@@ -39,6 +39,7 @@
 \begin{document}
 \maketitle
 \begin{abstract}
+\noindent
 We introduce The Graph, a \textit{Decentralized Query Protocol} for indexing and caching data from blockchains and storage networks. We describe the query interface, the topology of the P2P network, and the economic incentives and mechanisms designed to keep the network running as a public utility.
 \end{abstract}
 \section{Introduction}
@@ -83,7 +84,7 @@ The Graph can be divided into a stack of sub-protocols which can be treated conc
 \vspace*{5mm}
 \caption{\textbf{The Protocol Stack has the following sub-protocols:}}
 \begin{center}
-\includegraphics[width=.9\textwidth]{media/image7.png}
+\includegraphics[width=.85  \textwidth]{media/image7.png}
 \end{center}
 \end{figure}
 \begin{enumerate}
@@ -144,7 +145,9 @@ https://ipfs.io/ipfs/QmR7GSQM93Cx5eAg6a6yRzNde1FQv7uL6X1o4k7zrJa3LX/ipfs.draft3.
 \begin{figure}[H]
 \vspace*{5mm}
 \caption{\textbf{Service-Addressable Network}}
+\begin{center}
 \includegraphics[width=1\textwidth]{media/image6.png}
+\end{center}
 \end{figure}
 \subsubsection*{Query Processing}
 The \textit{Query Processing} is split into five distinct stages: \textit{Query Splitting, Service Discovery, Query Routing, Nested Query Processing} and \textit{Response Collation}.
@@ -160,7 +163,9 @@ In the Service Discovery stage, we leverage our Service-Addressable Network, to 
 In the Query Routing stage, the Gateway Node that originated the query\footnote{From the perspective of the network, it is impossible to distinguish whether a Gateway Node originated a query itself, or on behalf of a dApp client.} decides which Query Node to forward a specific Query Fragment to, as shown in Figure 5. The Query Routing stage uses the \textit{Service Group Routing Table}, which contains the location of each Node in the Service Group, as well as additional metadata.
 \begin{figure}[H]
 \caption{\textbf{The Query Routing stage.}}
-\includegraphics[width=1\textwidth]{media/image9.png}
+\begin{center}
+\includegraphics[width=.9\textwidth]{media/image9.png}
+\end{center}
 \end{figure}
 \noindent
 The metadata in the Service Group Routing Table is extensible to support modular routing logic. We take advantage of this in the Query Marketplace sub-protocol, but it could also be used to support operating the protocol in local networks or with trusted nodes, where payment requirements may be undesirable.

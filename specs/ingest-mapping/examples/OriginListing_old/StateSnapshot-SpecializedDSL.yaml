@@ -1,0 +1,153 @@
+specVersion: mapping/v1
+mappings:
+  - kind: ethereum/array-collection
+    entity: ForSaleListing
+
+    # Collection name and size define the state variables or
+    # functions that provide the array collection and its length
+    collectionName: listings
+    collectionSize: listingsLength
+
+    # Fields defines fields that can be retrieved from the
+    # structs returned for each item in the array collection;
+    #
+    # Fields starting with an underscore (e.g. _ipfsHash) are
+    # considered internal and are stripped of before passing
+    # entities on to the indexer's data source event handler
+    fields:
+      lister:
+        kind: ethereum/struct-field-by-index
+        index: 0
+      _ipfsHash:
+        kind: ethereum/struct-field-by-index
+        index: 1
+      price:
+        kind: ethereum/struct-field-by-index
+        index: 2
+      unitsAvailable:
+        kind: ethereum/struct-field-by-index
+        index: 3
+
+    # Extra fields are additional fields that can come from additional
+    # smart contract function calls, external files e.g. on IPFS and more;
+    # they can refer to values of regular fields
+    extraFields:
+      id:
+        kind: ethereum/array-collection-item-index
+      _schema:
+        kind: ipfs/field-in-json-file
+        hash:
+          source: field
+          name: _ipfsHash
+        path: ["data", "schema"]
+      category:
+        kind: ipfs/field-in-json-file
+        hash:
+          source: field
+          name: _ipfsHash
+        path: ["data", "category"]
+      description:
+        kind: ipfs/field-in-json-file
+        hash:
+          source: field
+          name: _ipfsHash
+        path: ["data", "description"]
+
+    # Transformations are applied to entities after all of their
+    # fields have been collected; in this example, these items
+    # are filtered based on a filter called is-for-sale-listing, which
+    # is defined further below
+    transformations:
+      - kind: filter
+        name: is-for-sale-listing
+
+    # Events describe events that can lead to entities being reindexed
+    events:
+      - name: NewListing
+        pipeline:
+          - kind: ethereum/event-param
+            name: _index
+          - kind: ethereum/array-collection-item
+          - kind: filter
+            name: is-for-sale-listing
+          - kind: update-entity
+      - name: ListingPurchased
+        pipeline:
+          - kind: ethereum/event-param
+            name: _index
+          - kind: ethereum/array-collection-item
+          - kind: filter
+            name: is-for-sale-listing
+          - kind: update-entity
+
+    # Filters can be used in transformations and events and are defined
+    # in a single place
+    filters:
+      is-for-sale-listing:
+        kind: filter-by-field-value
+        field: _schema
+        value: https://localhost:3000/schemas/for-sale.json
+
+  - kind: ethereum/array-collection
+    entity: AnnouncementListing
+    collectionName: listings
+    collectionSize: listingsLength
+    fields:
+      lister:
+        kind: ethereum/struct-field-by-index
+        index: 0
+      _ipfsHash:
+        kind: ethereum/struct-field-by-index
+        index: 1
+      price:
+        kind: ethereum/struct-field-by-index
+        index: 2
+      unitsAvailable:
+        kind: ethereum/struct-field-by-index
+        index: 3
+    extraFields:
+      id:
+        kind: ethereum/array-collection-item-index
+      _schema:
+        kind: ipfs/field-in-json-file
+        hash:
+          source: field
+          name: _ipfsHash
+        path: ["data", "schema"]
+      category:
+        kind: ipfs/field-in-json-file
+        hash:
+          source: field
+          name: _ipfsHash
+        path: ["data", "category"]
+      description:
+        kind: ipfs/field-in-json-file
+        hash:
+          source: field
+          name: _ipfsHash
+        path: ["data", "description"]
+    transformations:
+      - kind: filter
+        name: filter-announcement
+    events:
+      - name: NewListing
+        pipeline:
+          - kind: ethereum/event-param
+            name: _index
+          - kind: ethereum/array-collection-item
+          - kind: filter
+            name: is-announcement-listing
+          - kind: update-entity
+      - name: ListingPurchased
+        pipeline:
+          - kind: ethereum/event-param
+            name: _index
+          - kind: ethereum/array-collection-item
+          - kind: filter
+            name: is-announcement-listing
+          - kind: update-entity
+    filters:
+      is-announcement-listing:
+        kind: filter-by-field-value
+        field: _schema
+        value: https://localhost:3000/schemas/announcement.json

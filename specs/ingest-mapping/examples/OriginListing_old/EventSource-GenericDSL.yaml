@@ -1,0 +1,55 @@
+# Contract source: https://github.com/OriginProtocol/demo-dapp/blob/master/contracts/Listing.sol
+# specVersion indicates the version of the ingest mapping spec
+specVersion: 0.0.1
+# definitions are optional to help readability. May be used to specify aliases
+# for use later in the file. YAML requires that aliases be declared before they
+# are referenced.
+definitions:
+# Links to the GraphQL schema being mapped to
+schema:
+  # An IPLD link. This may not be needed if we have a single global schema.
+  /: /ipfs/QmUmg7BZC1YP1ca66rRtWKxpXp77WgVHrnv263JtDuvs2k
+# A single DataSource may comprise multiple DataSets.
+# DataSets are composed of Data, Structure & Mapping, which are intentionally
+# decoupled.
+datasets:
+  # IPLD address of the data for the dataset
+  - data: eth-contract/0x06012c8cf97BEaD5deAe237070F9587f8E7A266d
+    structure:
+      format: eth-contract
+      abi:
+        # This is an IPLD link. Any value can be replaced with an IPLD link for
+        # improved legibility. See: https://github.com/ipld/specs/tree/master/ipld
+        /: /ipfs/QmUmg7BZC1YP1ca66rRtWKxpXp77WgVHrnv263JtDuvs2k
+    mapping:
+      strategy: eth-contract-event-source
+      # How to access entities using smart contract interface.
+      # Not the source of truth on current state, but used in event source logic.
+      accessors:
+        - entity: "@OriginProtocol/Listing"
+          # getListing is a public method on the OriginProtocol Listing contract
+          # for accessing the Listing entity
+          getByIndex: getListing
+      # This is where the core of the event sourcing logic happens using pipeline
+      # operators. The events being sourced are in the ethereum contract event log.
+      processEvents:
+        - fork:
+            - filter:
+                event: NewListing
+            - getEntityByIndex:
+                entity: "@OriginProtocol/Listing"
+                idField: id
+            - createEntity:
+                entity: "@OriginProtocol/Listing"
+                idField: id
+        - fork:
+            - filter:
+                event: ListingPurchased
+            # Gets the state *after* the Listing was updated.
+            - getEntityByIndex:
+                entity: "@OriginProtocol/Listing"
+                index: _index
+              # Updates an entity in The Graph by ID
+            - updateEntity:
+                entity: "@OriginProtocol/Listing"
+                idField: id

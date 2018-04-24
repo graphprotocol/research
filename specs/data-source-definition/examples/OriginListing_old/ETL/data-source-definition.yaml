@@ -1,5 +1,5 @@
 # Contract source: https://github.com/OriginProtocol/demo-dapp/blob/master/contracts/Listing.sol
-# specVersion indicates the version of the ingest mapping spec
+# specVersion indicates the version of the data source definition spec
 specVersion: 0.0.1
 # Links to the GraphQL schema being mapped to
 schema:
@@ -22,6 +22,8 @@ datasets:
     mapping:
       # Indicates that the mapping will be a batch Extract, Transform, Load mapping.
       kind: ETL
+      # Version of the ETL mapping API used.
+      apiVersion: 0.0.1
       # Indicates the language used by the mapping script runtime.
       language: Babel
       # Clients for the storage adapters will be injected into mapping script.

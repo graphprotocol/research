@@ -7,34 +7,25 @@ import { map, range } from 'lodash/fp'
  * @param  {Object} ipfs     A client for interacting with an IPFS storage backend.
  * @param  {Object} options  An object which may contain clients for storage adapters.
  */
-export const extract = (data, { adapters }) => {
+export function* extract(data, { adapters }) {
   const { ipfs } = adapters
   const originListing = data
+  // Need to pretend that entityCount can be arbitrarily large
   const entityCount = originListing.listingsLength()
-  const entities = range(0, entityCount)
-    .map(value => originListing.getListing(value))
-    .map(([index, lister, ipfsHash, price, unitsAvailable]) => ({
-      index,
-      lister,
-      ipfsHash,
-      price,
-      unitsAvailable,
-    }))
-  return Promise.all(
-    entities.map(entity =>
-      // OriginListing contract uses truncated IPFS hashes
-      ipfs.block
-        .get(`Qm${entity.ipfsHash}`)
-        .then(data => JSON.parse(data))
-        .then(ipfsObject => ({
-          index: entity.index,
-          lister: entity.lister,
-          price: entity.price,
-          unitsAvailable: unitsAvailable,
-          listingData: ipfsObject.data,
-        })),
-    ),
-  )
+  for (let i = 0; i < entityCount; i++) {
+    let listing = originListing.getListing(i)
+    let [index, lister, ipfsHash, price, unitsAvailable] = listing
+    yield ipfs.block
+      .get(`Qm${entity.ipfsHash}`)
+      .then(data => JSON.parse(data))
+      .then(ipfsObject => ({
+        index: entity.index,
+        lister: entity.lister,
+        price: entity.price,
+        unitsAvailable: unitsAvailable,
+        listingData: ipfsObject.data,
+      }))
+  }
 }
 
 /**

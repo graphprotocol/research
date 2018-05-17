@@ -1,0 +1,41 @@
+
+# Contract source: https://github.com/OriginProtocol/demo-dapp/blob/master/contracts/Listing.sol
+# specVersion indicates the version of the data source definition spec
+specVersion: 0.0.1
+# Links to the GraphQL schema being mapped to
+schema:
+  # An IPLD link to the local schema for this Data Source.
+  /: /ipfs/QmUmg7BZC1YP1ca66rRtWKxpXp77WgVHrnv263JtDuvs2k
+# A single Data Source may comprise multiple Datasets.
+# Datasets are composed of Data, Structure & Mapping, which are intentionally
+# decoupled.
+datasets:
+  # How the dataset is ingested into The Graph
+  - data:
+      kind: ethereum/contract
+      name: OriginListing
+      address: 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d
+      structure:
+        abi:
+          # This is an IPLD link. Any value can be replaced with an IPLD link for
+          # improved legibility. See: https://github.com/ipld/specs/tree/master/ipld
+          /: /ipfs/QmUmg7BZC1YP1ca66rRtWKxpXp77WgVHrnv263JtDuvs2k
+        # The solidity source code for the contract.
+        src:
+          /: /ipfs/QmXYZ7BZC1YP1ca66rRtWKxpXp77WgVHrnv263JtDuvs2k
+    mapping:
+      # Indicates that the mapping will be a batch Extract, Transform, Load mapping.
+      kind: projection
+      # Version of the ETL mapping API used.
+      apiVersion: 0.0.1
+      # Indicates the language used by the mapping script runtime.
+      language: Typescript
+      # Clients for the storage adapters will be injected into mapping script.
+      storage-adapters:
+        - ipfs
+      entities:
+        Listing
+      src:
+        # Points to the Javascript file, a module which should implement the ETL
+        # interface.
+        /: /ipfs/QmUmg7BZC1YP1ca66rRtWKxpXp77WgVHrnv263JtDuvs2k

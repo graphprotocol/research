@@ -1,0 +1,19 @@
+type Kitty {
+  id: ID!
+  genes: String!
+  birthTime: DateTime!
+  cooldownEndBlock: DateTime!
+  matron: Kitty!
+  sire: Kitty!
+  pregnant: Boolean!
+  siringWith: Kitty
+  cooldownDuration: Int!
+  generation: Int!
+  owner: Owner!
+}
+
+type Owner {
+  id: ID!
+  address: String!
+  kitties: [Kitty]!
+}

@@ -17,7 +17,6 @@ const listingProjector = (storageRoot, resolvers) =>
       'unitsAvailable',
       ['data', 'schema']
       ['data', 'category'],
-      ['data', 'category'],
       ['data', 'description'],
     )
     .flatten()

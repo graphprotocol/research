@@ -1,126 +1,120 @@
-// RXJS V6
-const Rx = require('rxjs')
-
-const { fromEventPattern } = Rx
-const { filter, map } = Rx.operators
-
-const processEvents = (memeRegistry, db, { config, adapters }) => {
-  // Instance of web3 connected to JSON RPC of Indexing Node's geth
+export default (memeRegistry, db, { config, adapters }) => {
+  // Instance of web3 connected to JSON RPC of Query Node's geth
   const { web3 } = adapters
   const { memeABI } = config
-  const MemeContract = web3.contract(JSON.Parse(memeABI))
 
-  const registryEntryEvent$ = fromEventPattern(
-    // Add handler
-    handler => {
-      memeRegistry.RegistryEntryEvent().watch(handler)
-    },
-    // Remove handler, unused since web3 doesn't provide a cleanup method
-    handler => {},
-    // Selector maps the handler arguments to a single value
-    (error, event) => ({ error, event }),
-  ).pipe(
-    map(({ error, event }) => {
-      if (error) {
-        throw new Error(error)
-      } else {
-        return event
+  const eventSubscriber = memeRegistry.events.RegistryEntryEvent({
+    // Filter parameters, fromBlock etc.
+  })
+
+  eventSubscriber.on('error', error => {
+    throw error
+  })
+
+  eventSubscriber.on('changed', event => {
+    // Block reorgs, see documentation for "changed" on
+    // https://web3js.readthedocs.io/en/1.0/web3-eth-contract.html#contract-events-return
+  })
+
+  eventSubscriber.on('data', event => {
+    const { address, blockNumber, returnValues } = event
+    const { eventType, registryEntry, timestamp } = returnValues
+
+    const meme = new web3.eth.Contract(memeABI, registryEntry)
+
+    switch (eventType) {
+      // From RegistryEntry
+      case 'constructed': {
+        const [
+          version,
+          status,
+          creator,
+          deposit,
+          challengePeriodEnd,
+        ] = meme.loadRegistryEntry(blockNumber)
+        const [metaHash, totalSupply, totalMinted, tokenIdStart] = meme.loadMeme(
+          blockNumber
+        )
+
+        const data = {
+          id: registryEntry,
+
+          regEntry_address: registryEntry,
+          regEntry_version: version,
+          regEntry_status: status,
+          regEntry_creator: creator,
+          regEntry_deposit: deposit,
+          regEntry_createdOn: timestamp,
+          regEntry_challengePeriodEnd: challengePeriodEnd,
+
+          meme_title: null, // ?
+          meme_number: null, // ?
+          meme_metaHash: metaHash,
+          meme_imageHash: null, // ?
+          meme_totalSupply: totalSupply,
+          meme_totalMinted: totalMinted,
+          meme_tokenIdStart: tokenIdStart,
+          meme_totalTradeVolume: null, // ?
+          meme_totalTradeVolumeRank: null, // ?
+          meme_tags: [], // ?
+        }
+
+        db.add('Meme', meme)
+        return
       }
-    }),
-    map(({ args: { registryEntry, timestamp, ...restArgs }, blockNumber }) => ({
-      blockNumber,
-      args,
-      data: {
-        regEntry_address: registryEntry,
-        regEntry_createdOn: timestamp,
-      },
-      memeContract: MemeContract.at(registryEntry),
-    })),
-  )
 
-  // TODO: Listen on other RegistryEntryEvent eventTypes (voteRewardClaimed, challengeRewardClaimed, voteRevealed)
-  const constructedEvent$ = registryEntryEvent$.pipe(
-    filter(({ args: { eventType } }) => eventType === 'constructed'),
-  )
+      case 'challengeCreated': {
+        const [
+          challengePeriodEnd,
+          challenger,
+          rewardPool,
+          metaHash,
+          commitPeriodEnd,
+          revealPeriodEnd,
+          votesFor,
+          votesAgainst,
+          claimedRewardOn,
+          _voteQuorum,
+        ] = meme.loadRegistryEntryChallenge(blockNumber)
 
-  const challengeCreatedEvent$ = registryEntryEvent$.pipe(
-    filter(({ args: { eventType } }) => eventType === 'challengeCreated'),
-  )
+        const data = {
+          id: registryEntry,
 
-  constructedEvent$.pipe(
-    map(({ data, blockNumber, memeContract }) => {
-      const [
-        version,
-        status,
-        creator,
-        deposit,
-        challengePeriodEnd,
-      ] = memeContract.loadRegistryEntry(blockNumber)
+          challenge_challenger: challenger,
+          challenge_createdOn: timestamp,
+          challenge_comment: null, // ?
+          challenge_votingToken: null, // ?
+          challenge_rewardPool: rewardPool,
+          challenge_commitPeriodEnd: commitPeriodEnd,
+          challenge_revealPeriodEnd: revealPeriodEnd,
+          challenge_votesFor: votesFor,
+          challenge_votesAgainst: votesAgainst,
+          challenge_votesTotal: votesAgainst + votesFor,
+          challenge_claimedRewardOn: claimedRewardOn,
+          challenge_votes: [], // 1:n reference to Vote
+        }
 
-      const [metaHash, totalSupply, totalMinted, tokenIdStart] = memeContract.loadMeme(
-        blockNumber,
-      )
-
-      return {
-        ...data,
-        regEntry_version: version,
-        regEntry_status: status,
-        regEntry_creator: creator,
-        regEntry_deposit: deposit,
-        regEntry_challengePeriodEnd: challengePeriodEnd,
-        // Not yet implemented (Hardcoded)
-        meme_title: null,
-        // IPFS?
-        meme_number: Int,
-        meme_metaHash: metaHash,
-        // Not yet implemented (Hardcoded)
-        meme_imageHash: null,
-        meme_totalSupply: totalSupply,
-        meme_totalMinted: totalMinted,
-        meme_tokenIdStart: tokenIdStart,
-        meme_totalTradeVolume: null,
-        meme_totalTradeVolumeRank: null,
-        // IPFS?
-        meme_tags: null,
+        db.update('Meme', data)
+        return
       }
-    }),
-  ).subscribe(meme =>
-    // Adds 'Meme' enttiy with ID set to the Meme's contract address
-    db.add('Meme', meme.regEntry_address, meme)
-  )
-
-  challengeCreatedEvent$.pipe(
-    map(({ data, blockNumber, memeContract, args: { timestamp } }) => {
-      const [
-        challengePeriodEnd,
-        challenger,
-        rewardPool,
-        metaHash,
-        commitPeriodEnd,
-        revealPeriodEnd,
-        votesFor,
-        votesAgainst,
-        claimedRewardOn,
-        _voteQuorum,
-      ] = memeContract.loadRegistryEntryChallenge(blockNumber)
-      return {
-        ...data,
-        challenge_challenger: challenger,
-        challenge_createdOn: timestamp,
-        // Is this in challenge meta hash?
-        challenge_comment: null,
-        // Where is this specified? Not implemented yet?
-        challenge_votingToken: null,
-        challenge_rewardPool: rewardPool,
-        challenge_commitPeriodEnd: commitPeriodEnd,
-        challenge_revealPeriodEnd: revealPeriodEnd,
-        challenge_votesFor: votesFor,
-        challenge_votesAgainst: votesAgainst,
-        challenge_votesTotal: votesAgainst + votesFor,
-        challenge_claimedRewardOn: claimedRewardOn,
+      case 'voteCommitted': {
       }
-    }),
-  ).subscribe(meme => db.add('Meme', meme.regEntry_address, meme))
+      case 'voteRevealed': {
+      }
+      case 'voteRewardClaimed': {
+      }
+      case 'challengeRewardClaimed': {
+      }
+
+      // From Meme
+      case 'depositTransferred': {
+      }
+      case 'minted': {
+      }
+
+      // From ParamChange
+      case 'changeApplied': {
+      }
+    }
+  })
 }
-
-export default processEvents

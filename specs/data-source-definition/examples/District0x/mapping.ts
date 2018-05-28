@@ -33,7 +33,7 @@ export default (memeRegistry, db, { config, adapters }) => {
           challengePeriodEnd,
         ] = meme.loadRegistryEntry(blockNumber)
         const [metaHash, totalSupply, totalMinted, tokenIdStart] = meme.loadMeme(
-          blockNumber
+          blockNumber,
         )
 
         const data = {
@@ -59,7 +59,7 @@ export default (memeRegistry, db, { config, adapters }) => {
           meme_tags: [], // ?
         }
 
-        db.add('Meme', meme)
+        db.add('Meme', data)
         return
       }
 

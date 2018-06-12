@@ -5,3 +5,4 @@
 **/*.log
 **/*.out
 **/*.synctex.gz
+node_modules/

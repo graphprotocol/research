@@ -1,0 +1,13 @@
+{
+  "extends": "../node_modules/assemblyscript/std/assembly.json",
+  "include": [
+    "./**/*.ts"
+  ],
+  "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "../declarations/"
+  },
+  "files": [
+    "env.d.ts"
+  ]
+}

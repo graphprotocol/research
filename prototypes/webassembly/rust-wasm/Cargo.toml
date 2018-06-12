@@ -1,0 +1,8 @@
+[package]
+name = "thegraph-runtime-test"
+version = "0.1.0"
+authors = ["Yaniv Tal <yanivtalmusic@gmail.com>"]
+
+[dependencies]
+parity-wasm = "0.27.0"
+wasmi = "0.2.0"

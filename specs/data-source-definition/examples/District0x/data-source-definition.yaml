@@ -23,15 +23,30 @@ datasets:
       # Version of the ETL mapping API used.
       apiVersion: 0.0.1
       # Indicates the language used by the mapping script runtime.
-      language: TypeScript
+      # The type of WASM matters because we are implementing custom
+      # data types for assemblyscript.
+      language: wasm/assemblyscript
+      # The entities that will be created/updated/removed in this mapping
+      # Names must correspond to types in the GraphQL schema.
       entities:
-        Meme
+        - Meme
+        - User
+        - Vote
+        - Tag
+        - MemeToken
       # Will be injected to into mapping module
-      config:
-        - name: memeABI
+      ethContractAbis:
+        - name: MemeContract
           value:
             path: ./abis/Meme.json
-            contentType: text/json
+      eventHandlers:
+          # This event will be subscribed to and trigger the handler function
+          # each time it is emitted.
+        - event: RegistryEntryEvent
+          # This is the name of the handler function that will be exported
+          # by the WASM module.
+          handler: handleRegistryEntryEvent
       source:
-        # Points to the TypeScript file, a module which should implement the mapping.
+        # Points to the AssemblyScript file, a module which should implement the mapping.
+        # This should actually point to the built WASM output when deployed.
         path: ./mapping.ts

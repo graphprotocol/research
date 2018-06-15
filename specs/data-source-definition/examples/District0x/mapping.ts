@@ -1,120 +1,183 @@
-export default (memeRegistry, db, { config, adapters }) => {
-  // Instance of web3 connected to JSON RPC of Query Node's geth
-  const { web3 } = adapters
-  const { memeABI } = config
+/**
+ * This file is written in AssemblyScript, a subset of TypeScript
+ * which compiles to WASM.
+ *
+ * See https://github.com/AssemblyScript/assemblyscript
+ */
 
-  const eventSubscriber = memeRegistry.events.RegistryEntryEvent({
-    // Filter parameters, fromBlock etc.
-  })
+import "allocator/tlsf"
 
-  eventSubscriber.on('error', error => {
-    throw error
-  })
+/**
+ * Common types for working with Ethereum blockchain data. These would likely
+ * be placed into a separate declarations file.
+ */
 
-  eventSubscriber.on('changed', event => {
-    // Block reorgs, see documentation for "changed" on
-    // https://web3js.readthedocs.io/en/1.0/web3-eth-contract.html#contract-events-return
-  })
+// TODO
+declare class Int256 {
+  // TODO: Factor out into utility functions
+  toI32(): i32
+}
 
-  eventSubscriber.on('data', event => {
-    const { address, blockNumber, returnValues } = event
-    const { eventType, registryEntry, timestamp } = returnValues
+// TODO
+declare class Address {
+ toString(): string
+}
 
-    const meme = new web3.eth.Contract(memeABI, registryEntry)
+// TODO
+declare class Bytes32 {
+  toString(): string
+}
 
-    switch (eventType) {
-      // From RegistryEntry
-      case 'constructed': {
-        const [
-          version,
-          status,
-          creator,
-          deposit,
-          challengePeriodEnd,
-        ] = meme.loadRegistryEntry(blockNumber)
-        const [metaHash, totalSupply, totalMinted, tokenIdStart] = meme.loadMeme(
-          blockNumber,
-        )
+// TODO
+declare class UInt256 {
+  toI32(): i32
+}
 
-        const data = {
-          id: registryEntry,
+// TODO
+declare class Bytes {}
 
-          regEntry_address: registryEntry,
-          regEntry_version: version,
-          regEntry_status: status,
-          regEntry_creator: creator,
-          regEntry_deposit: deposit,
-          regEntry_createdOn: timestamp,
-          regEntry_challengePeriodEnd: challengePeriodEnd,
+// TODO
+declare class Event<Args> {
+  address: Address
+  args: Args
+  blockHash: string
+}
 
-          meme_title: null, // ?
-          meme_number: null, // ?
-          meme_metaHash: metaHash,
-          meme_imageHash: null, // ?
-          meme_totalSupply: totalSupply,
-          meme_totalMinted: totalMinted,
-          meme_tokenIdStart: tokenIdStart,
-          meme_totalTradeVolume: null, // ?
-          meme_totalTradeVolumeRank: null, // ?
-          meme_tags: [], // ?
-        }
+// TODO
+declare class CBOR {
 
-        db.add('Meme', data)
-        return
-      }
+}
 
-      case 'challengeCreated': {
-        const [
-          challengePeriodEnd,
-          challenger,
-          rewardPool,
-          metaHash,
-          commitPeriodEnd,
-          revealPeriodEnd,
-          votesFor,
-          votesAgainst,
-          claimedRewardOn,
-          _voteQuorum,
-        ] = meme.loadRegistryEntryChallenge(blockNumber)
 
-        const data = {
-          id: registryEntry,
+/**
+ * Generated Types
+ *
+ * These would be generated from ABI and Data Source Definition, and likely
+ * placed into a separate file.
+ *
+ */
 
-          challenge_challenger: challenger,
-          challenge_createdOn: timestamp,
-          challenge_comment: null, // ?
-          challenge_votingToken: null, // ?
-          challenge_rewardPool: rewardPool,
-          challenge_commitPeriodEnd: commitPeriodEnd,
-          challenge_revealPeriodEnd: revealPeriodEnd,
-          challenge_votesFor: votesFor,
-          challenge_votesAgainst: votesAgainst,
-          challenge_votesTotal: votesAgainst + votesFor,
-          challenge_claimedRewardOn: claimedRewardOn,
-          challenge_votes: [], // 1:n reference to Vote
-        }
+declare class RegistryEventArgs {
+  registryEntry: Address
+  eventType: Bytes32
+  version: UInt256
+  timestamp: UInt256
+  data: Array<UInt256>
+}
 
-        db.update('Meme', data)
-        return
-      }
-      case 'voteCommitted': {
-      }
-      case 'voteRevealed': {
-      }
-      case 'voteRewardClaimed': {
-      }
-      case 'challengeRewardClaimed': {
-      }
+declare class LoadRegistryEntryResults {
+  version: UInt256
+  // This is an Enum in the smart contract, which Ethereum stores as a UInt256
+  status: UInt256
+  creator: Address
+  deposit: UInt256
+  challengePeriodEnd: UInt256
+}
 
-      // From Meme
-      case 'depositTransferred': {
-      }
-      case 'minted': {
-      }
+declare class LoadMemeResults {
+  version: Bytes
+  // This is an Enum in the smart contract, which Ethereum stores as a UInt256
+  status: UInt256
+  creator: Address
+  deposit: UInt256
+  challengePeriodEnd: UInt256
+}
 
-      // From ParamChange
-      case 'changeApplied': {
-      }
-    }
-  })
+declare class MemeContract {
+  // ABI not necessary because already stored on the Rust side
+  constructor (address: Address)
+  loadRegistryEntry(): LoadRegistryEntryResults
+  loadMeme(): LoadMemeResults
+}
+
+declare class User {}
+
+declare class Vote {}
+
+declare class Tag {}
+
+declare class MemeToken {}
+
+declare class Meme {
+  id: string
+
+  regEntry_address: string
+  regEntry_version: i32
+  regEntry_status: i32
+  regEntry_creator: string
+  regEntry_deposit: i32
+  regEntry_createdOn: i32
+  regEntry_challengePeriodEnd: i32
+
+  // This should be the ID of a User entity
+  challenge_challenger: string
+  // Do we want to store Date as seconds since the epoch or ISO 8601 string?
+  challenge_createdOn: i32
+  challenge_comment: string
+  challenge_votingToken: string
+  challenge_commitPeriodEnd: i32
+  challenge_revealPeriodEnd: i32
+  challenge_votesFor: i32
+  challenge_votesAgainst: i32
+  challenge_votesTotal: i32
+  challenge_claimedRewardOn: i32
+  // This is modified from District0x's original schema (they define an parameter)
+  challenge_votes: Array<Vote>
+
+  meme_title: string
+  meme_number: i32
+  meme_metaHash: string
+  meme_imageHash: string
+  meme_totalSupply: i32
+  meme_totalMinted: i32
+  meme_tokenIdStart: i32
+  meme_totalTradeVolume: i32
+  meme_totalTradeVolumeRank: i32
+  meme_ownedMemeToken: Array<MemeToken>
+  meme_tags: Array<Tag>
+
+  toCBOR(): Bytes
+}
+
+ /**
+  * DB
+  */
+
+declare namespace db {
+  export function add(entityType: string, entity: Bytes): void
+}
+
+/**
+ * This is what the user (developer) would actually write
+ */
+export function handleRegistryEntryEvent(event: Event<RegistryEventArgs> ): void {
+  var eventType: string = event.args.eventType.toString()
+  if (eventType === 'constructed') {
+    var memeContract = new MemeContract(event.args.registryEntry)
+    var registryEntryData = memeContract.loadRegistryEntry()
+    var memeData = memeContract.loadMeme()
+    var meme = new Meme()
+    meme.regEntry_address = event.args.registryEntry.toString()
+    meme.regEntry_version = registryEntryData.version.toI32()
+
+    // ETC.
+
+    // Should we replace entity types with auto generated constants?
+    db.add('Meme', meme.toCBOR())
+
+  } else if (eventType === 'challengeCreated') {
+    // TODO
+  } else if (eventType === 'voteCommitted') {
+    // TODO
+  } else if (eventType === 'voteRevealed') {
+    // TODO
+  } else if (eventType === 'challengeRewardClaimed') {
+    // TODO
+  } else if (eventType === 'depositTransferred') {
+    // TODO
+  } else if (eventType === 'minted') {
+    // TODO
+  } else if (eventType === 'changeApplied') {
+    // TODO
+  }
 }

@@ -1,29 +1,6 @@
 import {subtract} from './common';
 
-// import "allocator/arena";
-//
-// var buffer = new ArrayBuffer(8);
-
-// import {allocate_memory} from "allocator/arena";
-
-// var ptr = allocate_memory(64);
-// free_memory(ptr);
-
-
-// function doSomething<T>(a: T): T {
-//   if (isString<T>()) {
-//     ... // eliminated if T is not a string
-//   } else {
-//     ... // eliminated if T is a string
-//   }
-// }
-//
-
 import "allocator/arena";
-
-var buffer = new ArrayBuffer(8);
-
-assert(buffer.byteLength == 8);
 
 
 // Ambient declaration of external function signature
@@ -34,6 +11,11 @@ declare namespace env {
 // Use function defined in rust
 export function add(a: i32, b: i32): i32 {
   return env.add1(a, b);
+}
+
+// Use function imported from adjacent ts file
+export function minus(a: i32, b: i32): i32 {
+  return subtract(a, b);
 }
 
 // Store data in linear memory
@@ -54,14 +36,10 @@ export function storeloadtest(): bool {
 }
 
 // Return a string
-let a: string = "tiger";
+let a: string = "hello";
 export function getString(): string {
   return a;
 }
-
-// export function setString(b: string): void {
-//   a = b;
-
 
 export function storestring(offset: usize): void {
   store<string>(offset, a);
@@ -87,4 +65,19 @@ export function testsimpleclass(): simpleclass {
   var b = new simpleclass(5);
   var c = simpleclass.addLo(a, b);
   return c;
+}
+
+// Function that takes generic type
+export function genericfunc<T>(a: T): i32 {
+  if (isString<T>()) {
+    return parseInt(a);
+  } else if (isInteger<T>()) {
+    return a;
+  } else {
+    return a;
+  }
+}
+
+export function test_generic(a: i32): i32 {
+  return genericfunc(a);
 }

@@ -145,7 +145,7 @@ declare class Meme {
   challenge_votesTotal: i32
   challenge_claimedRewardOn: i32
   // This is modified from District0x's original schema (they define an parameter)
-  challenge_votes: Array<Vote>
+  challenge_votes: Array<string>
 
   meme_title: string
   meme_number: i32
@@ -156,7 +156,7 @@ declare class Meme {
   meme_tokenIdStart: i32
   meme_totalTradeVolume: i32
   meme_totalTradeVolumeRank: i32
-  meme_ownedMemeToken: Array<MemeToken>
+  meme_ownedMemeToken: Array<string>
   meme_tags: Array<Tag>
 
   toCBOR(): Bytes

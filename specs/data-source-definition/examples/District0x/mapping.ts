@@ -33,6 +33,13 @@ declare class UInt256 {
   toI32(): i32
 }
 
+declare class EthereumValue {
+  type: string
+  toInt256(): Int256
+  toAddress(): Address
+  toBytes32(): Bytes32
+}
+
 // TODO
 declare class Bytes {}
 
@@ -41,11 +48,6 @@ declare class Event<Args> {
   address: Address
   args: Args
   blockHash: string
-}
-
-// TODO
-declare class CBOR {
-
 }
 
 
@@ -73,44 +75,17 @@ declare class MemeAuctionEventArgs {
   data: Array<UInt256>
 }
 
-declare class LoadRegistryEntryResults {
-  version: UInt256
-  // This is an Enum in the smart contract, which Ethereum stores as a UInt256
-  status: UInt256
-  creator: Address
-  deposit: UInt256
-  challengePeriodEnd: UInt256
-}
-
-declare class LoadMemeResults {
-  version: Bytes
-  // This is an Enum in the smart contract, which Ethereum stores as a UInt256
-  status: UInt256
-  creator: Address
-  deposit: UInt256
-  challengePeriodEnd: UInt256
-}
-
-declare class LoadMemeAuctionResults {
-  version: Bytes
-  // This is an Enum in the smart contract, which Ethereum stores as a UInt256
-  status: UInt256
-  creator: Address
-  deposit: UInt256
-  challengePeriodEnd: UInt256
-}
-
 declare class MemeContract {
   // ABI not necessary because already stored on the Rust side
   constructor (address: Address)
-  loadRegistryEntry(): LoadRegistryEntryResults
-  loadMeme(): LoadMemeResults
+  loadRegistryEntry(): Array<EthereumValue>
+  loadMeme(): Array<EthereumValue>
 }
 
 declare class MemeAuctionContract {
   // ABI not necessary because already stored on the Rust side
   constructor (address: Address)
-  loadMemeAuction(): LoadMemeAuctionResults
+  loadMemeAuction(): Array<EthereumValue>
 }
 
 declare class User {}
@@ -197,7 +172,7 @@ export function handleRegistryEntryEvent(event: Event<RegistryEventArgs> ): void
     var memeData = memeContract.loadMeme()
     var meme = new Meme()
     meme.regEntry_address = event.args.registryEntry.toString()
-    meme.regEntry_version = registryEntryData.version.toI32()
+    meme.regEntry_version = registryEntryData[0].toInt256().toI32()
 
     // ETC.
 
@@ -227,6 +202,7 @@ export function handleMemeAuctionEvent(event: Event<MemeAuctionEventArgs>): void
     var memeAuctionContract = new MemeAuctionContract(event.args.memeAuction)
     var memeAuctionData = memeAuctionContract.loadMemeAuction()
     var memeAuction = new MemeAuction()
+    memeAuction.memeAuction_seller = memeAuctionData[0].toAddress().toString()
 
     // ETC.
 

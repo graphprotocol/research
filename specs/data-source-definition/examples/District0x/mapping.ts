@@ -44,9 +44,9 @@ declare class EthereumValue {
 declare class Bytes {}
 
 // TODO
-declare class Event<Args> {
+declare class Event {
   address: Address
-  args: Args
+  args: Array<EthereumValue>
   blockHash: string
 }
 
@@ -58,22 +58,6 @@ declare class Event<Args> {
  * placed into a separate file.
  *
  */
-
-declare class RegistryEventArgs {
-  registryEntry: Address
-  eventType: Bytes32
-  version: UInt256
-  timestamp: UInt256
-  data: Array<UInt256>
-}
-
-declare class MemeAuctionEventArgs {
-  memeAuction: Address
-  eventType: Bytes32
-  version: UInt256
-  timestamp: UInt256
-  data: Array<UInt256>
-}
 
 declare class MemeContract {
   // ABI not necessary because already stored on the Rust side
@@ -138,9 +122,9 @@ declare class Meme {
 }
 
 declare class MemeAuction {
-  memeAuction_address: i32
-  memeAuction_seller: User
-  memeAuction_buyer: User
+  memeAuction_address: string
+  memeAuction_seller: string
+  memeAuction_buyer: string
   memeAuction_startPrice: i32
   memeAuction_endPrice: i32
   memeAuction_duration: i32
@@ -164,14 +148,15 @@ declare namespace db {
 /**
  * This is what the user (developer) would actually write
  */
-export function handleRegistryEntryEvent(event: Event<RegistryEventArgs> ): void {
-  var eventType: string = event.args.eventType.toString()
+export function handleRegistryEntryEvent(event: Event): void {
+  var registryEntryAddress: string = event.args[0].toAddress().toString()
+  var eventType: string = event.args[1].toBytes32().toString()
   if (eventType === 'constructed') {
-    var memeContract = new MemeContract(event.args.registryEntry)
+    var memeContract = new MemeContract(registryEntryAddress)
     var registryEntryData = memeContract.loadRegistryEntry()
     var memeData = memeContract.loadMeme()
     var meme = new Meme()
-    meme.regEntry_address = event.args.registryEntry.toString()
+    meme.regEntry_address = registryEntryAddress
     meme.regEntry_version = registryEntryData[0].toInt256().toI32()
 
     // ETC.
@@ -196,12 +181,14 @@ export function handleRegistryEntryEvent(event: Event<RegistryEventArgs> ): void
   }
 }
 
-export function handleMemeAuctionEvent(event: Event<MemeAuctionEventArgs>): void {
-  var eventType: string = event.args.eventType.toString()
+export function handleMemeAuctionEvent(event: Event): void {
+  var memeAuctionAddress: string = event.args[0].toAddress().toString()
+  var eventType: string = event.args[1].toBytes32().toString()
   if (eventType === 'auctionStarted') {
-    var memeAuctionContract = new MemeAuctionContract(event.args.memeAuction)
+    var memeAuctionContract = new MemeAuctionContract(memeAuctionAddress)
     var memeAuctionData = memeAuctionContract.loadMemeAuction()
     var memeAuction = new MemeAuction()
+    memeAuction.memeAuction_address = memeAuctionAddress
     memeAuction.memeAuction_seller = memeAuctionData[0].toAddress().toString()
 
     // ETC.

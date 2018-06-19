@@ -65,6 +65,14 @@ declare class RegistryEventArgs {
   data: Array<UInt256>
 }
 
+declare class MemeAuctionEventArgs {
+  memeAuction: Address
+  eventType: Bytes32
+  version: UInt256
+  timestamp: UInt256
+  data: Array<UInt256>
+}
+
 declare class LoadRegistryEntryResults {
   version: UInt256
   // This is an Enum in the smart contract, which Ethereum stores as a UInt256
@@ -83,11 +91,26 @@ declare class LoadMemeResults {
   challengePeriodEnd: UInt256
 }
 
+declare class LoadMemeAuctionResults {
+  version: Bytes
+  // This is an Enum in the smart contract, which Ethereum stores as a UInt256
+  status: UInt256
+  creator: Address
+  deposit: UInt256
+  challengePeriodEnd: UInt256
+}
+
 declare class MemeContract {
   // ABI not necessary because already stored on the Rust side
   constructor (address: Address)
   loadRegistryEntry(): LoadRegistryEntryResults
   loadMeme(): LoadMemeResults
+}
+
+declare class MemeAuctionContract {
+  // ABI not necessary because already stored on the Rust side
+  constructor (address: Address)
+  loadMemeAuction(): LoadMemeAuctionResults
 }
 
 declare class User {}
@@ -139,6 +162,22 @@ declare class Meme {
   toCBOR(): Bytes
 }
 
+declare class MemeAuction {
+  memeAuction_address: i32
+  memeAuction_seller: User
+  memeAuction_buyer: User
+  memeAuction_startPrice: i32
+  memeAuction_endPrice: i32
+  memeAuction_duration: i32
+  memeAuction_startedOn: i32
+  memeAuction_boughtOn: i32
+  memeAuction_status: i32
+  memeAuction_memeToken: MemeToken
+
+  toCBOR(): Bytes
+}
+
+
  /**
   * DB
   */
@@ -178,6 +217,23 @@ export function handleRegistryEntryEvent(event: Event<RegistryEventArgs> ): void
   } else if (eventType === 'minted') {
     // TODO
   } else if (eventType === 'changeApplied') {
+    // TODO
+  }
+}
+
+export function handleMemeAuctionEvent(event: Event<MemeAuctionEventArgs>): void {
+  var eventType: string = event.args.eventType.toString()
+  if (eventType === 'auctionStarted') {
+    var memeAuctionContract = new MemeContract(event.args.memeAuction)
+    var memeAuctionData = memeAuctionContract.loadMemeAuction()
+    var memeAuction = new MemeAuction()
+    
+    // ETC.
+
+    db.add('MemeAuction', memeAuction.toCBOR())
+  } else if (eventType === 'buy') {
+    // TODO
+  } else if (eventType === 'canceled') {
     // TODO
   }
 }

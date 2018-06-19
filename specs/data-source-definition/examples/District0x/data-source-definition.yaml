@@ -9,8 +9,8 @@ schema:
 # decoupled.
 datasets:
   # How the dataset is ingested into The Graph
-  - data:
-      kind: ethereum/contract
+  - kind: ethereum/contract
+    data:
       name: MemeRegistry
       address: 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d
       structure:
@@ -42,11 +42,37 @@ datasets:
       eventHandlers:
           # This event will be subscribed to and trigger the handler function
           # each time it is emitted.
-        - event: RegistryEntryEvent
+        - event: RegistryEntryEvent(address,bytes32,uint256,uint256,uint256[])
           # This is the name of the handler function that will be exported
           # by the WASM module.
           handler: handleRegistryEntryEvent
       source:
         # Points to the AssemblyScript file, a module which should implement the mapping.
         # This should actually point to the built WASM output when deployed.
+        path: ./mapping.ts
+  - kind: ethereum/contract
+    data:
+      name: MemeAuctionFactory
+      address: 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d
+      structure:
+        abi:
+          path: ./abis/MemeAuctionFactory.json
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.1
+      language: wasm/assemblyscript
+      entities:
+        - Meme
+        - User
+        - Vote
+        - Tag
+        - MemeToken
+      ethContractAbis:
+        - name: MemeAuction
+          value:
+            path: ./abis/MemeAuction.json
+      eventHandlers:
+        - event: MemeAuctionEvent(address,bytes32,uint256,uint256,uint256[])
+          handler: handleMemeAuctionEvent
+      source:
         path: ./mapping.ts

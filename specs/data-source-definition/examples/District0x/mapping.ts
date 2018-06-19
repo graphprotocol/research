@@ -38,6 +38,7 @@ declare class EthereumValue {
   toInt256(): Int256
   toAddress(): Address
   toBytes32(): Bytes32
+  toArray(): Array<EthereumValue>
 }
 
 // TODO
@@ -61,14 +62,14 @@ declare class Event {
 
 declare class MemeContract {
   // ABI not necessary because already stored on the Rust side
-  constructor (address: Address)
+  constructor (address: string)
   loadRegistryEntry(): Array<EthereumValue>
   loadMeme(): Array<EthereumValue>
 }
 
 declare class MemeAuctionContract {
   // ABI not necessary because already stored on the Rust side
-  constructor (address: Address)
+  constructor (address: string)
   loadMemeAuction(): Array<EthereumValue>
 }
 
@@ -78,7 +79,14 @@ declare class Vote {}
 
 declare class Tag {}
 
-declare class MemeToken {}
+declare class MemeToken {
+  memeToken_tokenId: i32
+  memeToken_number: i32
+  memeToken_owner: string
+  memeToken_meme: string
+
+  toBytes(): Bytes
+}
 
 declare class Meme {
   id: string
@@ -115,7 +123,7 @@ declare class Meme {
   meme_tokenIdStart: i32
   meme_totalTradeVolume: i32
   meme_totalTradeVolumeRank: i32
-  meme_ownedMemeToken: Array<string>
+  meme_ownedMemeTokens: Array<string>
   meme_tags: Array<Tag>
 
   toBytes(): Bytes
@@ -142,7 +150,13 @@ declare class MemeAuction {
   */
 
 declare namespace db {
-  export function add(entityType: string, entity: Bytes): void
+  /**
+   * [add description]
+   * @param  {string} entityType The type of the entity being added (i.e. 'User')
+   * @param  {Bytes}  entity     The data for the enttiy being added.
+   * @return {string}            The ID of the entity that was successfully added.
+   */
+  export function add(entityType: string, entity: Bytes): string
 }
 
 /**
@@ -151,11 +165,13 @@ declare namespace db {
 export function handleRegistryEntryEvent(event: Event): void {
   var registryEntryAddress: string = event.args[0].toAddress().toString()
   var eventType: string = event.args[1].toBytes32().toString()
+  var eventData: Array<EthereumValue> = event.args[4].toArray()
+  var meme = new Meme()
   if (eventType === 'constructed') {
     var memeContract = new MemeContract(registryEntryAddress)
     var registryEntryData = memeContract.loadRegistryEntry()
     var memeData = memeContract.loadMeme()
-    var meme = new Meme()
+    meme = new Meme()
     meme.regEntry_address = registryEntryAddress
     meme.regEntry_version = registryEntryData[0].toInt256().toI32()
 
@@ -175,7 +191,28 @@ export function handleRegistryEntryEvent(event: Event): void {
   } else if (eventType === 'depositTransferred') {
     // TODO
   } else if (eventType === 'minted') {
-    // TODO
+    var memeToken_owner = eventData[0]
+    var tokenIdStart = eventData[1].toInt256().toI32()
+    var tokenIdEnd = eventData[2].toInt256().toI32()
+    var i = 0
+    var memeToken = new MemeToken()
+    var tokenIds: Array<string> = []
+    for (var j = tokenIdStart; i <= tokenIdEnd; j++) {
+      memeToken = new MemeToken()
+      memeToken.memeToken_number = i
+      memeToken.memeToken_tokenId = j
+      memeToken.memeToken_owner = memeToken_owner.toAddress().toString()
+      memeToken.memeToken_meme = registryEntryAddress
+      tokenIds[i] = db.add('MemeToken', memeToken.toBytes())
+      i++
+    }
+    meme = new Meme()
+    meme.regEntry_address = registryEntryAddress
+    meme.meme_ownedMemeTokens = tokenIds
+    db.add('Meme', meme.toBytes())
+
+
+
   } else if (eventType === 'changeApplied') {
     // TODO
   }

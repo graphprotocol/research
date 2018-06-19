@@ -159,7 +159,7 @@ declare class Meme {
   meme_ownedMemeToken: Array<string>
   meme_tags: Array<Tag>
 
-  toCBOR(): Bytes
+  toBytes(): Bytes
 }
 
 declare class MemeAuction {
@@ -172,9 +172,9 @@ declare class MemeAuction {
   memeAuction_startedOn: i32
   memeAuction_boughtOn: i32
   memeAuction_status: i32
-  memeAuction_memeToken: MemeToken
+  memeAuction_memeToken: string
 
-  toCBOR(): Bytes
+  toBytes(): Bytes
 }
 
 
@@ -202,7 +202,7 @@ export function handleRegistryEntryEvent(event: Event<RegistryEventArgs> ): void
     // ETC.
 
     // Should we replace entity types with auto generated constants?
-    db.add('Meme', meme.toCBOR())
+    db.add('Meme', meme.toBytes())
 
   } else if (eventType === 'challengeCreated') {
     // TODO
@@ -224,13 +224,13 @@ export function handleRegistryEntryEvent(event: Event<RegistryEventArgs> ): void
 export function handleMemeAuctionEvent(event: Event<MemeAuctionEventArgs>): void {
   var eventType: string = event.args.eventType.toString()
   if (eventType === 'auctionStarted') {
-    var memeAuctionContract = new MemeContract(event.args.memeAuction)
+    var memeAuctionContract = new MemeAuctionContract(event.args.memeAuction)
     var memeAuctionData = memeAuctionContract.loadMemeAuction()
     var memeAuction = new MemeAuction()
-    
+
     // ETC.
 
-    db.add('MemeAuction', memeAuction.toCBOR())
+    db.add('MemeAuction', memeAuction.toBytes())
   } else if (eventType === 'buy') {
     // TODO
   } else if (eventType === 'canceled') {

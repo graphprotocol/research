@@ -85,162 +85,62 @@ query {
 ```
 
 # 1.4 Ethereum
-We implement a field `ethereum` on our top level `Query` type which surfaces Ethereum related data that is potentially relevant across all data sources.
+An `ethereum` field on the top level `Query` type surfaces most of the data you would be able to get through the [Ethereum JSON-RPC API](https://github.com/ethereum/wiki/wiki/JSON-RPC).
 
-The `ethereum` field returns the `Ethereum` type, composed of other ethereum specific types:
+### Example
+Query the latest block on the Ethereum blockchain:
 ```graphql
-####
-# Several of the comments in this schema were pulled, or paraphrased from:
-# https://github.com/ethereum/wiki/wiki/JSON-RPC
-####
-
-type Ethereum {
-  # Optionally may specify a block number OR a block hash OR a block tag
-  # (provided otherwise query will result in an error). If none specified
-  # will return the latest block.
-  block(number: Int, hash: EthereumHash tag: EthereumBlockTag): EthereumBlock
-  blocks: [Blocks]
-  transaction(hash: EthereumHash): EthereumTransaction
-  transactions: [EthereumTransactions]
+query {
+  block {
+    hash
+    number
+  }
 }
-
-type EthereumBlock {
-  # Arbitrary data optionally included in the block
-  extraData: Bytes32
-  # The difficulty level of this block
-  difficulty: BigInt
-  # The current limit of gas expenditure per block
-  gasLimit: Int
-  # The total used gas by all transactions in the block.
-  gasUsed: Int
-  # Hash of the block. `null` when block is pending.
-  hash: EthereumHash!
-  # The bloom filter for the logs of the block. `null` when block is pending.
-  logsBloom: Bytes256
-  # Hash of the generated proof-of-work. `null` when block is pending.
-  nonce: Bytes8
-  # The block number
-  number: Int
-  # Miner of this block, to whom block rewards will be sent
-  miner: EthereumAccount
-  # Transactions that were included in this block
-  transactions: [EthereumTransaction]
-  # The block created immediately prior to this block
-  parent: EthereumBlock
-  # SHA-3 of the uncles data in the block
-  sha3Uncles: EthereumHash
-  # The size of this block in bytes
-  size: Int
-  # The root of the final state trie of this block
-  stateRoot: EthereumHash
-  # Unix time (seconds since the Epoch)
-  timestamp: Int
-  # The root of the transaction trie of the block
-  transactionsRoot: EthereumHash
-  # The total difficulty of the chain until this block
-  totalDifficulty: BigInt
-  # The uncles for this block
-  uncles: [EthereumBlock]
-}
-
-type EthereumTransaction {
-  # Block where this transaction was included. `null` if pending.
-  block: EthereumBlock
-  # Address of the sender
-  from: EthereumAccount
-  # Gas provided by the sender
-  gas: Int
-  # Gas price provided by the sender in Wei
-  gasPrice: BigInt
-  # SHA-3 hash of this transaction
-  hash: EthereumHash
-  # The data sent along with the transaction
-  input: Bytes
-  # The number of transactions made by the sender prior to this one
-  nonce: Int
-  # Address of the receiver. `null` if contract creation.
-  to: EthereumAccount
-  # Integer of the transaction's index position in the block. `null` if
-  # still pending.
-  transactionIndex: Int
-  # Value transferred in Wei
-  value: BigInt
-}
-
-type EthereumTransactionReceipt {
-  # The block this transaction receipt was included in
-  block: EthereumBlock
-  # The created contract, if any. `null` otherwise.
-  contract: EthereumAccount
-  # The gas used by this and all preceding transactions in the block
-  # it was included in
-  cumulativeGasUsed: Int
-  # Address of the sender
-  from: EthereumAccount
-  # The amount of gas used by this transaction
-  gasUsed: Int
-  # The hash of the transaction receipt
-  hash: EthereumHash
-  # Logs which this transaction generated
-  logs: [EthereumLog]
-  # Bloom filter for light clients to quickly retrieve related logs
-  logsBloom: Bytes256
-  # Address of the receiver. `null` when it is a contract creation transaction.
-  to: EthereumAccount
-  # The associated transaction
-  transaction: Transaction
-}
-
-type EthereumLog {
-# Address from which this log originated
-address: EthereumAccount
-# The block this log was included in
-block: EthereumBlock
-# One or more non-indexed log arguments
-data: [Bytes32]
-# Position in the block. `null` if pending.
-logIndex: Int
-# True if log has been removed due to chain reorganization. False if valid.
-removed: Boolean
-# Between one and four indexed values associated with the log
-topics: [Bytes32]
-# Transaction this log was included in. `null` if still pending.
-transaction: Transaction
-}
-
-type EthereumAccount {
-  # Address of this account
-  address: EthereumAddress
-  # Balance of this account in Wei
-  balance: BigInt
-}
-
-
-enum EthereumBlockTag {
-  # The latest mined block
-  LATEST
-  # Refers to the genesis block or the earliest block the node has stored
-  EARLIEST
-  # A hypothetical block based on transactions in the mempool
-  PENDING
-}
-
-# EthereumAddress is a 20 byte hex-encoded string prefixed with a "0x"
-scalar EthereumAddress
-# EthereumHash values are hex-encoded KECCAK-256 SHA-3 strings with a "0x"
-# prefix
-scalar EthereumHash
-
-# Bytes scalar values will be sent over the wire as a Base64 encoded String
-scalar Bytes8
-scalar Bytes32
-scalar Bytes256
-# Unsized bytes array
-scalar Bytes
-
-# Numeric scalars
-scalar BigInt
 ```
+
+### Example
+Query an Ethereum transaction by its hash, and fetch the hash of the block it was included in:
+```graphql
+query {
+  transaction(hash: "0x568757dfa0e374b3e89b3fec5bebc88dcdda393f2914d3b651963971a292cf82") {
+    block {
+      hash
+    }
+  }
+}
+```
+
+### Example
+Query the genesis block:
+```graphql
+query {
+  block(tag: EARLIEST) {
+    timestamp
+  }
+}
+```
+
+### Example
+Query the ten most recent blocks and their transactions. For each transaction, query
+the Ethereum address and balance of the recipient and sender of the transaction:
+```graphql
+query {
+  blocks(last: 10) {
+    transactions {
+      from {
+        address
+        balance
+      }
+      to {
+        address
+        balance
+      }
+    }
+  }
+}
+```
+See the [Ethereum GraphQL Schema](ethereum.graphql) for the full API.
+
 # 1.5 Block Depth
 Querying data on blockchains is different than querying data in a traditional SQL database because data that is added to a blockchain may reverted spontaneously due to [uncled](https://ethereum.stackexchange.com/questions/34/what-is-an-uncle-ommer-block) blocks and block reorganizations.
 

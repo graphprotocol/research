@@ -276,7 +276,7 @@ query {
     _logs(from: '0xeeac66f4785cbd5f37e157be7fa59ae03b3c22d859109052b72cef7b626ee756') {
       operation
       # We will be able to see how `age` changed, if at all,
-      # since our lat query.
+      # since our last query.
       data {
         age
       }
@@ -294,7 +294,7 @@ Graph Protocol subscriptions are GraphQL spec-compliant subscriptions. An import
 ## 2.1 Basics
 The root Subscription type for subscription operations mimics the root Query type used for query operations in order to minimize the cognitive overhead for writing subscriptions.
 
-For example, If your schema permits the following query:
+For example, if the following is a valid query:
 
 ```graphql
 query {
@@ -306,27 +306,26 @@ query {
 }
 ```
 
-Then you can write the following corresponding subscription:
+Then the following subscription would also be valid:
 
 ```graphql
 subscription {
   User {
-    data {
-      id
-      name
-      age
-    }
-    operation
-    transaction {
-      from
-      to
+    id
+    name
+    age
+    _logs {
+      operation
+      transaction {
+        from
+        to
+      }
     }
   }
 }
 ```
-
-Both the query and the subscription above will fetch data for User entities with id, name and age attributes.
-
-The type of entity subscriptions is the same as the type used for entity logs in the query API.
+As with the query API, by not passing in any arguments into the `_logs` field, we indicate that we wish to fetch the most recent transaction that mutated the entity.
 
 ## 2.3 Block Reorgs
+
+A key difference between the query and subscription APIs is that with the subscription API it is unnecessary to pass in the `from` argument into `_logs` in order to see REVERT transactions. This is because the subscription already carries the context of what transactions were seen previously by the client and must be reverted in the event of a chain reorganization.

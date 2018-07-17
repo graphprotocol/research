@@ -368,8 +368,25 @@ query {
 }
 ```
 
+Several of the operations supported for querying collections of entities are also supported on the `_logs` field. Specifically, `first`, `last` and `orderDirection`.
 
+### Example
+Query the ten most recent logs for a User entity:
+```graphql
+query {
+  allUsers() {
+    id
+    name
+    age
+    _logs(last: 10) {
+      operation
+    }
+  }
+}
+```
 
+The `orderBy` parameter is not supported for `_logs`. Logs will be sorted in the
+direction of `from` block parameter to the present block. This order can be reversed by passing in `DESC` to `orderDirection`. Similarly, the `before` and `after` parameters are not supported as this functionality is superseded by the `from` input parameter.
 
 # 2 Subscriptions
 Graph Protocol subscriptions are GraphQL spec-compliant subscriptions. An important difference between subscription and query operations in GraphQL is that the former may only have a single top level field at the root level for each operation.

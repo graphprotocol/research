@@ -201,6 +201,8 @@ We generate a log type for each entity in your schema.
 A `Token` entity in your schema generates a corresponding `_TokenLog` type:
 ```graphql
 type _TokenLog {
+  # The id of the operation
+  id: ID!
   # The value of the entity after the operation
   value: Token
   # The value of the entity prior to the operation
@@ -265,7 +267,7 @@ query {
 }
 ```
 
-Several of the operations supported for querying collections of entities are also supported on the `_logs` field. Specifically, `first`, `last` and `orderDirection`.
+Several of the operations supported for querying collections of entities are also supported on the `_logs` field. Specifically, `first`, `last` and `orderDirection`, `after` and `before` (though they may not all be used simultaneously, see documentation above).
 
 #### Example
 Query the ten most recent logs for a `Token` entity:
@@ -283,10 +285,6 @@ query {
 
 The `orderBy` parameter is not supported for `_logs`. Logs will be sorted in the
 direction of `from` block parameter to the present block. This order can be reversed by passing in `DESC` to `orderDirection`.
-
-**Note**: `orderDirection` also affects the value of `previousValue`, in that `previousValue` will always return the `data` of the log immediately preceding the current log in the sort order.
-
-Similarly, the `before` and `after` parameters are not supported as this functionality is superseded by the `from` input parameter.
 
 # 2 Subscriptions
 Graph Protocol subscriptions are GraphQL spec-compliant subscriptions. Unlike query operations GraphQL subscriptions may only have a single top level field at the root level for each subscription operation.

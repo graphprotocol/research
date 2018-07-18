@@ -2,8 +2,8 @@
 # 1.1 Basics
 For each type `Entity` which you define in your schema, an `Entity` and `allEntities` field will be generated on the top-level `Query` type.
 
-### Example
-To query for a single `Token` entity:
+#### Example
+Query for a single `Token` entity defined in your schema:
 ```graphql
 query {
   Token(id: 1) {
@@ -14,8 +14,8 @@ query {
 ```
 When querying for a single entity, the `id` field is required.
 
-### Example
-To query all `Token` entities:
+#### Example
+Query all `Token` entities:
 ```graphql
 query {
   allTokens {
@@ -27,7 +27,7 @@ query {
 # 1.2 Sorting
 When querying a collection, the `orderBy` parameter may be used to sort by a specific attribute. Additionally the `orderDirection` can be used to specify the sort direction, `ASC` for ascending or `DESC` for descending.
 
-### Example
+#### Example
 ```graphql
 query (orderBy: "price", orderDirection: ASC ) {
   allTokens {
@@ -40,7 +40,8 @@ query (orderBy: "price", orderDirection: ASC ) {
 # 1.3 Pagination
 When querying a collection, the `first` or `last` parameters can be used to paginate from the beginning or the end of the collection, respectively.
 
-### Example
+#### Example
+Query the first ten tokens:
 ```graphql
 query {
   allTokens(first: 10) {
@@ -52,7 +53,8 @@ query {
 
 In order to query for groups of entities in the middle of a collection, the `skip` parameter may be used in conjunction with either the `first` or `last` parameters to skip a specified number of entities starting at the beginning or end of the collection.
 
-### Example
+#### Example
+Query ten `Token` entities, offset by ten places from the end of the collection:
 ```graphql
 query {
   allTokens(last: 10, skip: 10) {
@@ -62,9 +64,10 @@ query {
 }
 ```
 
-Additionally, the `after` or `before` parameters may be used to fetch a group of entities starting at an entity with a specified ID. The `after` parameter is used in conjunction with `first`, while the `before` parameter is used in conjunction with `last`.
+Additionally, the `after` or `before` parameters may be used to fetch a group of entities starting at an entity with a specified `id`. The `after` parameter is used in conjunction with `first`, while the `before` parameter is used in conjunction with `last`.
 
-### Example
+#### Example
+Query the ten `Token` entities located after the `Token` with an `id` of `A1234` in the collection:
 ```graphql
 query {
   allTokens(first: 10, after: A1234) {
@@ -74,7 +77,8 @@ query {
 }
 ```
 
-### Example
+#### Example
+Query the ten `Token` entities located before the `Token` with an `id` of `A1234` in the collection:
 ```graphql
 query {
   allTokens(last: 10, before: A1234) {
@@ -87,7 +91,7 @@ query {
 # 1.4 Ethereum
 An `ethereum` field on the top level `Query` type surfaces most of the data you would be able to get through the [Ethereum JSON-RPC API](https://github.com/ethereum/wiki/wiki/JSON-RPC).
 
-### Example
+#### Example
 Query the latest block on the Ethereum blockchain:
 ```graphql
 query {
@@ -98,7 +102,7 @@ query {
 }
 ```
 
-### Example
+#### Example
 Query an Ethereum transaction by its hash, and fetch the hash of the block it was included in:
 ```graphql
 query {
@@ -110,7 +114,7 @@ query {
 }
 ```
 
-### Example
+#### Example
 Query the genesis block:
 ```graphql
 query {
@@ -120,7 +124,7 @@ query {
 }
 ```
 
-### Example
+#### Example
 Query the ten most recent blocks and their transactions. For each transaction, query
 the Ethereum address and balance of the recipient and sender of the transaction:
 ```graphql
@@ -142,25 +146,26 @@ query {
 See the [Ethereum GraphQL Schema](ethereum.graphql) for the full API.
 
 # 1.5 Block Depth
-Querying data on blockchains is different than querying data in a traditional SQL database because data that is added to a blockchain may reverted spontaneously due to [uncled](https://ethereum.stackexchange.com/questions/34/what-is-an-uncle-ommer-block) blocks and block reorganizations.
+In contrast to traditional SQL databases, data that is added to a blockchain be may reverted spontaneously due to [uncled](https://ethereum.stackexchange.com/questions/34/what-is-an-uncle-ommer-block) blocks and block reorganizations.
 
-Apps built on top of blockchains, therefore, need to be able to communicate to their users how likely any piece of data is to be a permanent part of the blockchain. In Bitcoin and Ethereum (Proof-of-Work) blockchains this is a function of how ‘deep’ the block is in which the transaction affecting the data was added.
+Apps built atop blockchains require the ability to communicate to users the likelihood that specific data is part of the permanent canonical blockchain. In Bitcoin and Ethereum (Proof-of-Work) blockchains this is a function of how many 'confirmations' a transaction has, or put differently how 'deep' in the blockchain a transaction is.
 
-**Note**: Some Proof-of-Stake implementations have a concept of finality which is not tied to block depth, which we may expose in this API in the future.
+**Note**: Some Proof-of-Stake implementations have a concept of finality which is not tied to block depth. This will be addressed in a future version of this API.
 
-In our API we expose this additional information in a `_depth` field that we add to each entity (note the single `_`, not to conflict with the introspection systems reserved double `_` prefix). It allows you to query the block depth, sometimes called 'confirmations', of each attribute on the entity.
+In our API we expose this additional information in a `_depth` field that we add to each entity.
 
-### Example
+#### Example
+Query the number of confirmations that the `owner` and `id` fields have on a `Token` entity:
 ```graphql
 query  {
-  allUsers() {
+  allTokens() {
     id
-    age
+    owner
     _depth {
       # Will return the block depth of the transaction which
-      # last modified the 'age' field
-      age
-      # Getting depth of the entity's id attribute effectively
+      # last modified the 'owner' field
+      owner
+      # Getting depth of the entity's `id` attribute effectively
       # gives you the block depth of the entire entity.
       id
     }
@@ -169,99 +174,91 @@ query  {
 
 ```
 # 1.6 Entity Logs
-Even if your dApp communicates to your users that a particular piece of data is not very deep, and subject to be reverted, it can be jarring when that reversion actually happens. If the data your dApp queries changes from one query to the next, how should your users recognize if the change is due to a block reversion or due to a legitimate transaction?
+Even if a dApp communicates to users that some data has few confirmations, it would be jarring to see that data change suddenly without explanation. Without additional context, users would not understand whether data changed due to a chain reorganization or a legitimate transaction.
 
-To solve this problem we introduce a `_logs` field on each entity. It provides additional context as to why the current value of an entity is what it is. By default it will show you the last transaction which affected that entity.
+To solve this problem a `_logs` field is generated for each entity in your schema. It provides context as to how an entity arrived at its current value. By default it will show you the most recent operation which modified an entity.
 
-### Example
+#### Example
+Query for all `Token` entities. For each `Token` fetch the most recent operation type and the previous `owner` of that `Token`:
 ```graphql
 query {
-  allUsers() {
+  allToken() {
     id
-    age
+    owner
     _logs {
-      # Indicated what type of operation was last performed on
-      # the entity (i.e. CREATE, UPDATE, DELETE, REVERT)
       operation
-      data {
-        # In this case these field are redundant since the
-        # values will be the same as the fields queried above.
-        id
-        age
+      previousValue {
+        owner
       }
     }
   }
 }
 ```
 
-For each entity of type `Entity` we generate a type `EntityLog`, which is the type of the list items returned by `_logs`.
+We generate a log type for each entity in your schema.
 
-### Example
-For example, if we have a type `User` in our input schema:
+#### Example
+A `Token` entity in your schema generates a corresponding `_TokenLog` type:
 ```graphql
-type User {
-  id: ID!
-  age: Int!
-  name: String!
-}
-```
-
-Then the final output schema will include a `UserLog` type:
-```graphql
-type UserLog {
-  data: User
-  operation: LogOperation
+type _TokenLog {
+  # The value of the entity after the operation
+  value: Token
+  # The value of the entity prior to the operation
+  previousValue: Token
+  # The type of operation
+  operation: Operation
+  # The Ethereum transaction which triggered this operation
   transaction: EthereumTransaction
 }
 
-enum LogOperation {
+enum Operation {
   CREATE
   UPDATE
   DELETE
+  # REVERT operations occur in the event of uncles and chain reorganizations
   REVERT
 }
 ```
 
-The above API already goes a long way in explaining how data changed, but falls short for complex block reorganizations. For example, what if the data changed due to a reversion - should the last transaction be the reversion, or should it be the last valid transaction on the new canonical chain after the reversion? Similarly does it make sense to show a reversion to a user that never saw data on the reverted chain? Probably not.
+In the default usage, the `_logs` field will only return operations that are a part of the canonical blockchain; this means no `REVERT` operations. This is so that dApps do not inadvertently present users with data that is part of some "alternate history" blockchain that they have never seen before.
 
-To address this last point, the `_logs` will only return transactions impacting the entity on the canonical chain, which by definition has no block reversions.
+In order to query for operations that were reverted due to chain reorganizations, the `from` field may be used to specify a block which we want the history of operations in the log to be relative to. If the block specified is an uncle block, or part of a chain reorganization, then there may be several `REVERT` operations in the log.
 
-In order to query for block reversions, we introduce an input parameter `from` on the `_logs` field to specify what block you want the logs to be relative to. This could be a block on the canonical chain, in which case the logs will again contain no REVERT transactions, but it could also be an uncle block or a reverted block on a temporary chain split, in which case the first few transactions might be REVERT transactions, possibly followed by other transactions.
+The `_logs(from: '...')` field usage is particularly useful in conjunction with the `ethereum` field specified previously.
 
-The `_logs(from: '...')` field usage is particularly powerful when combined with the `ethereum` field described above.
-
-### Example
-
-For example on first page load, your dApp might issue the following query:
+#### Example
+Query all `Tokens` on initial page load, as well as the latest block hash of the chain that is being queried:
 ```graphql
 query {
-  allUsers() {
+  allTokens() {
     id
-    name
-    age
+    owner
   }
   ethereum {
     block {
+      # The latest block is - '0xeeac66f4785cbd5f37e157be7fa59ae03b3c22d859109052b72cef7b626ee756'
       hash
     }
   }
 }
 ```
-
-Then on a subsequent query (perhaps you are polling to keep your UI up to date):
+Poll to see how the data has changed since the last time you ran the query:
 ```graphql
 query {
-  allUsers() {
+  allTokens() {
     id
-    name
-    age
-    # We enter the hash that was returned from the previous query
+    owner
+    # We enter the hash that was returned from the previous query.
+    # If the entity has not changed will return an empty array.
     _logs(from: '0xeeac66f4785cbd5f37e157be7fa59ae03b3c22d859109052b72cef7b626ee756') {
+      # A `REVERT` operation would indicate that the previously queried
+      # block was part of a chain reorganization.
       operation
       # We will be able to see how `age` changed, if at all,
       # since our last query.
-      data {
-        age
+      previousValue {
+        # The token's owner prior to the operation
+        owner
       }
     }
   }
@@ -270,14 +267,13 @@ query {
 
 Several of the operations supported for querying collections of entities are also supported on the `_logs` field. Specifically, `first`, `last` and `orderDirection`.
 
-### Example
-Query the ten most recent logs for a User entity:
+#### Example
+Query the ten most recent logs for a `Token` entity:
 ```graphql
 query {
-  allUsers() {
+  allTokens() {
     id
-    name
-    age
+    owner
     _logs(last: 10) {
       operation
     }
@@ -286,46 +282,56 @@ query {
 ```
 
 The `orderBy` parameter is not supported for `_logs`. Logs will be sorted in the
-direction of `from` block parameter to the present block. This order can be reversed by passing in `DESC` to `orderDirection`. Similarly, the `before` and `after` parameters are not supported as this functionality is superseded by the `from` input parameter.
+direction of `from` block parameter to the present block. This order can be reversed by passing in `DESC` to `orderDirection`.
+
+**Note**: `orderDirection` also affects the value of `previousValue`, in that `previousValue` will always return the `data` of the log immediately preceding the current log in the sort order.
+
+Similarly, the `before` and `after` parameters are not supported as this functionality is superseded by the `from` input parameter.
 
 # 2 Subscriptions
-Graph Protocol subscriptions are GraphQL spec-compliant subscriptions. An important difference between subscription and query operations in GraphQL is that the former may only have a single top level field at the root level for each operation.
+Graph Protocol subscriptions are GraphQL spec-compliant subscriptions. Unlike query operations GraphQL subscriptions may only have a single top level field at the root level for each subscription operation.
 
 ## 2.1 Basics
 The root Subscription type for subscription operations mimics the root Query type used for query operations in order to minimize the cognitive overhead for writing subscriptions.
 
-For example, if the following is a valid query:
+#### Example
+Query all `Token` entities along with their `id` and `owner` attributes:
 
 ```graphql
 query {
-  allUsers {
+  allTokens {
     id
-    name
-    age
+    owner
   }
 }
 ```
 
-Then the following subscription would also be valid:
+Subscribe to all `Token` entity changes and fetch the values of the `id` and `owner` attributes on the updated entity:
 
 ```graphql
 subscription {
-  User {
+  Token {
     id
-    name
-    age
+    owner
+  }
+}
+```
+
+As with the Query API, we can use `_logs` to fetch information about the operation that mutated the entity.
+
+#### Example
+Subscribe to all `Token` entity changes and fetch the type of operation:
+```graphql
+subscription {
+  Token {
+    id
     _logs {
       operation
-      transaction {
-        from
-        to
-      }
     }
   }
 }
 ```
-As with the query API, by not passing in any arguments into the `_logs` field, we indicate that we wish to fetch the most recent transaction that mutated the entity.
 
 ## 2.3 Block Reorgs
 
-A key difference between the query and subscription APIs is that with the subscription API it is unnecessary to pass in the `from` argument into `_logs` in order to see REVERT transactions. This is because the subscription already carries the context of what transactions were seen previously by the client and must be reverted in the event of a chain reorganization.
+A key difference from the Query API is that the Subscription API does not support the `from` parameter on the `_logs` field. This is because the subscription already carries the context of what transactions were seen previously by the client and must be reverted in the event of a chain reorganization.

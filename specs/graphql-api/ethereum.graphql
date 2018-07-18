@@ -102,20 +102,20 @@ type EthereumTransactionReceipt {
 }
 
 type EthereumLog {
-# Address from which this log originated
-address: EthereumAccount
-# The block this log was included in
-block: EthereumBlock
-# One or more non-indexed log arguments
-data: [Bytes32]
-# Position in the block. `null` if pending.
-logIndex: Int
-# True if log has been removed due to chain reorganization. False if valid.
-removed: Boolean
-# Between one and four indexed values associated with the log
-topics: [Bytes32]
-# Transaction this log was included in. `null` if still pending.
-transaction: Transaction
+  # Address from which this log originated
+  address: EthereumAccount
+  # The block this log was included in
+  block: EthereumBlock
+  # One or more non-indexed log arguments
+  data: [Bytes32]
+  # Position in the block. `null` if pending.
+  logIndex: Int
+  # True if log has been removed due to chain reorganization. False if valid.
+  removed: Boolean
+  # Between one and four indexed values associated with the log
+  topics: [Bytes32]
+  # Transaction this log was included in. `null` if still pending.
+  transaction: Transaction
 }
 
 type EthereumAccount {

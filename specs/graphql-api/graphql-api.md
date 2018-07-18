@@ -145,35 +145,42 @@ query {
 ```
 See the [Ethereum GraphQL Schema](ethereum.graphql) for the full API.
 
-# 1.5 Block Depth
+# 1.5 Confirmations and Finality
 In contrast to traditional SQL databases, data that is added to a blockchain be may reverted spontaneously due to [uncled](https://ethereum.stackexchange.com/questions/34/what-is-an-uncle-ommer-block) blocks and block reorganizations.
 
-Apps built atop blockchains require the ability to communicate to users the likelihood that specific data is part of the permanent canonical blockchain. In Bitcoin and Ethereum (Proof-of-Work) blockchains this is a function of how many 'confirmations' a transaction has, or put differently how 'deep' in the blockchain a transaction is.
+Apps built atop blockchains require the ability to communicate to users the likelihood that specific data is part of the permanent canonical blockchain. In Bitcoin and Ethereum (proof-of-work) blockchains this is a function of how many 'confirmations' a transaction has (how many blocks were created after this transaction). In pure proof-of-work blockchains a transaction can have many confirmations but is never technically final (i.e. there is always at least an infinitesimally small chance that it may be reverted). In proof-of-stake blockchains on the other hand, including mechanisms such as Casper FFG, blocks and transactions may achieve finality.
 
-**Note**: Some Proof-of-Stake implementations have a concept of finality which is not tied to block depth. This will be addressed in a future version of this API.
-
-In our API we expose this additional information in a `_depth` field that we add to each entity.
+In our API we expose this additional information in a `_fields` field that we add to each entity.
 
 #### Example
-Query the number of confirmations that the `owner` and `id` fields have on a `Token` entity:
+Query the number of confirmations that the `owner` and `id` fields have on a `Token` entity, as well as whether the current value of the `owner` field is "final" and when it was last updated:
 ```graphql
 query  {
   tokens() {
     id
     owner
-    _depth {
-      # Will return the block depth of the transaction which
-      # last modified the 'owner' field
-      owner
-      # Getting depth of the entity's `id` attribute effectively
-      # gives you the block depth of the entire entity.
-      id
+    _fields {
+      id {
+        # The confirmations since the `id` was set is equivalent
+        # to the amount of confirmations since the entity was created.
+        confirmations
+      }
+      owner {
+        # How many blocks were confirmed after the current value
+        # of this field was set.
+        confirmations
+        # When this field was last modified
+        updatedAt
+        # Whether the value shown for this field has been finalized
+        # Always `false` for pure proof-of-work blockchains.
+        final
+      }
     }
   }
 }
 
 ```
-# 1.6 Entity Logs
+# 1.6 Entity and Field Logs
 Even if a dApp communicates to users that some data has few confirmations, it would be jarring to see that data change suddenly without explanation. Without additional context, users would not understand whether data changed due to a chain reorganization or a legitimate transaction.
 
 To solve this problem a `_logs` field is generated for each entity in your schema. It provides context as to how an entity arrived at its current value. By default it will show you the most recent operation which modified an entity.

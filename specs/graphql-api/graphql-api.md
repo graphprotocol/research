@@ -1,12 +1,12 @@
 # 1 Queries
 # 1.1 Basics
-For each type `Entity` which you define in your schema, an `Entity` and `allEntities` field will be generated on the top-level `Query` type.
+For each type `Entity` which you define in your schema, an `entity` and `entities` field will be generated on the top-level `Query` type.
 
 #### Example
 Query for a single `Token` entity defined in your schema:
 ```graphql
 query {
-  Token(id: 1) {
+  token(id: 1) {
     id
     owner
   }
@@ -18,7 +18,7 @@ When querying for a single entity, the `id` field is required.
 Query all `Token` entities:
 ```graphql
 query {
-  allTokens {
+  tokens {
     id
     owner
   }
@@ -30,7 +30,7 @@ When querying a collection, the `orderBy` parameter may be used to sort by a spe
 #### Example
 ```graphql
 query (orderBy: "price", orderDirection: ASC ) {
-  allTokens {
+  tokens {
     id
     owner
   }
@@ -44,7 +44,7 @@ When querying a collection, the `first` or `last` parameters can be used to pagi
 Query the first ten tokens:
 ```graphql
 query {
-  allTokens(first: 10) {
+  tokens(first: 10) {
     id
     owner
   }
@@ -57,7 +57,7 @@ In order to query for groups of entities in the middle of a collection, the `ski
 Query ten `Token` entities, offset by ten places from the end of the collection:
 ```graphql
 query {
-  allTokens(last: 10, skip: 10) {
+  tokens(last: 10, skip: 10) {
     id
     owner
   }
@@ -70,7 +70,7 @@ Additionally, the `after` or `before` parameters may be used to fetch a group of
 Query the ten `Token` entities located after the `Token` with an `id` of `A1234` in the collection:
 ```graphql
 query {
-  allTokens(first: 10, after: A1234) {
+  tokens(first: 10, after: A1234) {
     id
     owner
   }
@@ -81,7 +81,7 @@ query {
 Query the ten `Token` entities located before the `Token` with an `id` of `A1234` in the collection:
 ```graphql
 query {
-  allTokens(last: 10, before: A1234) {
+  tokens(last: 10, before: A1234) {
     id
     owner
   }
@@ -158,7 +158,7 @@ In our API we expose this additional information in a `_depth` field that we add
 Query the number of confirmations that the `owner` and `id` fields have on a `Token` entity:
 ```graphql
 query  {
-  allTokens() {
+  tokens() {
     id
     owner
     _depth {
@@ -182,7 +182,7 @@ To solve this problem a `_logs` field is generated for each entity in your schem
 Query for all `Token` entities. For each `Token` fetch the most recent operation type and the previous `owner` of that `Token`:
 ```graphql
 query {
-  allToken() {
+  tokens() {
     id
     owner
     _logs {
@@ -230,7 +230,7 @@ The `_logs(from: '...')` field usage is particularly useful in conjunction with 
 Query all `Tokens` on initial page load, as well as the latest block hash of the chain that is being queried:
 ```graphql
 query {
-  allTokens() {
+  tokens() {
     id
     owner
   }
@@ -245,7 +245,7 @@ query {
 Poll to see how the data has changed since the last time you ran the query:
 ```graphql
 query {
-  allTokens() {
+  tokens() {
     id
     owner
     # We enter the hash that was returned from the previous query.
@@ -271,7 +271,7 @@ Several of the operations supported for querying collections of entities are als
 Query the ten most recent logs for a `Token` entity:
 ```graphql
 query {
-  allTokens() {
+  tokens() {
     id
     owner
     _logs(last: 10) {
@@ -299,7 +299,7 @@ Query all `Token` entities along with their `id` and `owner` attributes:
 
 ```graphql
 query {
-  allTokens {
+  tokens {
     id
     owner
   }
@@ -310,7 +310,7 @@ Subscribe to all `Token` entity changes and fetch the values of the `id` and `ow
 
 ```graphql
 subscription {
-  Token {
+  token {
     id
     owner
   }
@@ -323,7 +323,7 @@ As with the Query API, we can use `_logs` to fetch information about the operati
 Subscribe to all `Token` entity changes and fetch the type of operation:
 ```graphql
 subscription {
-  Token {
+  token {
     id
     _logs {
       operation

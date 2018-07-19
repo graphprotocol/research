@@ -25,11 +25,11 @@ query {
 }
 ```
 # 1.2 Sorting
-When querying a collection, the `orderBy` parameter may be used to sort by a specific attribute. Additionally the `orderDirection` can be used to specify the sort direction, `ASC` for ascending or `DESC` for descending.
+When querying a collection, the `orderBy` parameter may be used to sort by a specific attribute. Additionally the `orderDirection` can be used to specify the sort direction, `asc` for ascending or `desc` for descending.
 
 #### Example
 ```graphql
-query (orderBy: "price", orderDirection: ASC ) {
+query (orderBy: "price", orderDirection: asc ) {
   tokens {
     id
     owner
@@ -129,15 +129,17 @@ Query the ten most recent blocks and their transactions. For each transaction, q
 the Ethereum address and balance of the recipient and sender of the transaction:
 ```graphql
 query {
-  blocks(last: 10) {
-    transactions {
-      from {
-        address
-        balance
-      }
-      to {
-        address
-        balance
+  ethereum {
+    blocks(last: 10) {
+      transactions {
+        from {
+          address
+          balance
+        }
+        to {
+          address
+          balance
+        }
       }
     }
   }
@@ -150,42 +152,42 @@ In contrast to traditional SQL databases, data that is added to a blockchain be 
 
 Apps built atop blockchains require the ability to communicate to users the likelihood that specific data is part of the permanent canonical blockchain. In Bitcoin and Ethereum (proof-of-work) blockchains this is a function of how many 'confirmations' a transaction has (how many blocks were created after this transaction). In pure proof-of-work blockchains a transaction can have many confirmations but is never technically final (i.e. there is always at least an infinitesimally small chance that it may be reverted). In proof-of-stake blockchains on the other hand, including mechanisms such as Casper FFG, blocks and transactions may achieve finality.
 
-In our API we expose this additional information in a `_fields` field that we add to each entity.
+In our API we expose this additional information through a `_meta { fields }` field which returns a `_<Entity>_<Field>Meta` type for each entity attribute.
 
 #### Example
-Query the number of confirmations that the `owner` and `id` fields have on a `Token` entity, as well as whether the current value of the `owner` field is "final" and when it was last updated:
+Query the number of confirmations that the `owner` and `id` fields have on a `Token` entity, as well as whether the current value of the `owner` field is final and when it was last updated:
 ```graphql
 query  {
-  tokens() {
+  tokens {
     id
     owner
-    _fields {
-      id {
-        # The confirmations since the `id` was set is equivalent
-        # to the amount of confirmations since the entity was created.
-        confirmations
-      }
-      owner {
-        # How many blocks were confirmed after the current value
-        # of this field was set.
-        confirmations
-        # When this field was last modified
-        updatedAt
-        # Whether the value shown for this field has been finalized
-        # Always `false` for pure proof-of-work blockchains.
-        final
+    _meta {
+      fields {
+        id {
+          # The confirmations since the `id` was set is equivalent
+          # to the amount of confirmations since the entity was created.
+          confirmations
+        }
+        owner {
+          # How many blocks were confirmed after the current value
+          # of this field was set.
+          confirmations
+          # When this field was last modified
+          updatedAt
+          # Whether the value shown for this field has been finalized
+          # Always `false` for pure proof-of-work blockchains.
+          final
+        }
       }
     }
   }
 }
 
 ```
-# 1.6 Entity and Field Logs
+# 1.6 Entity and Field Changes
 Even if a dApp communicates to users that some data has few confirmations, it would be jarring to see that data change suddenly without explanation. Without additional context, users would not understand whether data changed due to a chain reorganization or a legitimate transaction.
 
-To solve this problem a `_logs` and `_log` field is generated for each entity and entity attribute in your schema. It provides context as to how an entity arrived at its current value. By default it will show you the most recent operation which modified an entity or entity attribute.
-
-By default, `_log` fetches the most recent operation that modified an entity or attribute, while `_logs` fetches a paginated collection of operations.
+To solve this problem `change`, `latest_change` and `changes` fields are included in each entity entity's `_<Entity>Meta` type as well each field's `_<Entity>_<Field>Meta` type. It provides context as to how an entity arrived at its current value.
 
 #### Example
 Query for all `Token` entities. For each `Token` fetch the most recent operation type and the previous `owner` of that `Token`:
@@ -194,29 +196,12 @@ query {
   tokens() {
     id
     owner
-    _log {
-      id
-      operation
-      previousValue {
-        owner
-      }
-    }
-  }
-}
-```
-
-#### Example
-Query for all `Token` entities. For each `Token` fetch the most recent operation that modified the `owner` field:
-```graphql
-query {
-  tokens() {
-    id
-    owner
-    _fields {
-      owner {
-        _log {
-          operation
-          previousValue
+    _meta {
+      latest_change {
+        id
+        operation
+        previousValue {
+          owner
         }
       }
     }
@@ -224,12 +209,34 @@ query {
 }
 ```
 
-We generate a log type for each entity in your schema.
+#### Example
+Query for all `Token` entities. For each `Token` fetch the most recent change of the `owner` field:
+```graphql
+query {
+  tokens() {
+    id
+    owner
+    _meta {
+      fields {
+        owner {
+          latest_change {
+            operation
+            previousValue
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+We generate a an `_<Entity>Change` for each entity in your schema. All changes have this type,
+even changes returned by the top level `_meta` field or at the entity attribute level.
 
 #### Example
-A `Token` entity in your schema generates a corresponding `_TokenLog` type:
+A `Token` entity in your schema generates a corresponding `_TokenChange` type:
 ```graphql
-type _TokenLog {
+type _TokenChange {
   # The id of the operation
   id: ID!
   # The name of the entity type that was modified
@@ -255,33 +262,34 @@ enum Operation {
 }
 ```
 
-There are also `_log` and `_logs` fields in the top level `Query` type so that you can easily fetch a log operation that you've seen previously or fetch logs of operations across multiple entities.
+There are also `change`, `latest_change` and `changes` fields in the type returned by the top-level `_meta` field so that you can easily fetch a change that you've seen previously or fetch changes across multiple entities.
 
 #### Example
-Fetch a log operation that I saw previously while querying the `Token` entity logs:
+Fetch a change that I saw previously while querying the `Token` entity changes:
 ```graphql
 query {
- _log(id: 75643) {
-   operation
-   entityType
-   # For the top level `_log` value will be an union
-   # of all entity types.
-   value {
-     id
-     ... on Token {
-       owner
-     }
-   }
- }
+  _meta {
+    change(id: 75463) {
+       operation
+       entityType
+       # For the top level `change`, value will be an union
+       # of all entity types.
+       value {
+         id
+         ... on Token {
+           owner
+         }
+       }
+    }
+  }
 }
 ```
 
+In the default usage, the `changes` field will only return changes that are a part of the canonical blockchain; this means no `REVERT` operations. This is so that dApps do not inadvertently present users with data that is part of some "alternate history" blockchain that they have never seen before.
 
-In the default usage, the `_logs` field will only return operations that are a part of the canonical blockchain; this means no `REVERT` operations. This is so that dApps do not inadvertently present users with data that is part of some "alternate history" blockchain that they have never seen before.
+In order to query for changes that were reverted due to chain reorganizations, the `from` field may be used to specify a block which we want the history of changes to be relative to. This is similar, but not identical to, getting the diff between two arbitrary commits of the same git repository. If the block specified is an uncle block, or part of a chain reorganization, then there may be several `REVERT` operations in the list of changes.
 
-In order to query for operations that were reverted due to chain reorganizations, the `from` field may be used to specify a block which we want the history of operations in the log to be relative to. If the block specified is an uncle block, or part of a chain reorganization, then there may be several `REVERT` operations in the log.
-
-The `_logs(from: '...')` field usage is particularly useful in conjunction with the `ethereum` field specified previously.
+The `changes(from: '...')` field usage is particularly useful in conjunction with the `ethereum` field specified previously.
 
 #### Example
 Query all `Tokens` on initial page load, as well as the latest block hash of the chain that is being queried:
@@ -292,7 +300,7 @@ query {
     owner
   }
   ethereum {
-    block {
+    latest_block {
       # The latest block is - '0xeeac66f4785cbd5f37e157be7fa59ae03b3c22d859109052b72cef7b626ee756'
       hash
     }
@@ -305,41 +313,44 @@ query {
   tokens() {
     id
     owner
-    # We enter the hash that was returned from the previous query.
-    # If the entity has not changed will return an empty array.
-    _logs(from: '0xeeac66f4785cbd5f37e157be7fa59ae03b3c22d859109052b72cef7b626ee756') {
-      # A `REVERT` operation would indicate that the previously queried
-      # block was part of a chain reorganization.
-      operation
-      # We will be able to see how `age` changed, if at all,
-      # since our last query.
-      previousValue {
-        # The token's owner prior to the operation
-        owner
+    _meta {
+      # We enter the hash that was returned from the previous query.
+      # If the entity has not changed will return an empty array.
+      changes(from: '0xeeac66f4785cbd5f37e157be7fa59ae03b3c22d859109052b72cef7b626ee756') {
+        # A `REVERT` operation would indicate that the previously queried
+        # block was part of a chain reorganization.
+        operation
+        # We will be able to see how `age` changed, if at all,
+        # since our last query.
+        previousValue {
+          # The token's owner prior to the operation
+          owner
+        }
       }
     }
   }
 }
 ```
 
-Several of the operations supported for querying collections of entities are also supported on the `_logs` field. Specifically, `first`, `last` and `orderDirection`, `after` and `before` (though they may not all be used simultaneously, see documentation above).
+Several of the operations supported for querying collections of entities are also supported on the `changes` field. Specifically, `first`, `last` and `orderDirection`, `after` and `before` (though they may not all be used simultaneously, see documentation above).
 
 #### Example
-Query the ten most recent logs for a `Token` entity:
+Query the ten most recent changes for a `Token` entity:
 ```graphql
 query {
   tokens() {
     id
     owner
-    _logs(last: 10) {
-      operation
+    _meta {
+      changes(last: 10) {
+        operation
+      }
     }
   }
 }
 ```
 
-The `orderBy` parameter is not supported for `_logs`. Logs will be sorted in the
-direction of `from` block parameter to the present block. This order can be reversed by passing in `DESC` to `orderDirection`.
+The `orderBy` parameter is not supported for `changes`. This is because entity changes map to the structure of the underlying blockchain, which despite having a single canonical chain, is actually a directed acyclic graph, where some nodes in the graph may be reverted due to chain reorganizations. Sorting by timestamp, for example, would tell you very little (and be quite misleading) since the changes being shown would be in completely different histories. Changes therefore will be sorted in the direction of `from` block parameter to the present block, traversing a single path in the graph of changes. This order can be reversed by passing in `desc` to `orderDirection`.
 
 # 2 Subscriptions
 Graph Protocol subscriptions are GraphQL spec-compliant subscriptions. Unlike query operations GraphQL subscriptions may only have a single top level field at the root level for each subscription operation.
@@ -370,7 +381,7 @@ subscription {
 }
 ```
 
-As with the Query API, we can use `_log` to fetch information about the most recent operation that mutated the entity.
+As with the Query API, we can use `latest_change`, or `changes` to fetch information about the most recent operation that mutated the entity.
 
 #### Example
 Subscribe to all `Token` entity changes and fetch the type of operation:
@@ -378,8 +389,10 @@ Subscribe to all `Token` entity changes and fetch the type of operation:
 subscription {
   token {
     id
-    _log {
-      operation
+    _meta {
+      latest_change {
+        operation
+      }
     }
   }
 }
@@ -387,4 +400,4 @@ subscription {
 
 ## 2.3 Block Reorgs
 
-A key difference from the Query API is that the Subscription API does not support the `from` parameter on the `_logs` field. This is because the subscription already carries the context of what transactions were seen previously by the client and must be reverted in the event of a chain reorganization.
+A key difference from the Query API is that the Subscription API does not support the `from` parameter on the `changes` field. This is because the subscription already carries the context of what transactions were seen previously by the client and must be reverted in the event of a chain reorganization.

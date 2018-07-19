@@ -5,13 +5,14 @@
 ####
 
 type Ethereum {
-  # Optionally may specify a block number OR a block hash OR a block tag
-  # (provided otherwise query will result in an error). If none specified
-  # will return the latest block.
-  block(number: Int, hash: EthereumHash tag: EthereumBlockTag): EthereumBlock
-  blocks: [Blocks]
+  # Must provide a `number` or `hash` parameter, but not both.
+  block(number: Int, hash: EthereumHash): EthereumBlock
+  blocks(after: ID, before: ID, first: Int, last: Int, orderBy: _EthereumBlockScalarFields, orderDirection: Direction, skip: Int): [Blocks]
+  earliest_block: EthereumBlock
+  latest_block: EthereumBlock
+  pending_block: EthereumBlock
   transaction(hash: EthereumHash): EthereumTransaction
-  transactions: [EthereumTransactions]
+  transactions(after: ID, before: ID, first: Int, last: Int, orderBy: _EthereumTransactionScalarFields, orderDirection: Direction, skip: Int): [EthereumTransactions]
 }
 
 type EthereumBlock {
@@ -53,6 +54,19 @@ type EthereumBlock {
   uncles: [EthereumBlock]
 }
 
+enum _EthereumBlockScalarFields {
+  difficulty
+  gasLimit
+  gasUsed
+  number
+  miner_account
+  miner_balance
+  miner_account
+  parent_number
+  size
+  timestamp
+}
+
 type EthereumTransaction {
   # Block where this transaction was included. `null` if pending.
   block: EthereumBlock
@@ -75,6 +89,20 @@ type EthereumTransaction {
   transactionIndex: Int
   # Value transferred in Wei
   value: BigInt
+}
+
+enum _EthereumTransactionScalarFields {
+  block_hash
+  block_number
+  from_account
+  from_balance
+  gas
+  gasPrice
+  nonce
+  to_account
+  to_balance
+  trandactionIndex
+  value
 }
 
 type EthereumTransactionReceipt {
@@ -125,14 +153,10 @@ type EthereumAccount {
   balance: BigInt
 }
 
-
-enum EthereumBlockTag {
-  # The latest mined block
-  LATEST
-  # Refers to the genesis block or the earliest block the node has stored
-  EARLIEST
-  # A hypothetical block based on transactions in the mempool
-  PENDING
+# Enum used for specifying the direction of sorting for entity collections
+enum Direction {
+  asc
+  desc
 }
 
 # EthereumAddress is a 20 byte hex-encoded string prefixed with a "0x"

@@ -183,7 +183,9 @@ query  {
 # 1.6 Entity and Field Logs
 Even if a dApp communicates to users that some data has few confirmations, it would be jarring to see that data change suddenly without explanation. Without additional context, users would not understand whether data changed due to a chain reorganization or a legitimate transaction.
 
-To solve this problem a `_logs` field is generated for each entity in your schema. It provides context as to how an entity arrived at its current value. By default it will show you the most recent operation which modified an entity.
+To solve this problem a `_logs` and `_log` field is generated for each entity and entity attribute in your schema. It provides context as to how an entity arrived at its current value. By default it will show you the most recent operation which modified an entity or entity attribute.
+
+By default, `_log` fetches the most recent operation that modified an entity or attribute, while `_logs` fetches a paginated collection of operations.
 
 #### Example
 Query for all `Token` entities. For each `Token` fetch the most recent operation type and the previous `owner` of that `Token`:
@@ -192,10 +194,30 @@ query {
   tokens() {
     id
     owner
-    _logs {
+    _log {
+      id
       operation
       previousValue {
         owner
+      }
+    }
+  }
+}
+```
+
+#### Example
+Query for all `Token` entities. For each `Token` fetch the most recent operation that modified the `owner` field:
+```graphql
+query {
+  tokens() {
+    id
+    owner
+    _fields {
+      owner {
+        _log {
+          operation
+          previousValue
+        }
       }
     }
   }
@@ -210,14 +232,18 @@ A `Token` entity in your schema generates a corresponding `_TokenLog` type:
 type _TokenLog {
   # The id of the operation
   id: ID!
-  # The value of the entity after the operation
-  value: Token
-  # The value of the entity prior to the operation
-  previousValue: Token
+  # The name of the entity type that was modified
+  entityType: String!
+  # The names of the fields that were modified by the operation
+  modifiedFields: [String]!
   # The type of operation
   operation: Operation
+  # The value of the entity prior to the operation
+  previousValue: Token
   # The Ethereum transaction which triggered this operation
   transaction: EthereumTransaction
+  # The value of the entity after the operation
+  value: Token
 }
 
 enum Operation {
@@ -228,6 +254,28 @@ enum Operation {
   REVERT
 }
 ```
+
+There are also `_log` and `_logs` fields in the top level `Query` type so that you can easily fetch a log operation that you've seen previously or fetch logs of operations across multiple entities.
+
+#### Example
+Fetch a log operation that I saw previously while querying the `Token` entity logs:
+```graphql
+query {
+ _log(id: 75643) {
+   operation
+   entityType
+   # For the top level `_log` value will be an union
+   # of all entity types.
+   value {
+     id
+     ... on Token {
+       owner
+     }
+   }
+ }
+}
+```
+
 
 In the default usage, the `_logs` field will only return operations that are a part of the canonical blockchain; this means no `REVERT` operations. This is so that dApps do not inadvertently present users with data that is part of some "alternate history" blockchain that they have never seen before.
 
@@ -322,7 +370,7 @@ subscription {
 }
 ```
 
-As with the Query API, we can use `_logs` to fetch information about the operation that mutated the entity.
+As with the Query API, we can use `_log` to fetch information about the most recent operation that mutated the entity.
 
 #### Example
 Subscribe to all `Token` entity changes and fetch the type of operation:
@@ -330,7 +378,7 @@ Subscribe to all `Token` entity changes and fetch the type of operation:
 subscription {
   token {
     id
-    _logs {
+    _log {
       operation
     }
   }

@@ -6,7 +6,7 @@ For each type `Entity` which you define in your schema, an `entity` and `entitie
 Query for a single `Token` entity defined in your schema:
 ```graphql
 query {
-  token(id: 1) {
+  token(id: "1") {
     id
     owner
   }
@@ -29,7 +29,7 @@ When querying a collection, the `orderBy` parameter may be used to sort by a spe
 
 #### Example
 ```graphql
-query (orderBy: "price", orderDirection: asc ) {
+query (orderBy: price, orderDirection: asc ) {
   tokens {
     id
     owner
@@ -70,7 +70,7 @@ Additionally, the `after` or `before` parameters may be used to fetch a group of
 Query the ten `Token` entities located after the `Token` with an `id` of `A1234` in the collection:
 ```graphql
 query {
-  tokens(first: 10, after: A1234) {
+  tokens(first: 10, after: "A1234") {
     id
     owner
   }
@@ -81,7 +81,7 @@ query {
 Query the ten `Token` entities located before the `Token` with an `id` of `A1234` in the collection:
 ```graphql
 query {
-  tokens(last: 10, before: A1234) {
+  tokens(last: 10, before: "A1234") {
     id
     owner
   }
@@ -193,7 +193,7 @@ To solve this problem `change`, `latest_change` and `changes` fields are include
 Query for all `Token` entities. For each `Token` fetch the most recent operation type and the previous `owner` of that `Token`:
 ```graphql
 query {
-  tokens() {
+  tokens {
     id
     owner
     _meta {
@@ -213,7 +213,7 @@ query {
 Query for all `Token` entities. For each `Token` fetch the most recent change of the `owner` field:
 ```graphql
 query {
-  tokens() {
+  tokens {
     id
     owner
     _meta {
@@ -265,7 +265,7 @@ enum Operation {
 There are also `change`, `latest_change` and `changes` fields in the type returned by the top-level `_meta` field so that you can easily fetch a change that you've seen previously or fetch changes across multiple entities.
 
 #### Example
-Fetch a change that I saw previously while querying the `Token` entity changes:
+Fetch a change seen previously while querying the `Token` entity changes:
 ```graphql
 query {
   _meta {
@@ -295,7 +295,7 @@ The `changes(from: '...')` field usage is particularly useful in conjunction wit
 Query all `Tokens` on initial page load, as well as the latest block hash of the chain that is being queried:
 ```graphql
 query {
-  tokens() {
+  tokens {
     id
     owner
   }
@@ -310,7 +310,7 @@ query {
 Poll to see how the data has changed since the last time you ran the query:
 ```graphql
 query {
-  tokens() {
+  tokens {
     id
     owner
     _meta {
@@ -338,7 +338,7 @@ Several of the operations supported for querying collections of entities are als
 Query the ten most recent changes for a `Token` entity:
 ```graphql
 query {
-  tokens() {
+  tokens {
     id
     owner
     _meta {

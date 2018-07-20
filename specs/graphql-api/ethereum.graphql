@@ -8,50 +8,50 @@ type Ethereum {
   # Must provide a `number` or `hash` parameter, but not both.
   block(number: Int, hash: EthereumHash): EthereumBlock
   blocks(after: ID, before: ID, first: Int, last: Int, orderBy: _EthereumBlockScalarFields, orderDirection: Direction, skip: Int): [Blocks]
-  earliest_block: EthereumBlock
-  latest_block: EthereumBlock
-  pending_block: EthereumBlock
+  earliest_block: EthereumBlock!
+  latest_block: EthereumBlock!
+  pending_block: EthereumBlock!
   transaction(hash: EthereumHash): EthereumTransaction
-  transactions(after: ID, before: ID, first: Int, last: Int, orderBy: _EthereumTransactionScalarFields, orderDirection: Direction, skip: Int): [EthereumTransactions]
+  transactions(after: ID, before: ID, first: Int, last: Int, orderBy: _EthereumTransactionScalarFields, orderDirection: Direction, skip: Int): [EthereumTransactions]!
 }
 
 type EthereumBlock {
   # Arbitrary data optionally included in the block
-  extraData: Bytes32
+  extraData: Bytes32!
   # The difficulty level of this block
-  difficulty: BigInt
+  difficulty: BigInt!
   # The current limit of gas expenditure per block
-  gasLimit: Int
+  gasLimit: Int!
   # The total used gas by all transactions in the block.
-  gasUsed: Int
+  gasUsed: Int!
   # Hash of the block. `null` when block is pending.
-  hash: EthereumHash!
+  hash: EthereumHash
   # The bloom filter for the logs of the block. `null` when block is pending.
   logsBloom: Bytes256
   # Hash of the generated proof-of-work. `null` when block is pending.
   nonce: Bytes8
-  # The block number
-  number: Int
+  # The block number. `null` when block is pending.
+  number: Int!
   # Miner of this block, to whom block rewards will be sent
   miner: EthereumAccount
   # Transactions that were included in this block
-  transactions: [EthereumTransaction]
+  transactions: [EthereumTransaction]!
   # The block created immediately prior to this block
-  parent: EthereumBlock
+  parent: EthereumBlock!
   # SHA-3 of the uncles data in the block
-  sha3Uncles: EthereumHash
+  sha3Uncles: EthereumHash!
   # The size of this block in bytes
-  size: Int
+  size: Int!
   # The root of the final state trie of this block
-  stateRoot: EthereumHash
+  stateRoot: EthereumHash!
   # Unix time (seconds since the Epoch)
-  timestamp: Int
+  timestamp: Int!
   # The root of the transaction trie of the block
-  transactionsRoot: EthereumHash
+  transactionsRoot: EthereumHash!
   # The total difficulty of the chain until this block
-  totalDifficulty: BigInt
+  totalDifficulty: BigInt!
   # The uncles for this block
-  uncles: [EthereumBlock]
+  uncles: [EthereumBlock]!
 }
 
 enum _EthereumBlockScalarFields {
@@ -69,26 +69,28 @@ enum _EthereumBlockScalarFields {
 
 type EthereumTransaction {
   # Block where this transaction was included. `null` if pending.
-  block: EthereumBlock
+  block: EthereumBlock!
   # Address of the sender
-  from: EthereumAccount
+  from: EthereumAccount!
   # Gas provided by the sender
-  gas: Int
+  gas: Int!
   # Gas price provided by the sender in Wei
-  gasPrice: BigInt
+  gasPrice: BigInt!
   # SHA-3 hash of this transaction
-  hash: EthereumHash
+  hash: EthereumHash!
   # The data sent along with the transaction
-  input: Bytes
+  input: Bytes!
   # The number of transactions made by the sender prior to this one
-  nonce: Int
+  nonce: Int!
+  # The receipt for this transaction. `null` if still pending.
+  receipt: EthereumTransactionReceipt
   # Address of the receiver. `null` if contract creation.
   to: EthereumAccount
   # Integer of the transaction's index position in the block. `null` if
   # still pending.
   transactionIndex: Int
   # Value transferred in Wei
-  value: BigInt
+  value: BigInt!
 }
 
 enum _EthereumTransactionScalarFields {
@@ -107,50 +109,50 @@ enum _EthereumTransactionScalarFields {
 
 type EthereumTransactionReceipt {
   # The block this transaction receipt was included in
-  block: EthereumBlock
+  block: EthereumBlock!
   # The created contract, if any. `null` otherwise.
   contract: EthereumAccount
   # The gas used by this and all preceding transactions in the block
   # it was included in
-  cumulativeGasUsed: Int
+  cumulativeGasUsed: Int!
   # Address of the sender
-  from: EthereumAccount
+  from: EthereumAccount!
   # The amount of gas used by this transaction
-  gasUsed: Int
-  # The hash of the transaction receipt
-  hash: EthereumHash
+  gasUsed: Int!
+  # The hash of the transaction to which this receipt corresponds
+  transactionHash: EthereumHash!
   # Logs which this transaction generated
-  logs: [EthereumLog]
+  logs: [EthereumLog]!
   # Bloom filter for light clients to quickly retrieve related logs
-  logsBloom: Bytes256
+  logsBloom: Bytes256!
   # Address of the receiver. `null` when it is a contract creation transaction.
   to: EthereumAccount
   # The associated transaction
-  transaction: Transaction
+  transaction: Transaction!
 }
 
 type EthereumLog {
   # Address from which this log originated
-  address: EthereumAccount
+  address: EthereumAccount!
   # The block this log was included in
   block: EthereumBlock
   # One or more non-indexed log arguments
-  data: [Bytes32]
+  data: [Bytes32]!
   # Position in the block. `null` if pending.
   logIndex: Int
   # True if log has been removed due to chain reorganization. False if valid.
-  removed: Boolean
+  removed: Boolean!
   # Between one and four indexed values associated with the log
-  topics: [Bytes32]
+  topics: [Bytes32]!
   # Transaction this log was included in. `null` if still pending.
   transaction: Transaction
 }
 
 type EthereumAccount {
   # Address of this account
-  address: EthereumAddress
+  address: EthereumAddress!
   # Balance of this account in Wei
-  balance: BigInt
+  balance: BigInt!
 }
 
 # Enum used for specifying the direction of sorting for entity collections

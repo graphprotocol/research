@@ -374,7 +374,7 @@ Subscribe to all `Token` entity changes and fetch the values of the `id` and `ow
 
 ```graphql
 subscription {
-  token {
+  tokens {
     id
     owner
   }
@@ -387,7 +387,7 @@ As with the Query API, we can use `latest_change`, or `changes` to fetch informa
 Subscribe to all `Token` entity changes and fetch the type of operation:
 ```graphql
 subscription {
-  token {
+  tokens {
     id
     _meta {
       latest_change {

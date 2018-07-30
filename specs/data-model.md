@@ -8,15 +8,15 @@ The Graph comprises a decentralized network of nodes, which interact through the
 
 Sometimes the name "The Graph" will be used in describing aspects of the protocol, for convenience, when in fact these same traits would apply to any network of nodes operating the Graph Protocol.
 
-## 1.2 Package
-The Graph allows for querying all data across all blockchains (starting with Ethereum), via a single interface. In order to manage the scale and complexity of this task, GraphQL endpoints are defined in *Packages* which are managed and deployed separately.
+## 1.2 Subgraph
+The Graph allows for querying all data across all blockchains (starting with Ethereum), via a single interface. In order to manage the scale and complexity of this task, GraphQL endpoints are defined in *Subgraphs* which are managed and deployed separately.
 
-A Package is deployed to The Graph by a user or organization and comprises a [Schema](# Schema), one or more [Data Sources](# Data Source) and one or more [Mappings](# Mappings).
+A Subgraph is deployed to The Graph by a user or organization and comprises a [Schema](# Schema) and one or more [Data Sources](# Data Source), each with a corresponding [Mapping](# Mappings).
 
-Packages can be deployed locally and queried in development, with limited functionality. Once deployed to The Graph, they are aggregated into a single global endpoint and gain the ability to reference other packages. Importantly, entity types in deployed package schemas may reference one another, forming a graph.
+Subgraphs can be deployed locally and queried in development, with limited functionality. Once deployed to The Graph, they are aggregated into a single global endpoint and gain the ability to reference other subgraphs. Importantly, entity types in deployed subgraph schemas may reference one another, forming a graph.
 
 ### 1.2.1 Schema
-The Schema defines the entities and relationships within a given package. It is defined using the GraphQL Interface Definition Language (IDL). See the GraphQL Schema API reference for how these are defined.
+The Schema defines the entities and relationships within a given subgraph. It is defined using the GraphQL Interface Definition Language (IDL). See the GraphQL Schema API reference for how these are defined.
 
 ### 1.2.2 Data Sources
 The Graph is not the source of truth for any particular data, it merely ingests data from public blockchains and decentralized storage networks such as IPFS. The Data Sources are these underlying storage layers, and specifically, abstractions on top of these storage layers such as smart contracts *or* the underlying data structures themselves which form the blockchain, such as a set of blocks or merkelized state trees.
@@ -24,19 +24,19 @@ The Graph is not the source of truth for any particular data, it merely ingests 
 ### 1.2.3 Mappings
 Mappings define how data from blockchains are processed, transformed and loaded via one or more database transactions. Mappings are executed in a WASM runtime, and are akin to smart contracts in that nodes in The Graph build consensus around the outputs of running a mapping with a given set of inputs.
 
-### 1.2.4 Package Manifest
-The Package Manifest is an IPLD spec-compliant YAML file which specifies the *Schema*, *Data Sources* and *Mappings* of a package.
+### 1.2.4 Subgraph Manifest
+The Subgraph Manifest is an IPLD spec-compliant YAML file which specifies the *Schema*, *Data Sources* and *Mappings* of a subgraph.
 
-### 1.2.5 Package IDs
-Package definitions are immutable, even though the actual data ingested may grow -- each package manifest is hashed in its IPLD canonical serialized form, to produce a unique ID. Nodes in the peer-to-peer network use this ID to communicate who is indexing and caching what data, as well as route queries through the network. The self-certifying nature of package IDs also make them useful for providing attestations and filing disputes.
+### 1.2.5 Subgraph IDs
+Subgraph definitions are immutable, even though the actual data ingested may grow -- each subgraph manifest is hashed in its IPLD canonical serialized form, to produce a unique ID. Nodes in the peer-to-peer network use this ID to communicate who is indexing and caching what data, as well as route queries through the network. The self-certifying nature of subgraph IDs also make them useful for providing attestations and filing disputes.
 
 ### 1.2.6 Domains
-Package IDs can also be associated with a name in the Graph Name Service (GNS) to provide a mutable reference to a package. This can be useful for writing more human readable queries, always querying the latest version of a package, specifying relationships between packages or mutably referencing a package in smart contracts.
+Subgraph IDs can also be associated with a domain name in the Graph Name Service (GNS) to provide a mutable reference to a subgraph. This can be useful for writing more human readable queries, always querying the latest version of a subgraph, specifying relationships between subgraphs or mutably referencing a subgraph in smart contracts.
 
-Deploying a package to a domain also enables discoverability, as explorer UIs will be built on top of the GNS.
+Deploying a subgraph to a domain also enables discoverability, as explorer UIs will be built on top of the GNS.
 
 ### 1.2.7 Sub-Domains
-An owner of a domain in the GNS may wish to deploy multiple packages to a single domain, and have them exist in separate namespaces. Sub-domains enable this use case, and add an optional additional layer of namespacing beyond that already provided by the top level domains.
+An owner of a domain in the GNS may wish to deploy multiple subgraphs to a single domain, and have them exist in separate namespaces. Sub-domains enable this use case, and add an optional additional layer of namespacing beyond that already provided by the top level domains.
 
 
 ## 1.3 Database Model
@@ -52,7 +52,7 @@ In fact, The Graph's architecture is actually agnostic to the store implementati
 Facts in the the The Graph are tuples of the following fields: *entity*, *attribute*, *value*, *operation* and *transaction*.
 
 #### 1.3.1.1 Entity
-The entity field is a globally unique ID which identifies the entity. This ID is comprised of three parts: a *package ID*, an *entity type* and a *local ID* (which is unique within a specific entity).
+The entity field is a globally unique ID which identifies the entity. This ID is comprised of three parts: a *subgraph ID*, an *entity type* and a *local ID* (which is unique within a specific entity).
 
 #### 1.3.1.2 Attribute
 The attribute field is a name which uniquely identifies the attribute.
@@ -60,7 +60,7 @@ The attribute field is a name which uniquely identifies the attribute.
 #### 1.3.1.3 Value
 The value field is a literal value, or the ID of another entity to which this entity has a relationship.
 
-When specifying a relationship to another entity, a *Package Name* may be used instead of *Package ID*, which will be resolved at query time to a *Package ID*. This enables entities from one package specifying relationships to the entities from the latest "version" of a package with a specific name.
+When specifying a relationship to another entity, a *Domain* may be used instead of *Subgraph ID*, which will be resolved at query time to a *Subgraph ID*. This enables entities from one subgraph specifying relationships to the entities from the latest "version" of a subgraph with a specific name.
 
 #### 1.3.1.4 Store Transaction
 Store transactions are unique identifiers that encapsulate our notion of time and causality. The current state of the world can be derived by looking at all facts associated with store transactions that have taken place up until the current moment. Store transactions are so-called to disambiguate from transactions on blockchains such as Ethereum and Bitcoin. Store transactions are also atomic, meaning that all the facts associated with a transaction should be applied to calculate the state a certain point in time, or none of them should be.

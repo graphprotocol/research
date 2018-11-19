@@ -28,7 +28,7 @@ TODO: explain the relationship between index chains and subgraphs.
 
 ---
 
-## Types and Parameters and Message Formats
+## Types and Parameters
 
 The types listed below are inclusive of all the data types that get passed through messaging in the protocol, and variables that can be called within the protocol
 
@@ -73,7 +73,7 @@ Parameters can be set at the protocol level to fine tune how the POS protocol fu
 | Minimum Inflation Rate          | uint256 | The minimum the protocol will allow tokens to be inflated (yearly).                                                                             |
 | Leader Minting Reward           | uint256 | The reward the Leader Validator gets from calling the mintInflation()  on mainnet. It is a percentage of the daily reward. This covers gas.     |
 
-
+## Messages
 ### Staking messages 
 
 A `becomeValidator()` message consists of the following parameters:

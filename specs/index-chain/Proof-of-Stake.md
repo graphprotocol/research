@@ -30,40 +30,41 @@ TODO: explain the relationship between index chains and subgraphs.
 
 ## Types and Parameters and Message Formats
 
-The types listed below are inclusive of all the data types that get passed through messaging in the protocol, and mvariables that can be called within the protocol
+The types listed below are inclusive of all the data types that get passed through messaging in the protocol, and variables that can be called within the protocol
 
-Network Data types 
-- total staked
-- total tokens
-- index chain set 
-    - validator set (of each index chain)
+TODO: Link every mention of these back up to this list 
 
+| Network Data Types              | Type    | Description                                                                                                                                     |
+| ------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------|
+| Total Staked                    | uint256 | The total amount of Graph Tokens staked within the network.                                                                                     |
+| Total Tokens                    | uint256 | The total amount of Graph Tokens that exist within the network.                                                                                 |
+| Index Chain List                | mapping | The list of all Index Chains that are currently staked within the network.                                                                      |
+| Validator Set                   | mapping | The Validator set of each Index Chain. There is a Validator set for each Index chain                                                            |
 
-Block Data Types
-- round
-- block 
-- block reward
+| Block Data Types                | Type    | Description                                                                                                                                     |
+| ------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------|
+| Block Number (Mainnet)          | uint256 | Indicates the block number of the blockchain the POS smart contract is on.                                                                      |
+| Block Number Index Chain        | uint256 | Indicates the block number of the Index Chain.                                                                                                  |
+| Block Reward                    | uint256 | The total number of tokens rewarded per a mainnet block.                                                                                        |
 
-Validator Data Types
-- validator address
-- bonded amount
-- round started
-- last time claimed
-- fees or reward cut (can a validator charge different fees? a lot more variables can go in here)
+| Validator Data Types            | Type    | Description                                                                                                                                     |
+| ------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------|
+| Validator Address (Mainnet)     | address | The address of the mainnet account that has staked Graph Tokens.                                                                                |
+| Validator ID (Index Chain)      | Bytes   | The Validator ID, which is produced by The Graph Network client, and used to connect to an Index chain.                                         |
+| Bonded Amount                   | uint256 | The amount of Graph Tokens a Validator has staked.                                                                                              |
+| Started Validating              | uint256 | The block number (mainnet) that the Validator began Validating.                                                                                 |
 
-Where parameters are adjustable live protocol variables
+Parameters can be set at the protocol level to fine tune how the POS protocol functions. At first they will be controlled by a multisig address, and eventually they will be adjusted by governance. 
 
-List of Parameters 
-
-These can be enforceable high level, or else by decentralized governance 
-- round length
-- thawing period
-- unbonding period
-- minimum number of validators
-- maximum number of validators 
-- inflation rate
-- target bondind rate 
-
+| Parameters                      | Type    | Description                                                                                                                                     |
+| ------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------|
+| Thawing Period                  | uint256 | The period of time (unix) that tokens must be frozen before withdrawal. Must be used to prevent long-range attacks.                             |
+| Minimum number of Validators    | uint256 | The minimum number of Validators required for an Index Chain to be part of the network.                                                         |
+| Maximum Number of Validators    | uint256 | The maximum number of Validators an Index Chain is allowed to have.                                                                             |
+| Maximum Number of Index Chains  | uint256 | The maximum number of Index Chains allowed to connect to the POS Smart contract. Must be limited do to technological constraints.               |
+| Target Bonded Ratio             | uint256 | The ratio that is desired to stabilize the network. Max and Min Inflation Rate are used to hone in on the TBR.                                  |
+| Maximum Inflation Rate          | uint256 | The maximum the protocol will allow tokens to be inflated (yearly).                                                                             |
+| Minimum Inflation Rate          | uint256 | The minimum the protocol will allow tokens to be inflated (yearly).                                                                             |
 
 ### Staking messages 
 
@@ -97,8 +98,11 @@ A `changeStake()` message consists of the following parameters:
 
 ### Rewards Messages
 
+TODO
 
 ### Slashing Message
+
+TODO
 - fraud proof
     - quer(ies) in question
     - block of false query
@@ -112,12 +116,10 @@ A `changeStake()` message consists of the following parameters:
 
 ## Stakeholders
 
-Anyone dealing with **bonded stake**
+Anyone dealing with **bonded stake** within the network. They are: 
 
 - **Validators**: Users that bond tokens and serve up queries in exchange for shared rewards and fees.
 - **Fishermen**: Submit slash proofs as on-chain evidence of false queries, for which they are rewarded a fee.
-
- 
 
 ---
 
@@ -147,37 +149,21 @@ Validator      --> Stake
 
 Each SubgraphID has a list of the Index Chains within it. Each of those chains has a Validator set, representing the nodes securing the network. Each Validator has a stake they have posted. This design allows for an organized way to see how much is at stake, per Validator, and per Index Chain. 
 
-
-
 ### Round Progression
 
 - the blockhash of each round will be stored (note, we will find a way to make this less work intensive)
+NOTE: most of this should be left to the consensus section 
 
 
 ---
 
 ## Staking
 
-__Create action diagram__  changeBond(), and leaveValidator (2 diagramsRewar
-
-__Each of them are a message interface.__
-
-__Explain how the messages connect to mainnet__
-
-__Actors are to be incentivzed to do all messages__
-
-
 The Index Chains watch for events emitted from the Ethereum network to become informed when a change to the Validator set occurs. Events are the best solution to use, since they are Ethereum's main way of comunicating with the outside world. The event emitted will give the Index Chain the information it needs to allow a new Validator to join the Index Chain. The event data is as secure and reliable as the Ethereum main chain. 
 
 This process will be described below in three different ways - bonding, rewards, and slashing. These are the ways that the Index chains interact with the Ethereum main chain. 
 
-
-
-
-
-
-
-### Bonding
+### Bonding to Become a Validator
 
 ![Bonding Message Diagram](./registerValidator_msg.jpeg)
 
@@ -186,68 +172,83 @@ A user with Graph Tokens finds an Index Chain they would like to validate on. Th
 1. Once they confirm they meet the requirements to stake, they call the mainnet staking contract function registerValidator(), They pass data that indicates which Index Chain they will Validate on. This includes the Index Chain ID, their Validator ID, and the amount of Graph Tokens to stake. Once the becomeValidator() transaction is included in the main chain, it will emit an event :
 
         Event New Validator(
-        Index Chain ID, 
-        Graph Network Node ID, 
-        Main Chain Account Address, 
-        Graph Tokens Staked 
+            Index Chain ID, 
+            Graph Network Node ID, 
+            Main Chain Account Address (msg.sender), 
+            Graph Tokens Staked 
         )
 
 The Index Chain is listening for the mainnet staking smart contract for the NewValidator event with it’s own IndexChainID. The event will get added into a new block on the Index Chain, and it will update the Validator Set. The Index Chain Node ID allows the new Index Chain Node to become a Validator. Then Step 2:
 
 2. The new Validator runs a CLI command in The Graph Network software and it would create you as a validator if after a check (small bond to prevent spam))
 
-### Unbonding
+### Unbonding to Stop Validating 
 
-__Create message interface__
+![Unbonding Message Diagram](./Unbonding_msg.jpeg)
 
-### Rebonding 
+A Validator can stop validating with one call to the POS smart contract:
 
-While bonding and unbonding, both 
-__Create message interface__
+1. The Validator calls `stopValidating()` with their Validator ID, and Index Chain ID. Next the Event Stop Validating will be emitted: 
 
+        Event Stop Validating(
+            Index Chain ID, 
+            Validator ID, 
+            Main Chain Account Address (msg.sender), 
+        )
+
+The Index Chain Validators are listening for such events, and every Validator will then include an update to the Validator set in the next block. When a majority consensus is reached, the Validator set will be updated, and the Validator will no longer participate in consensus, and their tokens will enter the thawing period. 
+
+### Rebonding Frozen Tokens
+
+When a Validator unbonds tokens, they get put through a thawing period, which could be weeks or months long, depending on how the parameter is set. A delegator is free to rebond tokens that are frozen, with no wait time. This could happen from voluntary unbonding, or from being unbonded due to liveness faults. TODO: (LINK TO LOCATION OF SPEC)
+
+### Changing Stake 
+
+A Validator may want to increase or decrease their stake on their node. This is done by calling `changeStake()` on the POS smart contract. If they are adding stake, it will be added as soon as it can be included in a block. If they are lowering their stake, the tokens must go through the thawing period before they can be released from the POS smart contract. 
 
 ---
 
 ## Rewards
 
 Note - fees are being left out for now
+NOTE - mention of how getting rewarded with queries is left out of detail here for now, as this section focuses more on the messaging between 
+
 
 __Create action diagram__ - mintInflationTokens() (called daily), claimRewards() (probably 1 diagram, claimRewards() hasnt been made ), then also there needs to be a way to measure the query count , and that needs to be done in the payout claculation
 
-Explain how the messages connect to mainnet
+Block rewards are created in order for Validators to receive compensation. This happens on the Ethereum mainnet. With The Graph Network, there needs to be a simple way to pass down the rewards to each Index Chain, and then within each Index Chain, each Validator needs to be rewarded their appropriate amount. 
 
-Actors are to be incentivzed to do all messages
+The minimum and maximum Inflation pecentage is set at the parameter level, first by a multisig controlling account, and eventually by governance voting. The **Current Inflation Rate** will be continuously adjusted, as it aims to match the **Target Bonded Ratio**.
 
+### Pool of Shares TODO
 
-
-### Creation of Rewards
-
-Create message interface
-
-### Pool of Shares
 
 Show the formula, not the example
 
 Explain the Pool itself
 
+The **Pool** is a data structure created to help with efficient distribution of rewards to each Index Chain, and each Validator. 
 
-### Claiming of Rewards and Distribution
+### Minting Graph Tokens for Rewards TODO
+
+
+__Create message interface__
+
+TODO
+
+
+### Claiming of Rewards and Distribution TODO
+
 
 Automatically and manually
-Create message interface
-
-
-### Inflation
-
-Inflation adjustment? 
-
-Create message interface
+__Create message interface__
 
 
 
 ---
 
-## Slashing
+## Slashing TODO
+
 
 Note - final slashing parameters not decided. May be adjustable. 
 Note - don't get into the dispute process 
@@ -258,13 +259,8 @@ Explain how the messages connect to mainnet
 
 Actors are to be incentivzed to do all messages
 
+### Fraud Proofs TODO
 
-### Incentivization
-
-You are incentivized by the reward of what gets slashed. 
-
-
-### Fraud Proofs
 
 Fishermen submit these 
 

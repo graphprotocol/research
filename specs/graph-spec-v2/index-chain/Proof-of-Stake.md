@@ -5,7 +5,7 @@
 * [Introduction](#introduction)
 * [Types and Parameters](#types-and-parameters)
 * [Stakeholders](#stakeholders)
-* [POS Smart Contracts](#pos-smart-contracts)
+* [Proof-of-Stake Smart Contract](#pos-smart-contracts)
 * [Staking](#staking)
 * [Rewards](#rewards)
 * [Slashing](#slashing)
@@ -14,29 +14,30 @@
 
 ## Introduction
 
-Note - this spec is sectioned off right now. It does not have basic introductions of The Graph, and the stakeholders, because that would be in the intro of the whole specification
+The Graph Network uses Proof-of-Stake (POS) to achieve economic finality by incentivizing a group of distributed nodes to come to consensus on Index Chain data. Proof-of-Stake is a blockchain incentivization protocol. Stakeholders can vote proportional to their stake they have in the network. With the Graph Network the staking is done with Graph Tokens, and the nodes which are staking are called **Validators**.
 
-The Graph Network uses Proof of Stake (POS) to achieve economic finality by incentivizing the group of distributed nodes to come to consensus on Index Chain data. Proof of Stake is an incentivization protocol on top of a blockchain. Stakeholders can vote, proportional to their stake they have in the network. In the Graph Network the staking is done with The Graph Token, and the nodes which are staking are called **Validators**
+Each Index Chain has its own set of Validators. When a user owns Graph Tokens, they can stake them on the Ethereum Mainnet, and become a Validator of an Index Chain of their choosing. The Graph Network Staking Contracts emits events, and Index Chains are listening for these events to allow Validators to be added to their respective chains. This makes Index Chains Layer 2 blockchains. 
 
-Each Index Chain has its own set of Validators. When a user owns Graph Tokens, they can stake them on the Ethereum Mainnet, and become a Validator of an Index Chain of their choosing. The Graph Network Staking Contracts emit events, and these events are the messaging interface at which Index Chains are able to add new Validators. 
+Validators are rewarded for producing valid blocks, and punished for misbehaviour. An Index Chain’s block rewards are proportional to its stake, and how often it is queried.
 
-Validators are rewarded for producing correct blocks, and punished for misbehaviour. An Index Chain’s block rewards are proportional to how often it is queried, which is determined in the Query Marketplace.
+There are three ways to interact with the POS protocol - staking, rewards, and slashing. The POS protocol will be broken down to examine these three pieces.  
 
-There are three ways to interact with the POS protocol. They are staking, rewards, and slashing. The spec will be described with these three ways in mind. 
-
----
 ---
 
 ## Stakeholders 
 
-Players dealing with **bonded stake** within the network. They are: 
+Stakeholders are any players that interact with Graph tokens as stake within the network. They are: 
 
-* **Validators**: Users that bond tokens and serve up queries in exchange for shared rewards and fees.
-* **Fishermen**: Submit slash proofs as on-chain evidence of false queries, for which they are rewarded a fee.
+* **Validators**: Users that bond tokens and serve up queries in exchange for rewards and fees.
+* **Fishermen**: Submit slash proofs as on-chain evidence of Index Chains that produce false queries, for which they are rewarded a fee.
 
 ## Types and Parameters
 
-The types listed below are inclusive of all the data types that get passed through messaging in the protocol, and variables that can be called within the protocol
+The types listed below are high level protocol data types. 
+
+### Network Data Types
+
+The network data types provide important information on tokens staked, Index Chains, and Validators. 
 
 | Network Data Types (The Pool)   | Type    | Description                                                                                                                                     |
 | ------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -48,11 +49,19 @@ The types listed below are inclusive of all the data types that get passed throu
 | Next Reward                     | uint256 | The next time (unix) that the reward can be withdrawn (daily).                                                                                  |
 | Previous Reward Claim           | uint256 | The last time (unix) that the reward was withdrawn.                                                                                             |
 
+### Block Data Types
+
+Block data types deal strickly with blocks, on both the mainnet and the Index Chains. 
+
 | Block Data Types                | Type    | Description                                                                                                                                     |
 | ------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------|
 | Block Number (Mainnet)          | uint256 | Indicates the block number of the blockchain the POS smart contract is on.                                                                      |
 | Block Number Index Chain        | uint256 | Indicates the block number of the Index Chain.                                                                                                  |
 | Block Reward                    | uint256 | The total number of tokens rewarded per a mainnet block.                                                                                        |
+
+### Validator Data Types
+
+Validator data types define all important Values of a Validator
 
 | Validator Data Types            | Type    | Description                                                                                                                                     |
 | ------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -63,6 +72,8 @@ The types listed below are inclusive of all the data types that get passed throu
 | Status                          | enum    | The status of the Validator can be - `Bonded`, `Unbonding`, and `Revoked`.                                                                      |
 | Thawing Tokens                  | uint256 | The amount of tokens the Validator has thawing.                                                                                                 |
 | Bond Height                     | uint256 | The block number (mainnet) that the Validator began Validating.                                                                                 |
+
+### Network Parameters
 
 Network Parameters can be set at the protocol level to fine tune how the POS protocol functions. At first they will be controlled by a multisig address, and eventually they will be adjusted by governance. 
 
@@ -78,76 +89,10 @@ Network Parameters can be set at the protocol level to fine tune how the POS pro
 | Leader Minting Reward           | uint256 | The reward the Leader Validator gets from calling the mintInflation() on mainnet. It is a percentage of the daily reward. This covers gas.      |
 | Double Sign Slash %             | uint256 | The % value of the Validators stake to be slashed upon evidence of double signing (will likely be large).                                       |
 | Liveness Fault Slash %          | uint256 | The % value of the Validators stake to be slashed upon Liveness Faults (will likely be small).                                                  |
-
-## Messages
-### Staking messages 
-
-A `becomeValidator()` message consists of the following parameters:
-
-| Parameter                       | Type    | Description                                                                                                                                     |
-| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Bond Amount                     | uint256 | The amount of Graph Tokens being staked. Must be large enough to put the new Validator in the top Validator set.                                |
-| Validator Address               | address | The address that the validator is using for the smart contract platform (i.e. Ethereum).                                                        |
-| Validator ID                    | uint256 | Each Validator has a unique ID they get from the Index Chain. The Validator must share this with the smart contract.                            |
-| Index Chain ID                  | address | The Index Chain ID is unique to each Index Chain. This allows the smart contract to create a list of each Index Chain.                          |
-
-A `stopValidating()` message consists of the following parameters:
-
-| Parameter                       | Type    | Description                                                                                                                                     |
-| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Validator Address               | address | The address that the validator is using for the smart contract platform (i.e. Ethereum).                                                        |
-| Validator ID                    | bytes   | Each Validator has a unique ID they get from the Index Chain. The Validator must share this with the smart contract.                            |
-| Index Chain ID                  | bytes   | The Index Chain ID is unique to each Index Chain. This allows the smart contract to create a list of each Index Chain.                          |
-
-A `changeStake()` message consists of the following parameters:
-
-| Parameter                       | Type    | Description                                                                                                                                     |
-| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Change Amount                   | uint256 | The amount of Graph Tokens being added or subtracted.                                                                                           |
-| Increase Stake                  | boolean | True if increasing the stake, false if lowering the stake.                                                                                      |
-| Validator Address               | address | The address that the validator is using for the smart contract platform (i.e. Ethereum).                                                        |
-| Validator ID                    | uint256 | Each Validator has a unique ID they get from the Index Chain. The Validator must share this with the smart contract.                            |
-| Index Chain ID                  | address | The Index Chain ID is unique to each Index Chain. This allows the smart contract to create a list of each Index Chain.                          |
-
-### Rewards Messages
-
-A `mintInflationReward()` message consists of the following parameters:
-
-| Parameter                       | Type    | Description                                                                                                                                     |
-| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Validator ID                    | bytes   | Validators unique ID from their Index Chain.                                                                                                    |
-| Index Chain ID                  | bytes   | The Index Chain ID is unique to each Index Chain. This allows the smart contract to create a list of each Index Chain.                          |
-| Queries by Index Chain          | mapping | A mapping of the queries that were completed in the previous day by each Index Chain (used to divide the rewards evenly).                       |
-| feesPaidChain                   | unit256 | The fees paid for serving queries for each Index Chain. This is used to calculate the rewards for each Index Chain .                            |
-| feesPaidValidators              | mapping | The fees paid for by each Validator for an Index Chain. This is used to calculate the rewards for each Validator.                               |
-
-A `claimRewards()` message consists of the following parameters:
-
-| Parameter                       | Type    | Description                                                                                                                                     |
-| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Add To Stake                    | boolean | If true, add the rewards to the total stake. If false, just send them to the Validators mainnet account.                                        |
-| Validator ID                    | bytes   | Validators unique ID from their Index Chain.                                                                                                    |
-
-### Slashing Message
-
-A `slashValidator()` message consists of the following parameters:
-
-| Parameter                       | Type    | Description                                                                                                                                     |
-| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Validator ID                    | bytes   | The ID of the Validator to be slashed.                                                                                                          |
-| Slash Validator Proof           | bytes   | The Proof contains information at a certain Index Chain block height that has false information, which can then be Verified.                    |
-| type                            | enum    | Can be a slash of type `doubleSign` or `livenessFault`.                                                                                         |
-
-A `slashChain()` message consists of the following parameters:
-
-| Parameter                       | Type    | Description                                                                                                                                     |
-| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Chain ID                        | bytes   | The ID of the Validator to be slashed.                                                                                                          |
-| Slash Chain Proof               | bytes   | The Proof contains information at a certain Index Chain block height that has false information, which can then be Verified.                    |
  
 ---
 
-## POS Smart Contracts 
+## Proof-of-Stake Smart Contract
 
 The mainnet staking smart contract is the interface between the Ethereum mainnet Graph Tokens, and the network of Index Chains.
 
@@ -173,9 +118,10 @@ Each SubgraphID has a list of the Index Chains within it. Each of those chains h
 
 ### Round Progression and Checkpointing
 
-Each round is a day long. A round can contian many blocks, and the block times of Index Chains will vary depending on what data is being Indexed. If it is indexing data from a single blockchain, the Index Chain blocks will be produced slightly behind the chain it is indexing. 
+Each round is a day long. A round can contain many blocks, and the block times of Index Chains will vary depending on what data is being Indexed. If it is indexing data from a single blockchain, the Index Chain blocks will be produced slightly behind the chain it is indexing. 
 
-The Index Chain will have to be checkpointed to the mainnet POS smart contract. The simplest implentation is to checkpoint every single Index Chain blockhash to the mainnet. However, this can get expensive, especially with multiple Index Chains. Therefore groups of blocks, called `epochs`, will be checkpointed. __TODO: explain `epochs` better__
+The Index Chain will have to be checkpointed to the mainnet POS smart contract. The simplest implentation is to checkpoint every single Index Chain blockhash to the mainnet. However, this can get expensive, especially with multiple Index Chains. Therefore groups of blocks, called `epochs`, will be checkpointed.
+ > TODO: explain `epochs` better
 
 ---
 
@@ -186,6 +132,15 @@ The Index Chains watch for events emitted from the Ethereum network to become in
 This process will be described below in three different ways - bonding, rewards, and slashing. These are the ways that the Index chains interact with the Ethereum main chain. 
 
 ### Bonding to Become a Validator
+
+A `becomeValidator()` message consists of the following parameters:
+
+| Parameter                       | Type    | Description                                                                                                                                     |
+| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bond Amount                     | uint256 | The amount of Graph Tokens being staked. Must be large enough to put the new Validator in the top Validator set.                                |
+| Validator Address               | address | The address that the validator is using for the smart contract platform (i.e. Ethereum).                                                        |
+| Validator ID                    | uint256 | Each Validator has a unique ID they get from the Index Chain. The Validator must share this with the smart contract.                            |
+| Index Chain ID                  | address | The Index Chain ID is unique to each Index Chain. This allows the smart contract to create a list of each Index Chain.                          |
 
 ![Bonding Message Diagram](./registerValidator_msg.jpeg)
 
@@ -205,6 +160,14 @@ The Index Chain is listening for the mainnet staking smart contract for the NewV
 2. The new Validator runs a CLI command in The Graph Network software and it would create you as a validator if after a check (small bond to prevent spam))
 
 ### Unbonding to Stop Validating 
+
+A `stopValidating()` message consists of the following parameters:
+
+| Parameter                       | Type    | Description                                                                                                                                     |
+| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Validator Address               | address | The address that the validator is using for the smart contract platform (i.e. Ethereum).                                                        |
+| Validator ID                    | bytes   | Each Validator has a unique ID they get from the Index Chain. The Validator must share this with the smart contract.                            |
+| Index Chain ID                  | bytes   | The Index Chain ID is unique to each Index Chain. This allows the smart contract to create a list of each Index Chain.                          |
 
 ![Unbonding Message Diagram](./Unbonding_msg.jpeg)
 
@@ -228,15 +191,22 @@ When a Validator unbonds tokens, they get put through a thawing period, which co
 
 A Validator may want to increase or decrease their stake on their node. This is done by calling `changeStake()` on the POS smart contract. If they are adding stake, it will be added as soon as it can be included in a block. If they are lowering their stake, the tokens must go through the thawing period before they can be released from the POS smart contract. 
 
+A `changeStake()` message consists of the following parameters:
+
+| Parameter                       | Type    | Description                                                                                                                                     |
+| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Change Amount                   | uint256 | The amount of Graph Tokens being added or subtracted.                                                                                           |
+| Increase Stake                  | boolean | True if increasing the stake, false if lowering the stake.                                                                                      |
+| Validator Address               | address | The address that the validator is using for the smart contract platform (i.e. Ethereum).                                                        |
+| Validator ID                    | uint256 | Each Validator has a unique ID they get from the Index Chain. The Validator must share this with the smart contract.                            |
+| Index Chain ID                  | address | The Index Chain ID is unique to each Index Chain. This allows the smart contract to create a list of each Index Chain.                          |
+
 ---
 
 ## Rewards
 
-Note - fees are being left out for now
-NOTE - mention of how getting rewarded with queries is left out of detail here for now, as this section focuses more on the messaging between 
-
-
-__Create action diagram__ - mintInflationTokens() (called daily), claimRewards() (probably 1 diagram, claimRewards() hasnt been made ), then also there needs to be a way to measure the query count , and that needs to be done in the payout claculation
+> Note - fees are being left out for now
+> NOTE - mention of how getting rewarded with queries is left out of detail here for now, as this section focuses more on the messaging between 
 
 Block rewards are created in order for Validators to receive compensation. This happens on the Ethereum mainnet. With The Graph Network, there needs to be a simple way to pass down the rewards to each Index Chain, and then within each Index Chain, each Validator needs to be rewarded their appropriate amount. 
 
@@ -267,9 +237,28 @@ __(eq. 3) Validator Rewards = ( Validators Stake / Total Validators Stake ) * In
 
 The following diagram shows the process of minting rewards, as well as claiming rewards:
 
+A `mintInflationReward()` message consists of the following parameters:
+
+| Parameter                       | Type    | Description                                                                                                                                     |
+| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Validator ID                    | bytes   | Validators unique ID from their Index Chain.                                                                                                    |
+| Index Chain ID                  | bytes   | The Index Chain ID is unique to each Index Chain. This allows the smart contract to create a list of each Index Chain.                          |
+| Queries by Index Chain          | mapping | A mapping of the queries that were completed in the previous day by each Index Chain (used to divide the rewards evenly).                       |
+| feesPaidChain                   | unit256 | The fees paid for serving queries for each Index Chain. This is used to calculate the rewards for each Index Chain .                            |
+| feesPaidValidators              | mapping | The fees paid for by each Validator for an Index Chain. This is used to calculate the rewards for each Validator.                               |
+
+
 ![Minting Message Diagram](./minting-diagram.jpeg)
 
-The claiming of rewards must be done by each Validator. When the rewards are minted, they are all placed within the staking smart contract. To do this costs gas, which is why Leaders compete to win the reward that covers the gas, and provides them with extra tokens. But to separately send them to each Validator requires that the Validator calls `claimRewards()`. At this point, they can choose to send the rewards directly to their mainnet account, or to add them to their current stake, with the [`Add To Stake`](#Types-and-Parameters-and-Message-Formats) variable. Each Validator is allowed to accumlate their stake for multiple days. This can save on the gas spent to withdraw. __TODO: get more research into this (livepeer does this technique)__
+The claiming of rewards must be done by each Validator. When the rewards are minted, they are all placed within the staking smart contract. To do this costs gas, which is why Leaders compete to win the reward that covers the gas, and provides them with extra tokens. But to separately send them to each Validator requires that the Validator calls `claimRewards()`. At this point, they can choose to send the rewards directly to their mainnet account, or to add them to their current stake, with the [`Add To Stake`](#Types-and-Parameters-and-Message-Formats) variable. Each Validator is allowed to accumlate their stake for multiple days. This can save on the gas spent to withdraw. 
+> TODO: get more research into this (livepeer does this technique)
+
+A `claimRewards()` message consists of the following parameters:
+
+| Parameter                       | Type    | Description                                                                                                                                     |
+| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Add To Stake                    | boolean | If true, add the rewards to the total stake. If false, just send them to the Validators mainnet account.                                        |
+| Validator ID                    | bytes   | Validators unique ID from their Index Chain.                                                                                                    |
 
 The fees paid for each day for the Index Chain, and each Validator are passed along with `mintInflationTokens()`. This information is needed for __(eq. 2)__ and __(eq. 3)__. 
 
@@ -294,10 +283,19 @@ The `slashValidator()` function will be called in both cases. The liveness fault
 
 The messaging diagram is shown below for slashing: 
 
+
+A `slashValidator()` message consists of the following parameters:
+
+| Parameter                       | Type    | Description                                                                                                                                     |
+| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Validator ID                    | bytes   | The ID of the Validator to be slashed.                                                                                                          |
+| Slash Validator Proof           | bytes   | The Proof contains information at a certain Index Chain block height that has false information, which can then be Verified.                    |
+| type                            | enum    | Can be a slash of type `doubleSign` or `livenessFault`.                                                                                         |
+
 ![Double Fault Diagram](./Double_Fault_Msg.jpeg)
 
-TODO: having second thoughts on burning tokens for liveness faults. Maybe just losing out on inflation rewards is enough of a penalty to incentivize 100% uptime. 
-TODO: is it possible that any validator cannot call slashValidator()? Do we need signature aggregation? how does livepeer do it?
+> TODO: having second thoughts on burning tokens for liveness faults. Maybe just losing out on inflation rewards is enough of a penalty to incentivize 100% uptime. 
+> TODO: is it possible that any validator cannot call slashValidator()? Do we need signature aggregation? how does livepeer do it?
 
 ### Slashing Index Chains
 
@@ -312,6 +310,13 @@ Fishermen must pay a small fee to call the function `slashChain()`, in order to 
 
 The process of a Fisherman submitting a Fraud Proof for an Index Chain can be seen below: 
 
-![Fishermans Msd Diagram](./Fishermans_msg.jpeg)
+A `slashChain()` message consists of the following parameters:
 
-If the protocol operates as designed, it would be expected that no group of rational Validators would allow their full stake to be lost. Therefore the Fishermen would never get paid out, and might completely stop doing their job. Random rewards will be genereated by each Index Chain, that can be found by Fishermen to reward them for always being on standby. 
+| Parameter                       | Type    | Description                                                                                                                                     |
+| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chain ID                        | bytes   | The ID of the Validator to be slashed.                                                                                                          |
+| Slash Chain Proof               | bytes   | The Proof contains information at a certain Index Chain block height that has false information, which can then be Verified.                    |
+
+![Fishermans Msg Diagram](./Fishermans_msg.jpeg)
+
+If the protocol operates as designed, it would be expected that no group of rational Validators would allow their full stake to be lost. Therefore the Fishermen would never get paid out, and might completely stop doing their job. Random rewards will be generated by each Index Chain, that can be found by Fishermen to reward them for always being on standby. 

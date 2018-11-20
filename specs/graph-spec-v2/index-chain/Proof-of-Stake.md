@@ -24,8 +24,6 @@ Validators are rewarded for producing correct blocks, and punished for misbehavi
 
 There are three ways to interact with the POS protocol. They are staking, rewards, and slashing. The spec will be described with these three ways in mind. 
 
-TODO: explain the relationship between index chains and subgraphs. 
-
 ---
 ---
 
@@ -39,8 +37,6 @@ Players dealing with **bonded stake** within the network. They are:
 ## Types and Parameters
 
 The types listed below are inclusive of all the data types that get passed through messaging in the protocol, and variables that can be called within the protocol
-
-TODO: Link every mention of these back up to this list 
 
 | Network Data Types (The Pool)   | Type    | Description                                                                                                                                     |
 | ------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -175,11 +171,11 @@ Validator      --> Stake
 
 Each SubgraphID has a list of the Index Chains within it. Each of those chains has a Validator set, representing the nodes securing the network. Each Validator has a stake they have posted. This design allows for an organized way to see how much is at stake, per Validator, and per Index Chain. 
 
-### Round Progression
+### Round Progression and Checkpointing
 
-- the blockhash of each round will be stored (note, we will find a way to make this less work intensive)
-NOTE: most of this should be left to the consensus section 
-TODO: yeah, just turn this into how stake specifically matters to rounds 
+Each round is a day long. A round can contian many blocks, and the block times of Index Chains will vary depending on what data is being Indexed. If it is indexing data from a single blockchain, the Index Chain blocks will be produced slightly behind the chain it is indexing. 
+
+The Index Chain will have to be checkpointed to the mainnet POS smart contract. The simplest implentation is to checkpoint every single Index Chain blockhash to the mainnet. However, this can get expensive, especially with multiple Index Chains. Therefore groups of blocks, called `epochs`, will be checkpointed. __TODO: explain `epochs` better__
 
 ---
 
@@ -226,7 +222,7 @@ The Index Chain Validators are listening for such events, and every Validator wi
 
 ### Rebonding Frozen Tokens
 
-When a Validator unbonds tokens, they get put through a thawing period, which could be weeks or months long, depending on how the parameter is set. A delegator is free to rebond tokens that are frozen, with no wait time. This could happen from voluntary unbonding, or from being unbonded due to liveness faults. TODO: (LINK TO LOCATION OF SPEC)
+When a Validator unbonds tokens, they get put through a thawing period, which could be weeks or months long, depending on how the parameter is set. A delegator is free to rebond tokens that are frozen, with no wait time. This could happen from voluntary unbonding, or from being unbonded due to [liveness faults.](#slashing-validators)
 
 ### Changing Stake 
 
@@ -273,11 +269,9 @@ The following diagram shows the process of minting rewards, as well as claiming 
 
 ![Minting Message Diagram](./minting-diagram.jpeg)
 
-The claiming of rewards must be done by each Validator. When the rewards are minted, they are all placed within the staking smart contract. To do this costs gas, which is why Leaders compete to win the reward that covers the gas, and provides them with extra tokens. But to separately send them to each Validator requires that the Validator calls `claimRewards()`. At this point, they can choose to send the rewards directly to their mainnet account, or to add them to their current stake, with the [`Add To Stake`](#Types-and-Parameters-and-Message-Formats) variable. 
+The claiming of rewards must be done by each Validator. When the rewards are minted, they are all placed within the staking smart contract. To do this costs gas, which is why Leaders compete to win the reward that covers the gas, and provides them with extra tokens. But to separately send them to each Validator requires that the Validator calls `claimRewards()`. At this point, they can choose to send the rewards directly to their mainnet account, or to add them to their current stake, with the [`Add To Stake`](#Types-and-Parameters-and-Message-Formats) variable. Each Validator is allowed to accumlate their stake for multiple days. This can save on the gas spent to withdraw. __TODO: get more research into this (livepeer does this technique)__
 
 The fees paid for each day for the Index Chain, and each Validator are passed along with `mintInflationTokens()`. This information is needed for __(eq. 2)__ and __(eq. 3)__. 
-
-TODO: if tou miss it, your chain loses ! (maybe others can submit for you, there has to be some timing here)
 
 ---
 ## Slashing

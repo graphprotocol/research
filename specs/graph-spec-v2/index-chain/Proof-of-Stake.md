@@ -27,6 +27,14 @@ There are three ways to interact with the POS protocol. They are staking, reward
 TODO: explain the relationship between index chains and subgraphs. 
 
 ---
+---
+
+## Stakeholders 
+
+Players dealing with **bonded stake** within the network. They are: 
+
+* **Validators**: Users that bond tokens and serve up queries in exchange for shared rewards and fees.
+* **Fishermen**: Submit slash proofs as on-chain evidence of false queries, for which they are rewarded a fee.
 
 ## Types and Parameters
 
@@ -56,13 +64,13 @@ TODO: Link every mention of these back up to this list
 | Validator ID (Index Chain)      | Bytes   | The Validator ID, which is produced by The Graph Network client, and used to connect to an Index chain.                                         |
 | Bonded Amount                   | uint256 | The amount of Graph Tokens a Validator has staked.                                                                                              |
 | Bonded Shares                   | uint256 | The bonded shares represent a Validators share of the total tokens that they have staked.                                                       |
-| Status                          | enum    | The status of the Validator can be - `Bonded`, `Unbonding`, and `Revoked`.                                                                                        |
-| Thawing Tokens                  | uint256 | The amount of tokens the Validator has thawing. 
+| Status                          | enum    | The status of the Validator can be - `Bonded`, `Unbonding`, and `Revoked`.                                                                      |
+| Thawing Tokens                  | uint256 | The amount of tokens the Validator has thawing.                                                                                                 |
 | Bond Height                     | uint256 | The block number (mainnet) that the Validator began Validating.                                                                                 |
 
-Parameters can be set at the protocol level to fine tune how the POS protocol functions. At first they will be controlled by a multisig address, and eventually they will be adjusted by governance. 
+Network Parameters can be set at the protocol level to fine tune how the POS protocol functions. At first they will be controlled by a multisig address, and eventually they will be adjusted by governance. 
 
-| Parameters                      | Type    | Description                                                                                                                                     |
+| Network Parameters              | Type    | Description                                                                                                                                     |
 | ------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------|
 | Thawing Period                  | uint256 | The period of time (unix) that tokens must be frozen before withdrawal. Must be used to prevent long-range attacks.                             |
 | Minimum number of Validators    | uint256 | The minimum number of Validators required for an Index Chain to be part of the network.                                                         |
@@ -71,7 +79,9 @@ Parameters can be set at the protocol level to fine tune how the POS protocol fu
 | Target Bonded Ratio             | uint256 | The ratio that is desired to stabilize the network. Max and Min Inflation Rate are used to hone in on the TBR.                                  |
 | Maximum Inflation Rate          | uint256 | The maximum the protocol will allow tokens to be inflated (yearly).                                                                             |
 | Minimum Inflation Rate          | uint256 | The minimum the protocol will allow tokens to be inflated (yearly).                                                                             |
-| Leader Minting Reward           | uint256 | The reward the Leader Validator gets from calling the mintInflation()  on mainnet. It is a percentage of the daily reward. This covers gas.     |
+| Leader Minting Reward           | uint256 | The reward the Leader Validator gets from calling the mintInflation() on mainnet. It is a percentage of the daily reward. This covers gas.      |
+| Double Sign Slash %             | uint256 | The % value of the Validators stake to be slashed upon evidence of double signing (will likely be large).                                       |
+| Liveness Fault Slash %          | uint256 | The % value of the Validators stake to be slashed upon Liveness Faults (will likely be small).                                                  |
 
 ## Messages
 ### Staking messages 
@@ -112,7 +122,8 @@ A `mintInflationReward()` message consists of the following parameters:
 | Validator ID                    | bytes   | Validators unique ID from their Index Chain.                                                                                                    |
 | Index Chain ID                  | bytes   | The Index Chain ID is unique to each Index Chain. This allows the smart contract to create a list of each Index Chain.                          |
 | Queries by Index Chain          | mapping | A mapping of the queries that were completed in the previous day by each Index Chain (used to divide the rewards evenly).                       |
-
+| feesPaidChain                   | unit256 | The fees paid for serving queries for each Index Chain. This is used to calculate the rewards for each Index Chain .                            |
+| feesPaidValidators              | mapping | The fees paid for by each Validator for an Index Chain. This is used to calculate the rewards for each Validator.                               |
 
 A `claimRewards()` message consists of the following parameters:
 
@@ -121,30 +132,23 @@ A `claimRewards()` message consists of the following parameters:
 | Add To Stake                    | boolean | If true, add the rewards to the total stake. If false, just send them to the Validators mainnet account.                                        |
 | Validator ID                    | bytes   | Validators unique ID from their Index Chain.                                                                                                    |
 
-
-
-
 ### Slashing Message
 
-TODO
-- fraud proof
-    - quer(ies) in question
-    - block of false query
-    - block on mainnet of real one 
-    - the validator in  question
-- what about fraud proof for a whole chain
-    - much more here 
+A `slashValidator()` message consists of the following parameters:
 
+| Parameter                       | Type    | Description                                                                                                                                     |
+| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Validator ID                    | bytes   | The ID of the Validator to be slashed.                                                                                                          |
+| Slash Validator Proof           | bytes   | The Proof contains information at a certain Index Chain block height that has false information, which can then be Verified.                    |
+| type                            | enum    | Can be a slash of type `doubleSign` or `livenessFault`.                                                                                         |
 
----
+A `slashChain()` message consists of the following parameters:
 
-## Stakeholders
-
-Anyone dealing with **bonded stake** within the network. They are: 
-
-* **Validators**: Users that bond tokens and serve up queries in exchange for shared rewards and fees.
-* **Fishermen**: Submit slash proofs as on-chain evidence of false queries, for which they are rewarded a fee.
-
+| Parameter                       | Type    | Description                                                                                                                                     |
+| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chain ID                        | bytes   | The ID of the Validator to be slashed.                                                                                                          |
+| Slash Chain Proof               | bytes   | The Proof contains information at a certain Index Chain block height that has false information, which can then be Verified.                    |
+ 
 ---
 
 ## POS Smart Contracts 
@@ -175,6 +179,7 @@ Each SubgraphID has a list of the Index Chains within it. Each of those chains h
 
 - the blockhash of each round will be stored (note, we will find a way to make this less work intensive)
 NOTE: most of this should be left to the consensus section 
+TODO: yeah, just turn this into how stake specifically matters to rounds 
 
 ---
 
@@ -192,14 +197,14 @@ A user with Graph Tokens finds an Index Chain they would like to validate on. Th
 
 1. Once they confirm they meet the requirements to stake, they call the mainnet staking contract function registerValidator(), They pass data that indicates which Index Chain they will Validate on. This includes the Index Chain ID, their Validator ID, and the amount of Graph Tokens to stake. Once the becomeValidator() transaction is included in the main chain, it will emit an event :
 
-        Event New Validator(
-            Index Chain ID, 
-            Graph Network Node ID, 
-            Main Chain Account Address (msg.sender), 
-            Graph Tokens Staked 
+        Event New Validator( 
+            indexChainID, 
+            validatorID, 
+            mainnetAddress, 
+            tokensStaked 
         )
 
-The Index Chain is listening for the mainnet staking smart contract for the NewValidator event with it’s own IndexChainID. The event will get added into a new block on the Index Chain, and it will update the Validator Set. The Index Chain Node ID allows the new Index Chain Node to become a Validator. Then Step 2:
+The Index Chain is listening for the mainnet staking smart contract for the NewValidator event with it’s own IndexChainID. The event data will be read, and the Index Chain Validator Set will be updated. The Index Chain Node ID allows the new Index Chain Node to become a Validator. Then Step 2:
 
 2. The new Validator runs a CLI command in The Graph Network software and it would create you as a validator if after a check (small bond to prevent spam))
 
@@ -212,9 +217,9 @@ A Validator can stop validating with one call to the POS smart contract:
 1. The Validator calls `stopValidating()` with their Validator ID, and Index Chain ID. Next the Event Stop Validating will be emitted: 
 
         Event Stop Validating(
-            Index Chain ID, 
-            Validator ID, 
-            Main Chain Account Address (msg.sender), 
+            indexChainID, 
+            validatorID, 
+            mainnetAddress, 
         )
 
 The Index Chain Validators are listening for such events, and every Validator will then include an update to the Validator set in the next block. When a majority consensus is reached, the Validator set will be updated, and the Validator will no longer participate in consensus, and their tokens will enter the thawing period. 
@@ -270,29 +275,49 @@ The following diagram shows the process of minting rewards, as well as claiming 
 
 The claiming of rewards must be done by each Validator. When the rewards are minted, they are all placed within the staking smart contract. To do this costs gas, which is why Leaders compete to win the reward that covers the gas, and provides them with extra tokens. But to separately send them to each Validator requires that the Validator calls `claimRewards()`. At this point, they can choose to send the rewards directly to their mainnet account, or to add them to their current stake, with the [`Add To Stake`](#Types-and-Parameters-and-Message-Formats) variable. 
 
-TODO: add in how the query values are shared. each chain must submit their own in time, subject to change, in order for it to work 
+The fees paid for each day for the Index Chain, and each Validator are passed along with `mintInflationTokens()`. This information is needed for __(eq. 2)__ and __(eq. 3)__. 
+
+TODO: if tou miss it, your chain loses ! (maybe others can submit for you, there has to be some timing here)
 
 ---
+## Slashing
+### Slashing Validators
 
-## Slashing TODO
+The POS protocol is designed to ensure economic finality. Economic finality requires that once a block is finalized, then the only way to that there can be conflicting blocks in the future is if a large  subgroup of Validators are willing to lose their stake. This is where slashing comes in. It is an incentivization mechanism to prevent bad behaviour. 
 
+There are two reasons to be slashed:
+* Double Signing - Occurs when it is proven that a Validator has signed two blocks at the same height. This is because with a ⅔ majority, the only way a fork could happen is if ⅓ sign two blocks, thus creating two valid blocks. This is known as the nothing at stake problem, and slashing is used to mitigate it. The amount slashed is dependant on the [**Double Sign Slash %**](#Types-and-Parameters-and-Message-Formats) parameter.
+* Liveness Faults- Are events where > ⅓ of validators are no longer connected to the network due to a network partition, computer failure, or the validators themselves are malicious. This prevents ⅔ majorities from voting on blocks. We deal with this by introducing a small slash, and **Revoking** of the Validator’s status. The slash amount is dependant on the **Liveness Fault Slash%** parameter. This incentives Validators to no go down unexpectedly, and the revoking removes their bonded tokens from the overall calculation of the ⅔ majority. This allows the protocol to continue producing blocks.
 
-Note - final slashing parameters not decided. May be adjustable. 
-Note - don't get into the dispute process 
+The `slashValidator()` function will be called in both cases. The liveness fault and double signing slashed tokens will be burnt. Any Validator on the Index Chain can submit `slashValidator()`, and they must provide the proof of that Validators signature for two blocks with the same number. They are incentivized to do so because catching another Validator will remove them from earning inflationary rewards, and therefore increase the inflationary rewards they can earn themselves. It also increases the reputation of the Index Chain, which is good for attracting queries. `slashValidator()` releases the following event: 
 
-__Create action diagram__  - liveness faults doesnt need one. doubleSignFault() needs to be shown (1 diagram)
+        Event ValidatorSlashed(
+            slashType,
+            tokensSlashed,  
+            validatorID, 
+            mainnetAddress, 
+        )
 
-Explain how the messages connect to mainnet
+The messaging diagram is shown below for slashing: 
 
-Actors are to be incentivzed to do all messages
+![Double Fault Diagram](./Double_Fault_Msg.jpeg)
 
-### Fraud Proofs TODO
+TODO: having second thoughts on burning tokens for liveness faults. Maybe just losing out on inflation rewards is enough of a penalty to incentivize 100% uptime. 
+TODO: is it possible that any validator cannot call slashValidator()? Do we need signature aggregation? how does livepeer do it?
 
+### Slashing Index Chains
 
-Fishermen submit these 
+It is possible that an entire Index Chain is acting fradulently, and producing false information as a group, therefore reaching consensus. Fishermen(LINK) are watching for this. It is the Fisherman's job to watch for this possibility, and submit a Fraud Proof showing that the data the Index Chain Validators agree with do not equate to the real world data. This gets passed up to a third party (currently a multisig address in control by Graph developers) that can then run this exact query, and determine if it is fraudulent. If so, the Fishermen is rewarded 100% of the slashed stake. Only the Fraudulent Validators will be slashed. 
 
-How do they submit them? 
+Fishermen must pay a small fee to call the function `slashChain()`, in order to prevent a DDOS attack. `slashChain()` will release the following event upon successful execution:
 
-Create message interface
+        Event ChainSlashed(
+            tokensSlashed,  
+            indexChainID, 
+        )
 
+The process of a Fisherman submitting a Fraud Proof for an Index Chain can be seen below: 
 
+![Fishermans Msd Diagram](./Fishermans_msg.jpeg)
+
+If the protocol operates as designed, it would be expected that no group of rational Validators would allow their full stake to be lost. Therefore the Fishermen would never get paid out, and might completely stop doing their job. Random rewards will be genereated by each Index Chain, that can be found by Fishermen to reward them for always being on standby. 

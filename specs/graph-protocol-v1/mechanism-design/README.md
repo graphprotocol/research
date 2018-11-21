@@ -18,7 +18,7 @@ For a `stakingAmount` to be considered valid, it must meet the following require
  - `stakingAmount >= minimumStakingAmount` where `minimumStakingAmount` is set via governance.
  - The `stakingAmount` must be in the set of the top N staking amounts, where N is determined by the `maxIndexers` parameter which is set via governance.
 
-Indexing Nodes who have staked for a dataset, are not limited by the protocol in how many read requests they may process for that dataset. However, it may be assumed that Indexing Nodes with higher deposits, will receive more read requests and thus collect more fees, all else being equal, as this represents a greater economic security margin to the end user.
+Indexing Nodes who have staked for a dataset, are not limited by the protocol in how many read requests they may process for that dataset. However, it may be assumed that Indexing Nodes with higher deposits will receive more read requests and thus collect more fees, all else being equal, as this represents a greater economic security margin to the end user.
 
 ## Data Retrieval Market
 The work Indexing Nodes perform for the network can be described by a function of the type `ReadRequest -> ReadResponse`.
@@ -81,7 +81,7 @@ A Curators stakes a deposit of Graph Tokens for a particular dataset in exchange
 
 Subgraph tokens are issued according to a bonding curve, making it more expensive to mint subgraph tokens by locking up ETH over time, and thus more expensive to purchase a share of future curator inflation rewards over time.
 
-**TODO** Define bonding curve for curation market or bonding curve parameters.
+**TODO** [Define bonding curve for curation market or bonding curve parameters](https://github.com/graphprotocol/research/issues/69).
 
 ## Inflation Rewards
 The total monetary inflation rate of Graph Tokens, over a given inflation period (more on this later), is the sum of its two constituent components:
@@ -95,7 +95,7 @@ In order to encourage Graph Token holders to participate in the network, the pro
 
 The participation reward to the entire network is calculated as a function of a `targetParticipationRate` which is set via governance. If `actualParticipationRate === targetParticipationRate` then `participationRewardRate = 0`. Conversely, the lower the actual participation rate is relative to the target participation rate, the higher the participation reward will be.
 
-**TODO** Decide on actual function for relating `participationRewardRate` to `targetParticipationRate`.
+**TODO** [Decide on actual function for relating `participationRewardRate` to `targetParticipationRate`](https://github.com/graphprotocol/research/issues/70).
 
 In order to incentivize actual work being provided to the network, not just staking, the participation reward will be distributed to Indexing Nodes who are staking for datasets with the most economic activity.
 

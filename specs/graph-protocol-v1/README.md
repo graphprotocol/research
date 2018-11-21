@@ -19,7 +19,7 @@ This specification covers the network architecture, protocol interfaces, algorit
 
 1. [Architecture Overview](./architecture-overview)
 1. [Mechanism Design](./mechanism-design)
-1. Payment Channels
+1. [Payment Channels](./payment-channels)
 1. Smart Contract Architecture
 1. Query Processing
  1. Read Interface

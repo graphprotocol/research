@@ -32,9 +32,7 @@ A `ReadResponse` comprises the following parts:
 - `data`
 - `attestation`
 
-Additionally, a `ReadRequest` is sent alongside a `lockedBalanceTransfer`. This is a conditional micropayment, which can only be unlocked with a valid `ReadResponse` for the given `ReadRequest`. See Payment Channels for more info.
-
-**TODO** Add link to Payment Channels section when ready.
+Additionally, a `ReadRequest` is sent alongside a `lockedBalanceTransfer`. This is a conditional micropayment, which can only be unlocked with a valid `ReadResponse` for the given `ReadRequest`. See [Payment Channels](../payment-channels) for more info.
 
 **TODO** What parameters are sent along with the conditional micropayment?
 

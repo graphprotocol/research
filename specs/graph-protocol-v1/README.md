@@ -17,13 +17,13 @@ This specification covers the network architecture, protocol interfaces, algorit
 
 ## Table of Contents
 
-1. Architecture Overview
-1. Mechanism Design
+1. [Architecture Overview](./architecture-overview)
+1. [Mechanism Design](./mechanism-design)
+1. Payment Channels
+1. Smart Contract Architecture
+1. Query Processing
+ 1. Read Interface
 1. Dataset Creation
   1. Data Modeling
   1. [Subgraph Manifest](./subgraph-manifest)
   1. Mappings API
-1. Dataset Curation
-1. Indexing
-1. Query Processing
-1. Verification and Disputes

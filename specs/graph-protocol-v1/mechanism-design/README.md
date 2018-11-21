@@ -37,7 +37,17 @@ Additionally, a `ReadRequest` is sent alongside a `lockedBalanceTransfer`. This 
 **TODO** What parameters are sent along with the conditional micropayment?
 
 ## Data Retrieval Pricing
-**TODO**
+Pricing in the data retrieval market is set according to the bandwidth and compute required to process a request.
+
+Compute is priced in `ETH/gas` where the `gas` required for a request is determined by the specific read operation and parameters. See Read Interface.
+
+**TODO** Add link to Read Interface.
+
+Bandwidth is priced in `ETH/bytes` where `bytes` refers to the size of the `data` portion of the response, measured in bytes.
+
+Indexing Nodes respond with their compute and bandwidth costs on request. See Query Processing.
+
+**TODO** Add link to Query Processing.
 
 ## Verification
 

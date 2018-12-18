@@ -173,7 +173,7 @@ Filter predicates allow for declaratively asserting whether a value meets certai
 
 #### Structure
 
-Filter predicates have the following shape:
+Filter predicates are expressed through a simple DSL:
 ```typescript
 type FilterPredicate = FilterPredicateLeaf | FilterPredicateAnd | FilterPredicateOr
 
@@ -210,7 +210,7 @@ interface StringFilter extends BaseFilter {
   // Less than
   lt?: String;
   // Less than or equal to
-  lte?: STring;
+  lte?: String;
   // Greater than
   gt?: String;
   // Greater than or equal to
@@ -279,6 +279,15 @@ interface BooleanFilter extends BaseFilter {
 ```
 
 #### Gas Cost
+The clauses in the filter predicate DSL can be grouped into several buckets of operation types, which share equivalent gas cost calculations.
+
+| Operation Type | Description | Gas Cost |
+| --------- | ----------- | -------- |
+| Number Comparison | Includes `lt`, `lte`, `gt`, `gte`, `equals` and `notEquals` clauses on Number types. | `opCostBitCompare * N ` where `N` is the amount of bits compared to complete the operation, and `opCostBitCompare` is set via governance. |
+| String Comparison | Includes `lt`, `lte`, `gt`, `gte`, `startsWith`, `notStartsWith`, `endsWith`, `notEndsWith`, `equals` and `notEquals` clauses on String types. | `opCostCharCompare * N ` where `N` is the amount of characters compared to complete the operation, and `opCostCharCompare` is set via governance. |
+| Bit Comparison | Includes `equals` and `notEquals` clauses on Boolean types. Also used for combining two filter predicate clauses via boolean operators `or` and `and` (including the implicit `and` described above). | `opCostBitCompare` where `opCostBitCompare` is set via governance. |
+| String Match | Used for `contains` and `notContains` clauses on String types | `opCostStringSearch * (M + N)` where `N` is the amount of characters in the pattern being matched, and `M` is the amount of characters in the string being searched. `opCostStringSearch` is set via governance. |
+
 
 ### Database Models
 The semantics of reading from an Indexing Node are determined by the database model which the index being read from implements, such as [key-value (KV)](https://en.wikipedia.org/wiki/Key-value_database), [entity-attribute-value (EAV)](https://en.wikipedia.org/wiki/Entity%E2%80%93attribute%E2%80%93value_model) and the [relational model](https://en.wikipedia.org/wiki/Relational_model). Index types are prefixed with a short label indicating the database model the index implements:

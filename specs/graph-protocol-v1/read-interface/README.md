@@ -95,14 +95,14 @@ Indexes are defined by an `IndexRecord` which has the following shape:
 ```typescript
 interface IndexRecord {
   // The type of the index (required).
-  indexType: String!
+  indexType: String;
   // Parameters specific to the type of index specified (optional).
   indexParams?: {
     // An identifier for the partition of data that the index will cover. Available partitions determined by the database model of the index (optional).
-    partition?: String
+    partition?: String;
     // Parameters which are specific to the type of index specified (optional).
-    params?: [String]
-  }
+    params?: [String];
+  };
 }
 ```
 ###### Example Index Records
@@ -169,6 +169,116 @@ The concrete types (i.e. `K` and `V` shown below), as well as the implicit compa
 | takeLastWhile | `(predicate: FilterPredicate, options?:{ skip?: Number, gt?: K, lte?: K}) => [V]` | Retrieves values from the index in descending order, while `FilterPredicate` returns true, optionally skipping the number of values specified by `skip`. If specified, only take values whose sort keys are between the range parameters `gt` (exclusive) and `lte` (inclusive). | `(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S` where `N` is the amount of iterations taken not including skipped values, and `S` is the number of values skipped over, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided. |
 
 ### Filter Predicates
+Filter predicates allow for declaratively asserting whether a value meets certain criteria. Filter predicates are expressed as objects which can be passed into several low-level index read operations such as `takeWhile` and `find`.
+
+#### Structure
+
+Filter predicates have the following shape:
+```typescript
+type FilterPredicate = FilterPredicateLeaf | FilterPredicateAnd | FilterPredicateOr
+
+interface FilterPredicateOr {
+  or: [FilterPredicate];
+}
+
+interface FilterPredicateAnd {
+  and: [FilterPredicate];
+}
+
+type FilterPredicateLeaf = StringFilter | NumberFilter | BooleanFilter
+
+interface BaseFilter {
+  // The field the predicate will be applied to. Nested fields may be
+  // specified, by concatenating field names with a "."
+  // If no field specified, the predicate will be applied to the value. This
+  // is only supported if the value is a primitive type.
+  field?: String;
+}
+
+// If multiple filter clauses supplied will be treated as logical AND
+interface StringFilter extends BaseFilter {
+  equals?: String;
+  notEquals?: String;
+  // Contains string
+  contains?: String;
+  // Does not contain string
+  notContains?: String;
+  startsWith?: String;
+  notStartsWith?: String;
+  endsWith?: String;
+  notEndsWith?: String;
+  // Less than
+  lt?: String;
+  // Less than or equal to
+  lte?: STring;
+  // Greater than
+  gt?: String;
+  // Greater than or equal to
+  gte?: String;
+  // Contained in list
+  in?: [String];
+  // Not contained in list
+  notIn?: [String];
+}
+
+
+// If multiple filter clauses supplied will be treated as logical AND
+interface NumberFilter extends BaseFilter {
+  equals?: Number;
+  notEquals?: Number;
+  // Less than
+  lt?: Number;
+  // Less than or equal to
+  lte?: Number;
+  // Greater than
+  gt?: Number;
+  // Greater than or equal to
+  gte?: Number;
+  // Contained in list
+  in?: [Number];
+  // Not contained in list
+  notIn?: [Number];
+}
+
+// If multiple filter clauses supplied will be treated as logical AND
+interface BooleanFilter extends BaseFilter {
+  equals?: Boolean;
+  notEquals?: Boolean;
+}
+```
+
+###### Example - Simple Value Filter Predicate
+```js
+{
+  equals: 12
+}
+```
+
+###### Example - Object Filter Predicate
+```js
+{
+  field: "fullName",
+  contains: "Vitalik"
+}
+```
+
+###### Example - Filter Predicate with Boolean Operators and Nested Fields
+```js
+{
+ and: [
+   {
+     field: "name.first",
+     equals: "Vitalik"
+   },
+   {
+     field: "name.last",
+     equals: "Buterin"
+   }
+ ]
+}
+```
+
+#### Gas Cost
 
 ### Database Models
 The semantics of reading from an Indexing Node are determined by the database model which the index being read from implements, such as [key-value (KV)](https://en.wikipedia.org/wiki/Key-value_database), [entity-attribute-value (EAV)](https://en.wikipedia.org/wiki/Entity%E2%80%93attribute%E2%80%93value_model) and the [relational model](https://en.wikipedia.org/wiki/Relational_model). Index types are prefixed with a short label indicating the database model the index implements:

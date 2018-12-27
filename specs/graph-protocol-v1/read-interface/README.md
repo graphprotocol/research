@@ -15,6 +15,7 @@ Calling these read operations is done via JSON RPC 2.0[[1]](#footnotes). (See th
 The method of interest here is `readIndex` which accepts the following parameters:
 1. `Object`
  - `blockHash`: `String` - The hash of the Ethereum block as of which to read the data.
+ - `subgraphID`: `String` - The ID of the subgraph to read from.
  - `index`: `Object` - The [IndexRecord](#indexes) of the index being read from.
  - `op`: `String` - The name of the read operation.
  - `params`: `[any]` - The parameters passed into the called read operation.
@@ -35,6 +36,7 @@ The `readIndex` method returns the following:
   "params": [
     {
       "blockHash": "xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1",
+      "subgraphID": "QmTeW79w7QQ6Npa3b1d5tANreCDxF2iDaAPsDvW6KtLmfB",
       "index": {
         "indexType": "kv"
       },
@@ -104,9 +106,9 @@ The attestation message is encoded and signed according to the [EIP-712 specific
 ### Content IDs
 `messageCID` and `responseCID` are both produced according to the [IPLD CID V1 specification](https://github.com/ipld/cid#cidv1).
 
-It is recommended to use the canonical [CBOR encoding](https://tools.ietf.org/html/rfc7049#section-3.9), and SHA-256 multi-hash.
+Content IDs must use the canonical [CBOR encoding](https://tools.ietf.org/html/rfc7049#section-3.9), and SHA-256 multi-hash.
 
-In producing the `messageCID` the optional `id` field from the JSON-RPC 2.0 specification should be omitted, as well as the optional conditional micropayment in the `readIndex` params list.
+In producing the `messageCID`, the optional `id` field from the JSON-RPC 2.0 specification should be omitted, as well as the optional conditional micropayment in the `readIndex` params list.
 
 ## Indexes
 All read operations require that the caller specify an index. Index data structures efficiently organize the data to support different read access patterns. All indexes are covering indexes, meaning they store values directly rather than pointers.

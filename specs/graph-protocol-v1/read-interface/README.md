@@ -12,7 +12,7 @@ Calling these read operations is done via JSON RPC 2.0[[1]](#footnotes). (See th
 
 **TODO** Add link to full JSON RPC API when available
 
-The method of interest here is `call` which accepts the following parameters:
+The method of interest here is `readIndex` which accepts the following parameters:
 1. `Object`
  - `blockHash`: `String` - The hash of the Ethereum block as of which to read the data.
  - `index`: `Object` - The [IndexRecord](#indexes) of the index being read from.
@@ -22,7 +22,7 @@ The method of interest here is `call` which accepts the following parameters:
 
 **TODO** Add link to Payment Chanel Architecture when ready.
 
-The `call` method returns the following:
+The `readIndex` method returns the following:
 1. `Object`
  - `data`: `any` - The data retrieved by the read operation.
  - `attestation`: Object - An attestation that `data` is a correct response for the given read operation (see [Attestations](#attestations)).
@@ -31,7 +31,7 @@ The `call` method returns the following:
 ```js
 // request
 {
-  "method": "call",
+  "method": "readIndex",
   "params": [
     {
       "blockHash": "xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1",
@@ -41,7 +41,8 @@ The `call` method returns the following:
       "op": "get"
       "params": ["User:1"]
     }
-  ]
+  ],
+  "jsonrpc": "2.0"
 }
 // response
 {
@@ -58,7 +59,7 @@ The `call` method returns the following:
 ```js
 // request
 {
-  "method": "call",
+  "method": "readIndex",
   "params": [
     {
       "blockHash": "xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1",
@@ -68,7 +69,8 @@ The `call` method returns the following:
       "op": "get"
       "params": ["User:1"]
     }
-  ]
+  ],
+  "jsonrpc": "2.0"
 }
 // response
 {
@@ -81,10 +83,30 @@ The `call` method returns the following:
 ## Attestations
 Attestations are ECDSA (Elliptic-Curve Digital Signature Algorithm) signatures which assert that a given response is true for a given read request.
 
-The signature is produced as follows:
-1. The request and response are combined into a single JSON object.
-1. Take the SHA-256 of the CBOR serialization of the JSON object.
-1. Indexing Node signs the resulting hash with its private key.
+An Attestation message has the following structure:
+
+| Field Name  | Field Type | Description |
+| ----------- | ---------- | ----------- |
+|
+| messageCID | bytes    | The content ID of the mess. |
+| gasUsed     | uint256    | The gas used to process the read operation. |
+| bytes       | uint256    | The size of the response data in bytes. |
+| responseCID | bytes   | The content ID of the response. |
+| v | uint256 | The ECDSA recovery ID . |
+| r | bytes32 | The ECDSA signature r. |
+| s | bytes32 | The ECDSA signature v. |
+
+### Encoding
+The attestation message is encoded and signed according to the [EIP-712 specification](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-712.md) for hashing and signing typed structured data. See the [Smart Contract Architecture]() for more info on how the protocol utilizes said specification.
+
+**TODO** Add link to smart contract architecture section, when available.
+
+### Content IDs
+`messageCID` and `responseCID` are both produced according to the [IPLD CID V1 specification](https://github.com/ipld/cid#cidv1).
+
+It is recommended to use the canonical [CBOR encoding](https://tools.ietf.org/html/rfc7049#section-3.9), and SHA-256 multi-hash.
+
+In producing the `messageCID` the optional `id` field from the JSON-RPC 2.0 specification should be omitted, as well as the optional conditional micropayment in the `readIndex` params list.
 
 ## Indexes
 All read operations require that the caller specify an index. Index data structures efficiently organize the data to support different read access patterns. All indexes are covering indexes, meaning they store values directly rather than pointers.

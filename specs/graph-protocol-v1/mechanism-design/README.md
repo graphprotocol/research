@@ -15,7 +15,7 @@ There are several parameters throughout this mechanism design which are set via 
 Indexing Nodes deposit a `stakingAmount` of Graph Tokens in order to process read requests for a specific dataset, as defined by the `subgraphID`.
 
 For a `stakingAmount` to be considered valid, it must meet the following requirements:
- - `stakingAmount >= minimumStakingAmount` where `minimumStakingAmount` is set via governance.
+ - `stakingAmount >= minStakingAmount` where `minStakingAmount` is set via governance.
  - The `stakingAmount` must be in the set of the top N staking amounts, where N is determined by the `maxIndexers` parameter which is set via governance.
 
 Indexing Nodes who have staked for a dataset, are not limited by the protocol in how many read requests they may process for that dataset. However, it may be assumed that Indexing Nodes with higher deposits will receive more read requests and thus collect more fees, all else being equal, as this represents a greater economic security margin to the end user.
@@ -26,7 +26,7 @@ The work Indexing Nodes perform for the network can be described by a function o
 A `ReadRequest` comprises the following parts:
 - `readOperation`
 - `subgraphID`
-- `blockNumber`
+- `blockHash`
 
 A `ReadResponse` comprises the following parts:
 - `data`

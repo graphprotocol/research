@@ -90,7 +90,7 @@ An Attestation message has the following structure:
 | Field Name  | Field Type | Description |
 | ----------- | ---------- | ----------- |
 |
-| messageCID | bytes    | The content ID of the mess. |
+| requestCID | bytes    | The content ID of the message. |
 | gasUsed     | uint256    | The gas used to process the read operation. |
 | bytes       | uint256    | The size of the response data in bytes. |
 | responseCID | bytes   | The content ID of the response. |
@@ -104,11 +104,11 @@ The attestation message is encoded and signed according to the [EIP-712 specific
 **TODO** Add link to smart contract architecture section, when available.
 
 ### Content IDs
-`messageCID` and `responseCID` are both produced according to the [IPLD CID V1 specification](https://github.com/ipld/cid#cidv1).
+`requestCID` and `responseCID` are both produced according to the [IPLD CID V1 specification](https://github.com/ipld/cid#cidv1).
 
 Content IDs must use the canonical [CBOR encoding](https://tools.ietf.org/html/rfc7049#section-3.9), and SHA-256 multi-hash.
 
-In producing the `messageCID`, the optional `id` field from the JSON-RPC 2.0 specification should be omitted, as well as the optional conditional micropayment in the `readIndex` params list.
+In producing the `requestCID`, the optional `id` field from the JSON-RPC 2.0 specification should be omitted, as well as the optional conditional micropayment in the `readIndex` params list.
 
 ## Indexes
 All read operations require that the caller specify an index. Index data structures efficiently organize the data to support different read access patterns. All indexes are covering indexes, meaning they store values directly rather than pointers.

@@ -89,7 +89,6 @@ An Attestation message has the following structure:
 
 | Field Name  | Field Type | Description |
 | ----------- | ---------- | ----------- |
-|
 | requestCID | bytes    | The content ID of the message. |
 | gasUsed     | uint256    | The gas used to process the read operation. |
 | bytes       | uint256    | The size of the response data in bytes. |

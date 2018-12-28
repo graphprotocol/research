@@ -21,9 +21,9 @@ This specification covers the network architecture, protocol interfaces, algorit
 1. [Mechanism Design](./mechanism-design)
 1. [Payment Channels](./payment-channels)
 1. Smart Contract Architecture
-1. Query Processing
- 1. Read Interface
+1. [Query Processing](./query-processing)
+1. [Read Interface](./read-interface)
 1. Dataset Creation
-  1. Data Modeling
+  1. [Data Modeling](./data-modeling)
   1. [Subgraph Manifest](./subgraph-manifest)
   1. Mappings API

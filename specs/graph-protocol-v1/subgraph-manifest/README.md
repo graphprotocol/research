@@ -1,5 +1,7 @@
 # Subgraph Manifest
 
+**TODO** This file has moved to https://github.com/graphprotocol/graph-node. Please confirm. Datasets references this file with ../subgraph-manifest, so it needs to remain in this repo.
+
 ## Overview
 The Subgraph manifest specifies all the information required to index and query a specific subgraph. It is the entry point to your subgraph, so to speak.
 

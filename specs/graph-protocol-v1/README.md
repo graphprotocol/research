@@ -15,15 +15,24 @@ Graph Protocol falls into a category we refer to as *layer 2 read-scalability* s
 
 This specification covers the network architecture, protocol interfaces, algorithms and economic incentives required to build a network that is robust, performant, cost efficient, and enables a high margin of economic security for queries processed via the network.
 
+## Philosophy
+This spec defines a hybrid network design, in which the core mechanisms are decentralized and run on the blockchain, but some building blocks are still centralized. A future major version of this specification will target full decentralization. This is in keeping with our team's philosophy of shipping early and delivering immediate value, while incrementally decentralizing, as research and the state of external ecosystem dependencies progresses.
+
+See [this slide]() from this [recent research talk](https://www.youtube.com/watch?v=eRnYgXHQnlA&t=586s) for more info on this philosophy.
+
+**TODO** Add link to slide.
+
+## Disclaimer
+This spec defines a protocol that is still being implemented. Until a fully stable reference implementation exists, specification is likely to change in breaking ways.
+
 ## Table of Contents
 
 1. [Architecture Overview](./architecture-overview)
 1. [Mechanism Design](./mechanism-design)
 1. [Payment Channels](./payment-channels)
-1. Smart Contract Architecture
+1. [Datasets](./datasets)
+  - [Data Modeling](./data-modeling)
+  - [Subgraph Manifest](./subgraph-manifest)
+  - [Mappings API](./mappings-api)
 1. [Query Processing](./query-processing)
 1. [Read Interface](./read-interface)
-1. Dataset Creation
-  1. [Data Modeling](./data-modeling)
-  1. [Subgraph Manifest](./subgraph-manifest)
-  1. Mappings API

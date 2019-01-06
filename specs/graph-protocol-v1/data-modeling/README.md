@@ -1,5 +1,5 @@
 # 3 Data Modeling
-The schema of your data source--that is, the entity types, values, and relationships that are available to query--are defined through the [GraphQL Interface Definition Langauge (IDL)] (http://facebook.github.io/graphql/draft/#sec-Type-System).
+The schema of your data source--that is, the entity types, values, and relationships that are available to query--are defined through the [GraphQL Interface Definition Language (IDL)] (http://facebook.github.io/graphql/draft/#sec-Type-System).
 
 ## 3.1 Basics
 

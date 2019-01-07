@@ -1,5 +1,7 @@
 # Subgraph Manifest
 
+**TODO** This is a near identical file (minus the header numbers) to the file in the Graph Node repository in the docs folder. I did not edit the rest of this file because I don't think there should be two files with the same information.
+
 ## Overview
 The Subgraph manifest specifies all the information required to index and query a specific subgraph. It is the entry point to your subgraph, so to speak.
 

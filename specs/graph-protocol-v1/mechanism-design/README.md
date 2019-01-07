@@ -1,7 +1,7 @@
 # Mechanism Design
 
 ## Overview
-The protocol implements a *work token* token model[[1]](#footnotes) in which indexing node operators stake a deposit of tokens for a specific dataset to participate in a data-retrieval marketplace--indexing data and responding to read requests in exchange for micropayments. This deposit is forfeit in the event that the work is not performed correctly or is performed maliciously, as defined in the [slashing conditions](#dispute-resolution).
+The protocol implements a *work token* token model[[1]](#footnotes) in which Indexing Node operators stake a deposit of tokens for a specific dataset to participate in a data-retrieval marketplace--indexing data and responding to read requests in exchange for micropayments. This deposit is forfeit in the event that the work is not performed correctly or is performed maliciously, as defined in the [slashing conditions](#dispute-resolution).
 
 There are secondary mechanisms in the protocol that also require a staking of tokens, such as curation, stake delegation, and name registration, all of which will be expanded upon in their respective sections.
 
@@ -12,16 +12,16 @@ We introduce a native token for the protocol, Graph Tokens, which are the only t
 There are several parameters throughout this mechanism design that are set via a governance process. In the V1 specification, governance will consist of a small committee that enacts changes to the protocol via a multi-sig contract.
 
 ## Staking
-Indexing nodes deposit a `stakingAmount` of Graph Tokens to process read requests for a specific dataset, as defined by the `subgraphID`.
+Indexing Nodes deposit a `stakingAmount` of Graph Tokens to process read requests for a specific dataset, as defined by the `subgraphID`.
 
 For a `stakingAmount` to be considered valid, it must meet the following requirements:
  - `stakingAmount >= minStakingAmount` where `minStakingAmount` is set via governance.
  - The `stakingAmount` must be in the set of the top N staking amounts, where N is determined by the `maxIndexers` parameter that is set via governance.
 
-Indexing nodes that have staked for a dataset are not limited by the protocol in how many read requests they may process for that dataset. However, it may be assumed that indexing nodes with higher deposits will receive more read requests and, thus, collect more fees, if all else is equal, as this represents a greater economic security margin to the end user.
+Indexing Nodes that have staked for a dataset are not limited by the protocol in how many read requests they may process for that dataset. However, it may be assumed that Indexing Nodes with higher deposits will receive more read requests and, thus, collect more fees, if all else is equal, as this represents a greater economic security margin to the end user.
 
 ## Data Retrieval Market
-The work that indexing nodes perform for the network can be described by a function of the type `ReadRequest -> ReadResponse`.
+The work that Indexing Nodes perform for the network can be described by a function of the type `ReadRequest -> ReadResponse`.
 
 A `ReadRequest` comprises the following parts:
 - `readOperation`
@@ -43,28 +43,28 @@ Compute is priced in `ETH/gas` where the `gas` required for a request is determi
 
 Bandwidth is priced in `ETH/bytes` where `bytes` refers to the size of the `data` portion of the response, measured in bytes.
 
-Indexing nodes respond with their compute and bandwidth costs on request. See [Query Processing](https://github.com/graphprotocol/research/tree/zerim/v1-spec-overview/specs/graph-protocol-v1/query-processing).
+Indexing Nodes respond with their compute and bandwidth costs on request. See [Query Processing](https://github.com/graphprotocol/research/tree/zerim/v1-spec-overview/specs/graph-protocol-v1/query-processing).
 
 ## Verification
 
 ### Fisherman
-A Fisherman is an economic agent who verifies read responses in exchange for a reward in cases where they detect that an indexing node has attested to an incorrect response, and the Fisherman successfully disputes the response on-chain.
+A Fisherman is an economic agent who verifies read responses in exchange for a reward in cases where they detect that an Indexing Node has attested to an incorrect response, and the Fisherman successfully disputes the response on-chain.
 
 ### Dispute Resolution
 Dispute resolution is handled through an on-chain dispute resolution process. In future versions of the protocol, this may involve programmatically verifying proofs or using a Truebit-style verification game, but in the V1 specification, the outcome of a dispute will be decided by a centralized arbitrator interacting with the on-chain dispute resolution process.
 
-To dispute a response, a Fisherman must submit the attestation of the response they are disputing as well as a deposit equal to that of the indexing node who produced the response.
+To dispute a response, a Fisherman must submit the attestation of the response they are disputing as well as a deposit equal to that of the Indexing Node who produced the response.
 
-In the event of a successful dispute, the indexing node forfeits the entire deposit of tokens they staked on the dataset for which they produced an incorrect response. The Fisherman, in turn, receives a reward equal to 50% of the slashed deposit.
+In the event of a successful dispute, the Indexing Node forfeits the entire deposit of tokens they staked on the dataset for which they produced an incorrect response. The Fisherman, in turn, receives a reward equal to 50% of the slashed deposit.
 
 In the event of an unsuccessful dispute, the Fisherman forfeits the entire deposit they submitted with their dispute.
 
 ## Market Discovery
 
 ### Market Signals
-Market discovery is the process by which indexing nodes choose which datasets to index and serve data on.
+Market discovery is the process by which Indexing Nodes choose which datasets to index and serve data on.
 
-When the data retrieval market for a particular dataset is active, an indexing node may observe payment activity on-chain to decide if it would be profitable to participate in that market.
+When the data retrieval market for a particular dataset is active, an Indexing Node may observe payment activity on-chain to decide if it would be profitable to participate in that market.
 
 **TODO** How often should micropayment channels be settled so that the signal to the network is adequate?
 
@@ -93,13 +93,13 @@ The participation reward to the entire network is calculated as a function of a 
 
 **TODO** [Decide on actual function for relating `participationRewardRate` to `targetParticipationRate`](https://github.com/graphprotocol/research/issues/70).
 
-To incentivize actual work being provided to the network, not just staking, the participation reward will be distributed to indexing nodes who are staking for datasets with the most economic activity.
+To incentivize actual work being provided to the network, not just staking, the participation reward will be distributed to Indexing Nodes who are staking for datasets with the most economic activity.
 
-Let `participationReward[s[i]]` be the participation reward allotted to indexing node `i` staked on dataset `s`. Let `transactionVolume[s[i]]` be the economic value of all data retrieval fees paid to indexing node `i` for data from dataset `s` over a given inflation period, and `totalTransactionVolume` be the total transaction volume for the entire network over the same period, both measured in ETH. Then, we can define the participation reward as:
+Let `participationReward[s[i]]` be the participation reward allotted to Indexing Node `i` staked on dataset `s`. Let `transactionVolume[s[i]]` be the economic value of all data retrieval fees paid to Indexing Node `i` for data from dataset `s` over a given inflation period, and `totalTransactionVolume` be the total transaction volume for the entire network over the same period, both measured in ETH. Then, we can define the participation reward as:
 
 `participationReward[s[i]] = (transactionVolume[s[i]] / totalTransactionVolume) * participationRewardRate * totalTokenSupply`
 
-**TODO** How to deter indexing nodes from faking data retrieval transactions to claim a greater portion of the participation reward?
+**TODO** How to deter Indexing Nodes from faking data retrieval transactions to claim a greater portion of the participation reward?
 
 ### Curator Inflation Reward
 The `curationRewardRate` is defined as a percentage of the total Graph Token supply and is set via governance. As with the participation reward, it is paid via inflation.
@@ -118,9 +118,9 @@ For a given round `R`, the inflation rewards for that round are made available a
 This provides adequate time for off-chain micropayments to be settled on-chain. This settlement on-chain also provides a [market signal](#market-signals). So, `roundDuration` should be set sufficiently small to provide a good market signal, but sufficiently large to reduce the amount of on-chain transactions required to redeem inflation rewards on an on-going basis.
 
 ## Stake Delegation
-Participation in the protocol is a specialized activity. In the case of Curators, it entails accurately predicting the future value of datasets to the network, while in the case of indexing nodes, it requires operating infrastructure to index and serve data.
+Participation in the protocol is a specialized activity. In the case of Curators, it entails accurately predicting the future value of datasets to the network, while in the case of Indexing Nodes, it requires operating infrastructure to index and serve data.
 
-Token holders who do not feel equipped to perform one of these functions may *delegate* their tokens to an indexing node that is staked for a particular dataset. In this case, the delegator is the residual claimant for their stake, earning participation rewards according to the activities of the delegatee indexing node but also forfeiting their stake in the event that the delagatee indexing node is slashed.
+Token holders who do not feel equipped to perform one of these functions may *delegate* their tokens to an Indexing Node that is staked for a particular dataset. In this case, the delegator is the residual claimant for their stake, earning participation rewards according to the activities of the delegatee Indexing Node but also forfeiting their stake in the event that the delagatee Indexing Node is slashed.
 
 ## Footnotes
 - [1] https://multicoin.capital/2018/02/13/new-models-utility-tokens/

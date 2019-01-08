@@ -9,7 +9,7 @@ There are secondary mechanisms in the protocol that also require a staking of to
 We introduce a native token for the protocol, Graph Tokens, which are the only token that may be used for staking in the network. However, ETH is used for paying for queries, thus reducing friction for end users of dApps that query The Graph. Graph Tokens will have variable inflation to reward specific activities in the network.
 
 ## Governance
-There are several parameters throughout this mechanism design that are set via a governance process. In the V1 specification, governance will consist of a small committee that enacts changes to the protocol via a multi-sig contract.
+There are several parameters throughout this mechanism design that are set via a governance process. In the v1 specification, governance will consist of a small committee that enacts changes to the protocol via a multi-sig contract.
 
 ## Staking
 Indexing Nodes deposit a `stakingAmount` of Graph Tokens to process read requests for a specific dataset, as defined by the `subgraphID`.
@@ -39,19 +39,19 @@ Additionally, a `ReadRequest` is sent alongside a `lockedBalanceTransfer`. This 
 ## Data Retrieval Pricing
 Pricing in the data retrieval market is set according to the bandwidth and compute required to process a request.
 
-Compute is priced in `ETH/gas` where the `gas` required for a request is determined by the specific read operation and parameters. See [Read Interface](https://github.com/graphprotocol/research/tree/zerim/v1-spec-overview/specs/graph-protocol-v1/read-interface).
+Compute is priced in `ETH/gas` where the `gas` required for a request is determined by the specific read operation and parameters. See [Read Interface](../read-interface).
 
 Bandwidth is priced in `ETH/bytes` where `bytes` refers to the size of the `data` portion of the response, measured in bytes.
 
-Indexing Nodes respond with their compute and bandwidth costs on request. See [Query Processing](https://github.com/graphprotocol/research/tree/zerim/v1-spec-overview/specs/graph-protocol-v1/query-processing).
+Indexing Nodes respond with their compute and bandwidth costs on request. See [Query Processing](../query-processing).
 
 ## Verification
 
-### Fisherman
-A Fisherman is an economic agent who verifies read responses in exchange for a reward in cases where they detect that an Indexing Node has attested to an incorrect response, and the Fisherman successfully disputes the response on-chain.
+### Fisherman Service
+A Fisherman Service is an economic agent who verifies read responses in exchange for a reward in cases where they detect that an Indexing Node has attested to an incorrect response, and the Fisherman successfully disputes the response on-chain.
 
 ### Dispute Resolution
-Dispute resolution is handled through an on-chain dispute resolution process. In future versions of the protocol, this may involve programmatically verifying proofs or using a Truebit-style verification game, but in the V1 specification, the outcome of a dispute will be decided by a centralized arbitrator interacting with the on-chain dispute resolution process.
+Dispute resolution is handled through an on-chain dispute resolution process. In future versions of the protocol, this may involve programmatically verifying proofs or using a Truebit-style verification game, but in the v1 specification, the outcome of a dispute will be decided by a centralized arbitrator interacting with the on-chain dispute resolution process.
 
 To dispute a response, a Fisherman must submit the attestation of the response they are disputing as well as a deposit equal to that of the Indexing Node who produced the response.
 
@@ -73,7 +73,7 @@ With little to no activity for a newly created dataset, however, payment activit
 ### Curation Market
 Curators are economic agents who earn rewards by betting on the future economic value of datasets, perhaps with the benefit of private information.
 
-A Curator stakes a deposit of Graph Tokens for a particular dataset in exchange for dataset-specific *subgraph tokens*. These tokens entitle the holder to a portion of a curation reward, which is paid in Graph Tokens through inflation. See [inflation rewards](#inflation-rewards) for how curation reward is calculated for each dataset.
+A Curator stakes a deposit of Graph Tokens for a particular dataset in exchange for dataset-specific *subgraph tokens*. These tokens entitle the holder to a portion of a curation reward, which is paid in Graph Tokens through inflation. See [Inflation Rewards](#inflation-rewards) for how curation reward is calculated for each dataset.
 
 Subgraph tokens are issued according to a bonding curve, making it more expensive to mint subgraph tokens by locking up ETH over time and, thus, more expensive to purchase a share of future curator inflation rewards over time.
 

@@ -1,5 +1,5 @@
 # Data Modeling
-The schema of your data source--that is, the entity types, values, and relationships that are available to query--are defined through the [GraphQL Interface Definition Language (IDL)] (http://facebook.github.io/graphql/draft/#sec-Type-System).
+The schema of your data source--that is, the entity types, values, and relationships that are available to query--are defined through the [GraphQL Interface Definition Language (IDL)](http://facebook.github.io/graphql/draft/#sec-Type-System).
 
 ## Basics
 
@@ -7,7 +7,9 @@ GraphQL requests consist of three basic operations: `query`, `subscription`, and
 
 **Note:** Our API does not expose mutations because developers are expected to issue transactions directly against the underlying blockchain from their applications.
 
-It is typical for developers to define their own root `Query` and `Subscription` types when building a GraphQL API server, but with The Graph, we generate these top level types based on the entities that you define in your schema as well as several other types for exploring blockchain data, which we describe in depth in the [Query API](#Queries).
+It is typical for developers to define their own root `Query` and `Subscription` types when building a GraphQL API server, but with The Graph, we generate these top-level types based on the entities that you define in your schema as well as several other types for exploring blockchain data, which we describe in depth in the [Query API](#Queries).
+
+**TODO** The Query API link does not work. Should it be ../query-processing?
 
 ## Entities
 
@@ -59,7 +61,7 @@ The GraphQL spec defines `Int` and `Float` to have sizes of 32 bytes.
 
 This API additionally includes `BigInt` and `BigFloat` number types to represent arbitrarily large integer or floating point numbers, respectively.
 
-There are also fixed-size number types to represent numbers between 1 and 32 bytes long (the suffix is specified by the number of bits).
+There are also fixed-size number types to represent numbers between 1 and 32 bytes long. The suffix is specified by the number of bits.
 
 Signed integers all share the `Int` prefix: `Int8`, `Int16`, `Int24`, `Int32` (an alias of `Int`) ... `Int240`, `Int248`, and `Int256`.
 
@@ -70,7 +72,7 @@ All number types other than `Int` and `Float`, which are serialized as JSON numb
 Even though the serialization format is the same, having the sizes captured in the type system provides better self-documentation and enables tooling that generates convenient deserializers in statically typed languages.
 
 ## Value Objects
-All types not decorated with the `@entity` decorator are value objects. Value object types may be used as the type of entity attributes but will not have fields generated at the top level `Query` and `Subscription` type and cannot be queried by `ID` because they don't have one.
+All types not decorated with the `@entity` decorator are value objects. Value object types may be used as the type of entity attributes but will not have fields generated at the top-level `Query` and `Subscription` type and cannot be queried by `ID` because they don't have one.
 
 ## Entity Relationships
 An entity may have a relationship to one or more other entities in your schema. These relationships may be traversed in your queries and subscriptions.
@@ -116,7 +118,7 @@ type TokenBalance {
 ```
 
 ### Reverse Lookups
-Defining reverse lookups can be defined on an entity through the `@derivedFrom` field. This creates a "virtual" field on the entity that may be queried but cannot be set manually through the mappings API. Rather, it is derived from the relationship defined on the other entity.
+Reverse lookups can be defined on an entity through the `@derivedFrom` field. This creates a "virtual" field on the entity that may be queried but cannot be set manually through the mappings API. Rather, it is derived from the relationship defined on the other entity.
 
 The type of a `@derivedFrom` field must be a collection since multiple entities may specify relationships to a single entity.
 

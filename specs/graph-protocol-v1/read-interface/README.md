@@ -22,7 +22,7 @@ The method of interest here is `readIndex`, which accepts the following paramete
 2. `Object` (optional) - A conditional micropayment. See [Payment Channels](../payments-channel).
 
 The `readIndex` method returns the following:
-1. `Object`
+3. `Object`
     - `data`: `any` - The data retrieved by the read operation.
     - `attestation`: `Object` - An attestation that `data` is a correct response for the given read operation. See [Attestations](#attestations).
 

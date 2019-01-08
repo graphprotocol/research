@@ -11,7 +11,7 @@
 ## Abstract
 This document presents *Graph Protocol* ("the protocol"), a protocol for indexing public blockchain data and querying this data via a decentralized network. The canonical network implementing the protocol is referred to as *The Graph* ("the network").
 
-Graph Protocol falls into a category we refer to as a *layer 2 read-scalability* solution. Its purpose is to enable decentralized applications (dApps) to query public blockchain data efficiently and trustlessly via a service that, like blockchains and the Internet itself, operates as a public utility. This is in the interest of minimizing the role of brittle centralized infrastructure seen in many "decentralized" application architectures today.
+Graph Protocol falls into a category we refer to as a *layer 2 read-scalability* solution. Its purpose is to enable decentralized applications (dApps) to query public blockchain data efficiently and trustlessly via a service that, like blockchains and the Internet itself, operates as a public utility. This is in the interest of minimizing the role of brittle, centralized infrastructure seen in many "decentralized" application architectures today.
 
 This specification covers the network architecture, protocol interfaces, algorithms, and economic incentives required to build a network that is robust, performant, cost-efficient, and enables a high margin of economic security for queries processed via the network.
 
@@ -28,11 +28,11 @@ This spec defines a protocol that is still being implemented. Until a fully stab
 ## Table of Contents
 
 1. [Architecture Overview](./architecture-overview)
-1. [Mechanism Design](./mechanism-design)
-1. [Payment Channels](./payment-channels)
-1. [Datasets](./datasets)
-  - [Data Modeling](./data-modeling)
-  - [Subgraph Manifest](./subgraph-manifest)
-  - [Mappings API](./mappings-api)
-1. [Query Processing](./query-processing)
-1. [Read Interface](./read-interface)
+2. [Mechanism Design](./mechanism-design)
+3. [Payment Channels](./payment-channels)
+4. [Datasets](./datasets)
+    - [Data Modeling](./data-modeling)
+    - [Subgraph Manifest](./subgraph-manifest)
+    - [Mappings API](./mappings-api)
+5. [Query Processing](./query-processing)
+6. [Read Interface](./read-interface)

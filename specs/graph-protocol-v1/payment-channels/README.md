@@ -4,8 +4,8 @@
 The protocol adopts payment channels as a construction for facilitating micropayments that are paid to Indexing Nodes in exchange for reading from indexes.
 
 The protocol's payment channel architecture follows the [Raiden Network Specification](https://github.com/raiden-network/spec) with a few notable differences:
-1. The Graph V1 implements a hub-and-spoke topology that dramatically simplifies payment routing compared to a fully distributed network topology.
-1. The Graph V1 introduces a new concept, *minting channels*, to get around prohibitively large balance requirements for the payment channel hub.
+1. The Graph v1 implements a hub-and-spoke topology that dramatically simplifies payment routing compared to a fully distributed network topology.
+1. The Graph v1 introduces a new concept, *minting channels*, to get around prohibitively large balance requirements for the payment channel hub.
 1. The Graph uses an alternate locking mechanism for mediated payments that is tailored to the domain of reading data from indexes.
 1. Payment channels are one-way and may be withdrawn from and deposited into on a continuing basis. See [Payment Channel](#payment-channel).
 
@@ -89,7 +89,7 @@ Traditional mediated transfers via payment channels use a hash timelock in which
 | Field Name | Field Type | Description |
 | ---------- | ---------- | ----------- |
 | expiration | uint256    | The block until when the locked transfer may be settled on-chain.
-| gasPrice | uint256 | Amount of tokens locked.|
+| gasPrice | uint256 | Number of tokens locked.|
 | bytesPrice | uint256 | The price to pay per byte served.|
 | maxAmount | uint256 | The maximum amount of tokens to be paid. |
 | requestCID | bytes | The content ID of the request to which the Indexing Node must respond with a valid attestation to unlock the payment. |

@@ -1,11 +1,9 @@
 # Mappings API
 
 ## Overview
-Mappings define how data is extracted or ingested from one or more data sources, transformed, and then loaded in a format that follows a specific data model. At their core, mappings are simply WASM Modules, and the mappings API is a set of host external functions that are injected into the WASM runtime and implement a specific interface. These function interfaces are in-protocol.
+Mappings define how data is extracted or ingested from one or more data sources, transformed, and then loaded in a format that follows a specific data model. At their core, mappings are simply WASM modules, and the mappings API is a set of host external functions that are injected into the WASM runtime and implement a specific interface. These function interfaces are in-protocol.
 
 Additionally, extra-protocol APIs may be defined in userspace, which implement an API in a higher-level language that compiles to WASM. The Graph Protocol team created one such API, which is included here as a reference example.
-
-**TODO** I don't see that an example is included. Are you talking about the bottom portion of this document?
 
 ## WASM API
 The Mappings API can be split into two portions, the *ingest* or *extract* API and the *store* API (how data is loaded). We present an ingest API tailored to event-sourcing Ethereum smart contract data, but future versions of the protocol will enable ingest APIs specific to other decentralized data sources. The *store API* will not need to change to support new data sources.
@@ -14,7 +12,7 @@ The Mappings API can be split into two portions, the *ingest* or *extract* API a
 
 ### Ingest
 #### Ethereum
-Data is ingested from Ethereum by event-sourcing Solidity events, as well as other triggers, defined in the subgraph manifest. The WASM module referenced in a subgraph manifest is expected to have handlers that correspond to the handlers defined in the subgraph manifest ([Subgraph Manifest](../subgraph-manifest)).
+Data is ingested from Ethereum by event-sourcing Solidity events, as well as other triggers, defined in the subgraph manifest. The WASM module referenced in the subgraph manifest is expected to have handlers that correspond to the handlers defined in the [subgraph manifest](../subgraph-manifest).
 
 See this [reference implementation](https://github.com/graphprotocol/graph-node/blob/master/runtime/wasm/src/host.rs) for how these handlers should be called.
 
@@ -109,7 +107,6 @@ See this [reference](https://github.com/graphprotocol/graph-ts/blob/master/index
 - `json.toBigInt`
 - `typeConversion.bytesToString`
 - `typeConversion.bytesToHex`
-- `typeConversion.bigIntToString`
 - `typeConversion.bigIntToString`
 - `typeConversion.stringToH160`
 - `typeConversion.i32ToBigInt`

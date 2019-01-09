@@ -9,7 +9,7 @@ Notably, the protocol only defines the *read interface* to the Indexing Nodes, w
 
 Some Query Node implementations may provide an SQL interface, while others may provide a GraphQL interface. Query Nodes may implement different heuristics for balancing the requirements of price, performance, and economic security or make these algorithms pluggable. Indeed, some users may choose to forgo the Query Node altogether and directly consume the lower-level read interface exposed by the Indexing Nodes.
 
-While this last case is certainly possible, we present the architecture and high-level algorithms for consuming the data indexed by The Graph via a distributed query engine, as that is the intended usage pattern of the protocol.
+While this last case is certainly possible, we present the architecture and high-level algorithms for consuming the data indexed by The Graph via a distributed query engine because that is the intended usage pattern of the protocol.
 
 The specification will omit detailed steps in the algorithms that are left to implementers. However, The Graph team will implement a reference Query Node/Client that provides a concrete example of how these algorithms might be implemented in order to provide a GraphQL interface to The Graph.
 
@@ -48,7 +48,7 @@ Query plans may optionally be optimized based on a variety of heuristics and alg
 Processing a query plan, or processing a query directly, results in low-level read operations being made to Indexing Nodes. Each read operation corresponds to a specific dataset and, thus, needs to be made against an Indexing Node for that dataset. In the Service Discovery step, the Query Node locates Indexing Nodes for a specific dataset as well as important metadata that is useful in deciding which Indexing Node to issue read operations to, such as price, performance, and economic security margin.
 
 #### Locating Indexing Nodes
-To locate Indexing Nodes with data for a specific dataset, the Query Node makes several calls to the service discovery layer, which is implemented as several smart contracts on the Ethereum mainnet (see Smart Contract Architecture):
+To locate Indexing Nodes with data for a specific dataset, the Query Node makes several calls to the service discovery layer, which is implemented as several smart contracts on the Ethereum mainnet. See Smart Contract Architecture.
 
  **TODO** Add link to Smart Contract Architecture
 
@@ -72,19 +72,19 @@ In the Service Selection stage, Query Nodes choose which Indexing Nodes to trans
 
 A naive algorithm for service selection could look like the following:
 1. Filter Indexing Nodes where `economicSecurityMargin < minEconomicSecurityMargin`.
-    - If no Indexing Nodes remain, return an error to the sender of the Query for this piece of data, and specify the reason.
+    - If no Indexing Nodes remain, return an error to the sender of the query for this piece of data, and specify the reason.
 2. Filter Indexing Nodes where `latency < minLatency`.
-    - If no Indexing Nodes remain, increase `minLatency` by 33%, and repeat step.
+    - If no Indexing Nodes remain, increase `minLatency` by 33%, and repeat the step.
 3. Estimate the cost of the read operation for each remaining Index.
     - Assume 80% of the maximum possible entities returnable by the query will be returned.
     - Assume 25% of the max field size (in bytes) for each entity field with variable size.
     - Calculate the bandwidth and gas costs based on the above assumptions and the gas costs specified in the [Read Interface](../read-interface).
 4. Choose the Indexing Node with the lowest estimated cost for the read operation.
 
-In this example algorithm, `minLatency` and `minEconomicSecurityMargin` could be set per dataset, or for all dataset. Additionally it could be set by the Query Node or sent as metadata with an individual query.
+In this example algorithm, `minLatency` and `minEconomicSecurityMargin` could be set per dataset or for all datasets. Additionally, it could be set by the Query Node or sent as metadata with an individual query.
 
 ### Processing and Payment
-Individual read operations are made against Indexing Nodes via the Read Interface. They are accompanied by conditional micropayments as described in the [Payment Channels](../payment-channels) section of the specification.
+Individual read operations are made against Indexing Nodes via the [Read Interface](../read-interface). They are accompanied by conditional micropayments as described in the [Payment Channels](../payment-channels) section of the specification.
 
 ### Response Collation
 Once all read operations have been processed, the resulting data must be collated into a response that fulfills the read schema of the query interface provided by the Query Node. This response is then returned to the sender of the query.

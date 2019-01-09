@@ -1,16 +1,14 @@
 # Read Interface
 
 ## Overview
-To participate in the data-retrieval market, Indexing Nodes implement a low-level read interface to the indexed data in their store. The read interface not only provides the means of retrieving data from an Indexing Node, but it defines a contract that an Indexing Node is agreeing to uphold or else be slashed. This is enabled by attestations, which assert that a response was produced correctly and may be verified on-chain.
+To participate in the data retrieval market, Indexing Nodes implement a low-level read interface to the indexed data in their store. The read interface not only provides the means of retrieving data from an Indexing Node, but it also defines a contract that an Indexing Node is agreeing to uphold or else be slashed. This is enabled by attestations, which assert that a response was produced correctly and may be verified on-chain.
 
 ### Calling Read Operations
 Available read operations are defined by the respective interface of the index being read from. See [Index Abstract Data Structures](#index-abstract-data-structures) and [Index Types](#index-types) for more information.
 
 While the read interfaces are described using a TypeScript notation, all the interfaces are language agnostic and defined in terms of JSON types.
 
-Calling these read operations is done via JSON RPC 2.0[[1]](#footnotes). (See the full JSON RPC API)
-
-**TODO** Add link to full JSON RPC API when available
+Calling these read operations is done via JSON RPC 2.0[[1]](#footnotes). See the full [JSON RPC API](../rpc-api).
 
 The method of interest here is `readIndex`, which accepts the following parameters:
 1. `Object`
@@ -19,10 +17,10 @@ The method of interest here is `readIndex`, which accepts the following paramete
     - `index`: `Object` - The [IndexRecord](#indexes) of the index being read from.
     - `op`: `String` - The name of the read operation.
     - `params`: `[any]` - The parameters passed into the called read operation.
-2. `Object` (optional) - A conditional micropayment. See [Payment Channels](../payments-channel).
+2. `Object` (optional) - A conditional micropayment. See [Payment Channels](../payment-channel).
 
 The `readIndex` method returns the following:
-3. `Object`
+1. `Object`
     - `data`: `any` - The data retrieved by the read operation.
     - `attestation`: `Object` - An attestation that `data` is a correct response for the given read operation. See [Attestations](#attestations).
 
@@ -97,7 +95,7 @@ An attestation message has the following structure:
 | r | bytes32 | The ECDSA signature r. |
 | s | bytes32 | The ECDSA signature v. |
 
-**Question** Should "s" be ECDSA signature s.? Is v also correct with ECDSA recovery ID?
+**TODO** Should "s" be ECDSA signature s instead of v? Is v also correct with ECDSA recovery ID?
 
 ### Encoding
 The attestation message is encoded and signed according to the [EIP-712 specification](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-712.md) for hashing and signing typed structured data. See the [Smart Contract Architecture]() for more info on how the protocol utilizes said specification.
@@ -105,7 +103,7 @@ The attestation message is encoded and signed according to the [EIP-712 specific
 **TODO** Add link to smart contract architecture section, when available.
 
 ### Content IDs
-`requestCID` and `responseCID` are both produced according to the [IPLD CID V1 specification](https://github.com/ipld/cid#cidv1).
+`requestCID` and `responseCID` are both produced according to the [IPLD CID v1 specification](https://github.com/ipld/cid#cidv1).
 
 Content IDs must use the canonical [CBOR encoding](https://tools.ietf.org/html/rfc7049#section-3.9) and SHA-256 multi-hash.
 
@@ -123,14 +121,15 @@ interface IndexRecord {
   indexType: String;
   // Parameters specific to the type of index specified (optional).
   indexParams?: {
-    // An identifier for the partition of data that the index will cover. Available partitions determined by the database model of the index (optional).
+    // An identifier for the partition of data that the index will cover.
+    // Available partitions determined by the database model of the index (optional).
     partition?: String;
     // Parameters that are specific to the type of index specified (optional).
     params?: [String];
   };
 }
 ```
-###### Example Index Records
+##### Example - Index Records
 
 Given a dataset with the following data model:
 ```graphql
@@ -185,13 +184,13 @@ The concrete types (i.e., `K` and `V` shown below), as well as the implicit comp
 | --- | ------------------- | ------------ | -------- |
 | find | `(predicate: FilterPredicate, options?: { gte?: K, lt?: K } ) => V` | Retrieves the first value for which the `FilterPredicate` returns true, searching in ascending order. If specified, only take values whose sort keys are between the range parameters `gte` (inclusive) and `lt` (exclusive). | `(opCostSearchTreeStep opCostFilterPredicate) * N` where `N` is the number of iterations taken to find the value, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided. |
 | findLast | `(predicate: FilterPredicate, options?: { gt?: K, lte?: K } ) => V` | Retrieves the first value for which the `FilterPredicate` returns true, searching in descending order. If specified, only take values whose sort keys are between the range parameters `gt` (exclusive) and `lte` (inclusive). |  `(opCostSearchTreeStep opCostFilterPredicate) * N` where `N` is the number of iterations taken to find the value, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided. |
-| get | `(key: K) => V` | Retrieves a value by its sort key. If multiple values share the same sort key, it will retrieve the first value inserted with the sort key. | `opCostSearchTreeGetPerH * H` where `H` is the height of a binary search tree and `opCostSearchTreeGetPerH` is set via governance. |
+| get | `(key: K) => V` | Retrieves a value by its sort key. If multiple values share the same sort key, it will retrieve the first value inserted with the sort key. | `opCostSearchTreeGetPerH * H` where `H` is the height of a binary search tree, and `opCostSearchTreeGetPerH` is set via governance. |
 | take | `(count: Number, options?: { skip?: Number, gte?: K, lt?: K}) => [V]` | Retrieves the first N values, specified by `count`, from the index in ascending order, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gte` (inclusive) and `lt` (exclusive).| `opCostSearchTreeStep * N` where `N` is the number of iterations taken including skipped values. |
-| takeUntil | `(predicate: FilterPredicate, options?:{ skip?: Number, gte?: K, lt?: K}) => [V]` | Retrieves values from the index in ascending order until `FilterPredicate` returns false, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gte` (inclusive) and `lt` (exclusive). | `(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S` where `N` is the number of iterations taken not including skipped values, and `S` is the number of values skipped over, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided.  |
-| takeWhile | `(predicate: FilterPredicate, options?:{ skip?: Number, gte?: K, lt?: K}) => [V]` | Retrieves values from the index in ascending order, while `FilterPredicate` returns true, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gte` (inclusive) and `lt` (exclusive). | `(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S` where `N` is the number of iterations taken not including skipped values, and `S` is the number of values skipped over, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided. |
+| takeUntil | `(predicate: FilterPredicate, options?:{ skip?: Number, gte?: K, lt?: K}) => [V]` | Retrieves values from the index in ascending order until `FilterPredicate` returns false, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gte` (inclusive) and `lt` (exclusive). | `(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S` where `N` is the number of iterations taken not including skipped values, `S` is the number of values skipped over, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided.  |
+| takeWhile | `(predicate: FilterPredicate, options?:{ skip?: Number, gte?: K, lt?: K}) => [V]` | Retrieves values from the index in ascending order, while `FilterPredicate` returns true, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gte` (inclusive) and `lt` (exclusive). | `(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S` where `N` is the number of iterations taken not including skipped values, `S` is the number of values skipped over, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided. |
 | takeLast | `(count: Number, options?: { skip?: Number, gt?: K, lte?: K })` | Retrieves the last N values, specified by `count`, from the index in descending order, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gt` (exclusive) and `lte` (inclusive). | `opCostSearchTreeStep * N` where `N` is the number of iterations taken including skipped values.  |
-| takeLastUntil | `(predicate: FilterPredicate, options?:{ skip?: Number, gt?: K, lte?: K}) => [V]` | Retrieves values from the index in descending order, until `FilterPredicate` returns false, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gt` (exclusive) and `lte` (inclusive). | `(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S` where `N` is the number of iterations taken not including skipped values, and `S` is the number of values skipped over, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided. |
-| takeLastWhile | `(predicate: FilterPredicate, options?:{ skip?: Number, gt?: K, lte?: K}) => [V]` | Retrieves values from the index in descending order, while `FilterPredicate` returns true, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gt` (exclusive) and `lte` (inclusive). | `(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S` where `N` is the number of iterations taken not including skipped values, and `S` is the number of values skipped over, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided. |
+| takeLastUntil | `(predicate: FilterPredicate, options?:{ skip?: Number, gt?: K, lte?: K}) => [V]` | Retrieves values from the index in descending order, until `FilterPredicate` returns false, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gt` (exclusive) and `lte` (inclusive). | `(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S` where `N` is the number of iterations taken not including skipped values, `S` is the number of values skipped over, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided. |
+| takeLastWhile | `(predicate: FilterPredicate, options?:{ skip?: Number, gt?: K, lte?: K}) => [V]` | Retrieves values from the index in descending order, while `FilterPredicate` returns true, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gt` (exclusive) and `lte` (inclusive). | `(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S` where `N` is the number of iterations taken not including skipped values, `S` is the number of values skipped over, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided. |
 
 ### Filter Predicates
 Filter predicates allow for declaratively asserting whether a value meets certain criteria. Filter predicates are expressed as objects that can be passed into several low-level index read operations, such as `takeWhile` and `find`.
@@ -200,14 +199,14 @@ Filter predicates allow for declaratively asserting whether a value meets certai
 
 Filter predicates are expressed through a simple DSL:
 ```typescript
-type FilterPredicate = FilterPredicateLeaf | FilterPredicateAnd | FilterPredicateOr
-
-interface FilterPredicateOr {
-  or: [FilterPredicate];
-}
+type FilterPredicate = FilterPredicateAnd | FilterPredicateOr | FilterPredicateLeaf
 
 interface FilterPredicateAnd {
   and: [FilterPredicate];
+}
+
+interface FilterPredicateOr {
+  or: [FilterPredicate];
 }
 
 type FilterPredicateLeaf = StringFilter | NumberFilter | BooleanFilter
@@ -272,14 +271,14 @@ interface BooleanFilter extends BaseFilter {
 }
 ```
 
-###### Example - Simple Value Filter Predicate
+##### Example - Simple Value Filter Predicate
 ```js
 {
   equals: 12
 }
 ```
 
-###### Example - Object Filter Predicate
+##### Example - Object Filter Predicate
 ```js
 {
   field: "fullName",
@@ -287,7 +286,7 @@ interface BooleanFilter extends BaseFilter {
 }
 ```
 
-###### Example - Filter Predicate with Boolean Operators and Nested Fields
+##### Example - Filter Predicate with Boolean Operators and Nested Fields
 ```js
 {
  and: [
@@ -310,30 +309,30 @@ The clauses in the filter predicate DSL can be grouped into several buckets of o
 | --------- | ----------- | -------- |
 | Number Comparison | Includes `lt`, `lte`, `gt`, `gte`, `equals`, and `notEquals` clauses on Number types. | `opCostBitCompare * N ` where `N` is the number of bits compared in order to complete the operation, and `opCostBitCompare` is set via governance. |
 | String Comparison | Includes `lt`, `lte`, `gt`, `gte`, `startsWith`, `notStartsWith`, `endsWith`, `notEndsWith`, `equals`, and `notEquals` clauses on String types. | `opCostCharCompare * N ` where `N` is the number of characters compared in order to complete the operation, and `opCostCharCompare` is set via governance. |
-| Bit Comparison | Includes `equals` and `notEquals` clauses on Boolean types. Also used for combining two filter predicate clauses via Boolean operators `or` and `and` (including the implicit `and` described above). | `opCostBitCompare` where `opCostBitCompare` is set via governance. |
+| Bit Comparison | Includes `equals` and `notEquals` clauses on Boolean types. Also used for combining two filter predicate clauses via the Boolean operators `or` and `and` (including the implicit `and` described above). | `opCostBitCompare` where `opCostBitCompare` is set via governance. |
 | String Match | Used for `contains` and `notContains` clauses on String types. | `opCostStringSearch * (M + N)` where `N` is the number of characters in the pattern being matched, and `M` is the number of characters in the string being searched. `opCostStringSearch` is set via governance. |
 
 
 ### Database Models
 The semantics of reading from an Indexing Node are determined by the database model that the index being read from implements, such as [key-value (KV)](https://en.wikipedia.org/wiki/Key-value_database), [entity-attribute-value (EAV)](https://en.wikipedia.org/wiki/Entity%E2%80%93attribute%E2%80%93value_model), and the [relational model](https://en.wikipedia.org/wiki/Relational_model). Index types are prefixed with a short label indicating the database model the index implements:
 - `kv_` - The index is based on a key-value database model.
-- `rdb_` -  The index is based on a relational database model.
 - `eav_` -  The index is based on an entity-attribute-value database model.
+- `rdb_` -  The index is based on a relational database model.
 
 The database model also defines the available partitions and index types for use in read operations.
 
-In the V1 protocol, we only support the KV database model.
+In the v1 protocol, we only support the KV database model.
 
 #### Key-Value Entity Database Model
 In the protocol's key-value database model, entities are stored as key-value pairs, where the key is a concatenation of the entity type and the entity ID, and the value is an entity object. Indexes that implement this database model start with `kv` in their `indexType`.
 
-##### Example entities stored as key-value pairs
+##### Example - Entities Stored as Key-Value Pairs
 | Key | Value |
 | --- | ----- |
 | `user:1` | `{ user: "Alice", age: 17 }` |
 | `user:2` | `{ user: "Bob", age: 47 }` |
 
-##### Partitions
+#### Partitions
 Partitions define the subset of the data that is covered by the index.
 
 Possible values of `<partition>` in the index name:
@@ -362,7 +361,7 @@ This index supports iterating through entities, ordered by possibly nested attri
 - `indexType` - `kv_sortByAttribute`
 - `indexParams.params`
    - primaryAttribute - The first attribute to sort by, expressed as a `String`, using `.` to indicate nested attributes (i.e., `"name.first"`).
-   - secondaryAttribute -  The second attribute to sort by, expressed as a `String`, using `.` to indicate nested attributes (i.e., `"name.first"`).
+   - secondaryAttribute -  The second attribute to sort by, expressed as a `String`, using `.` to indicate nested attributes (i.e., `"name.last"`).
 
 ## Footnotes
 - [1] https://www.jsonrpc.org/specification

@@ -18,7 +18,7 @@ This specification covers the network architecture, protocol interfaces, algorit
 ## Philosophy
 This spec defines a hybrid network design in which the core mechanisms are decentralized and run on the blockchain, but some building blocks are still centralized. A future version of this specification will target full decentralization. This is in keeping with our team's philosophy of shipping early and delivering immediate value, while incrementally decentralizing, as research and the state of external ecosystem dependencies progress.
 
-See [this slide](https://www.slideshare.net/secret/AnB7pWnqZhiW2d/17) from this [recent research talk](https://www.youtube.com/watch?v=eRnYgXHQnlA&t=586s) for more info on this philosophy.
+See [this slide](https://www.slideshare.net/secret/AnB7pWnqZhiW2d/17) from this [recent research talk](https://www.youtube.com/watch?v=eRnYgXHQnlA&t=586s) for more info on this approach.
 
 ## Disclaimer
 This spec defines a protocol that is still being implemented. Until a fully stable reference implementation exists, the specification is likely to change in breaking ways.

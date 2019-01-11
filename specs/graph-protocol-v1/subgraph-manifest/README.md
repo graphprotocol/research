@@ -5,7 +5,7 @@
 ## Overview
 The Subgraph manifest specifies all the information required to index and query a specific subgraph. It is the entry point to your subgraph, so to speak.
 
-The subgraph manifest, and all the files linked from it, are what is deployed to IPFS, and hashed to produce a subgraph ID that can be referenced and used to retrieve your subgraph in The Graph.
+The subgraph manifest, and all the files linked from it, are what is deployed to IPFS, and hashed to produce a subgraph ID that can be referenced on Ethereum and used to retrieve your subgraph in The Graph.
 
 ## Format
 Any data format which has a well-defined 1:1 mapping with [IPLD Canonical Format](https://github.com/ipld/specs/blob/master/IPLD.md#serialized-data-formats) may be used to define a subgraph manifest. This includes YAML and JSON. Examples in this document will be provided in YAML.

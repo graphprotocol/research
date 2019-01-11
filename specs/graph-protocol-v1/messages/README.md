@@ -3,11 +3,11 @@
 ## Off-Chain Messages
 
 ### Encoding
-Off-chain messages are encoded using [JSON](json.org), a light-weight data interchange format, and the mostly commonly used format for exchanging data on the web.
+Off-chain messages are encoded using JSON[<sup>1</sup>](#footnotes), a light-weight data interchange format, and the mostly commonly used format for exchanging data on the web.
 
-Off-chain messages may be referenced in an on-chain message via a Content ID (CID). These are produced according to the [IPLD CID V1 specification](https://github.com/ipld/cid#cidv1).
+Off-chain messages may be referenced in an on-chain message via a Content ID (CID). These are produced according to the IPLD CID V1 specification[<sup>2</sup>](#footnotes).
 
-CIDs must use the canonical [CBOR encoding](https://tools.ietf.org/html/rfc7049#section-3.9), and SHA-256 multi-hash.
+CIDs must use the canonical CBOR encoding[<sup>3</sup>](#footnotes), and SHA-256 multi-hash.
 
 In producing CIDs for JSON RPC messages, the optional `id` field from the JSON-RPC 2.0 specification should be omitted, as well as the optional conditional micropayment in the `readIndex` params list.
 
@@ -35,7 +35,7 @@ In producing CIDs for JSON RPC messages, the optional `id` field from the JSON-R
 | partition | String | The name of the entity or interface which should be covered by the index. |  
 | params | Array<String> | Parameters specific to the type of index. |
 
-#### Read Responses
+#### Read Response
 
 ##### Fields
 There are several possible types for a read response:
@@ -91,12 +91,12 @@ A price listing advertising an Indexing Nodes asking price for computation and b
 ## On-Chain Messages
 
 ### Encoding
-Unsigned messages are encoded according to the [ABIv2 specification](https://solidity.readthedocs.io/en/develop/abi-spec.html), while signed messages are encoded according to [EIP 712 specification](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-712.md).
+Unsigned messages are encoded according to the ABIv2 specification[<sup>4</sup>](#footnotes), while signed messages are encoded according to [EIP 712 specification[<sup>5</sup>](#footnotes).
 
 Signed message formats are accompanied by a typed structured data definition, which can be used to compute the type, the type hash, and the data of a message according to the EIP 712 specification. Types are written as Solidity code, but are intended to be compatible with any language that compiles to EVM bytecode.
 
 #### EIP 712 Domain Separator
-The EIP 712 specification requires defining a [domain separator](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-712.md#definition-of-domainseparator) to disambiguate signed messages intended for different chains, different protocols, or different versions of the same protocol.
+The EIP 712 specification requires defining a domain separator to disambiguate signed messages intended for different chains, different protocols, or different versions of the same protocol.
 
 The domain separator for the protocol has the following chain-agnostic parameters:
  - **name** - 'graphprotocol'
@@ -181,3 +181,10 @@ struct BalanceProof {
 | maxBytes | uint256 | The maximum amount of bytes to be sent over the wire |
 | maxTokens | uint256 | The maximum amount of tokens to be paid. |
 | requestCID | bytes | The content ID of the read operation to which the Indexing Node must respond with a valid attestation, in order to unlock the payment. |
+
+## Footnotes
+- [1] http://json.org
+- [2] https://github.com/ipld/cid#cidv1
+- [3] https://tools.ietf.org/html/rfc7049#section-3.9
+- [4] https://solidity.readthedocs.io/en/develop/abi-spec.html
+- [5] https://github.com/ethereum/EIPs/blob/master/EIPS/eip-712.md

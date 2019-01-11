@@ -1,12 +1,12 @@
 # JSON RPC API
 
-This API uses [JSON RPC 2.0](https://www.jsonrpc.org/specification), a light-weight, transport agnostic RPC protocol.
+This API uses  JSON RPC 2.0[<sup>1</sup>](#footnotes), a light-weight, transport agnostic RPC protocol.
 
 ## Methods
 
 - getPrices
 - ping
-- readIndex
+- callReadOp
 
 ## Reference
 
@@ -68,7 +68,7 @@ None
 }
 ```
 
-### readIndex
+### callReadOp
 Calls a low-level read operation on a database index.
 
 #### Parameters
@@ -79,7 +79,6 @@ Calls a low-level read operation on a database index.
  - `index`: `Object` - The [IndexRecord](#indexes) of the index being read from.
  - `op`: `String` - The name of the read operation.
  - `params`: `[any]` - The parameters passed into the called read operation.
-1. `Object` (optional) - A conditional micropayment (see Payment Channels).
 
 #### Returns
 Returns one of the following message types:
@@ -88,19 +87,19 @@ Returns one of the following message types:
 `Object`
  - `type`: `String` - The constant "READ_RESULT"
  - `data`: `any` - The data retrieved by the read operation, if any.
- - `attestation`: Object - An attestation that `data` and `type` is a correct response for the given read operation (see [Attestations](#attestations)).
+ - `attestation`: Object - An attestation that `data` and `type` is a correct response for the given read operation (see [Attestation](#attestation)).
 
-##### Out of Gas
+##### Not Enough Gas
 Indicates that that the gas limit was consumed without completing the computation. Payment will still be made to the Indexing Node for computation performed. No data is returned.
 `Object`
  - `type`: `String` - The constant "NOT_ENOUGH_GAS"
- - `attestation`: Object - An attestation that `type` is a correct response for the given read operation (see [Attestations](#attestations)).
+ - `attestation`: Object - An attestation that `type` is a correct response for the given read operation (see [Attestation](#attestation)).
 
 ##### Not Enough Bandwidth
 Indicates that that the bandwidth limit is insufficient to cover the response size. Payment will still be made to the Indexing Node for computation performed (but not for bandwidth). No data is returned.
 `Object`
  - `type`: `String` - The constant "NOT_ENOUGH_BANDWIDTH"
- - `attestation`: Object - An attestation that `type` is a correct response for the given read operation (see [Attestations](#attestations)).
+ - `attestation`: Object - An attestation that `type` is a correct response for the given read operation (see [Attestation](#attestation)).
 
 ##### Insufficient Funds
 Indicates that that there are insufficient funds in the payment channel to cover the maximum amount of tokens that may be spent completing the read operation.
@@ -129,7 +128,7 @@ Indicates that the Indexing Nodes expects a conditional micropayment to be inclu
 ```js
 // request
 {
-  "method": "readIndex",
+  "method": "callReadOp",
   "params": [
     {
       "blockHash": "xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1",
@@ -158,7 +157,7 @@ Indicates that the Indexing Nodes expects a conditional micropayment to be inclu
 ```js
 // request
 {
-  "method": "readIndex",
+  "method": "callReadOp",
   "params": [
     {
       "blockHash": "xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1",
@@ -178,3 +177,6 @@ Indicates that the Indexing Nodes expects a conditional micropayment to be inclu
   "attestation": 0x0122340
 }
 ```
+
+## Footnotes
+- [1] https://www.jsonrpc.org/specification

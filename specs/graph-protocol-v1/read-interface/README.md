@@ -3,28 +3,26 @@
 ## Overview
 To participate in the data retrieval market, Indexing Nodes implement a low-level read interface to the indexed data in their store. The read interface not only provides the means of retrieving data from an Indexing Node, but it also defines a contract that an Indexing Node is agreeing to uphold or else be slashed. This is enabled by attestations, which assert that a response was produced correctly and may be verified on-chain.
 
-### Calling Read Operations
+## Calling Read Operations
 Available read operations are defined by the respective interface of the index being read from. See [Index Abstract Data Structures](#index-abstract-data-structures) and [Index Types](#index-types) for more information.
 
 While the read interfaces are described using a TypeScript notation, all the interfaces are language agnostic and defined in terms of JSON types.
 
 Calling these read operations is done via JSON RPC 2.0[[1]](#footnotes). See the full [JSON RPC API](../rpc-api).
 
-The method of interest here is `readIndex`, which accepts the following parameters:
+
+The method of interest here is `callReadOp` which accepts the following parameters:
 1. `Object`
-    - `blockHash`: `String` - The hash of the Ethereum block of which to read the data.
-    - `subgraphID`: `String` - The ID of the subgraph to read from.
-    - `index`: `Object` - The [IndexRecord](#indexes) of the index being read from.
-    - `op`: `String` - The name of the read operation.
-    - `params`: `[any]` - The parameters passed into the called read operation.
-2. `Object` (optional) - A conditional micropayment. See [Payment Channels](../payment-channel).
+ - `blockHash`: `String` - The hash of the Ethereum block from which to read the data.
+ - `subgraphID`: `String` - The ID of the subgraph to read from.
+ - `index`: `Object` - The [IndexRecord](#indexes) of the index being read from.
+ - `op`: `String` - The name of the read operation.
+ - `params`: `[any]` - The parameters passed into the called read operation.
 
 The `readIndex` method returns the following:
 1. `Object`
-    - `data`: `any` - The data retrieved by the read operation.
-    - `attestation`: `Object` - An attestation that `data` is a correct response for the given read operation. See [Attestations](#attestations).
-
-##### Example - Entity exists
+ - `data`: `any` - The data retrieved by the read operation.
+ - `attestation`: Object - An attestation that `data` is a correct response for the given read operation (see [Attestation](#attestation)).
 
 ```js
 // request
@@ -162,7 +160,7 @@ Then, the following would be valid index names for that dataset:
 | `{ indexType: "kv", partition: "User" }`  | A basic key-value index supporting constant-time lookup of `User` entities. |
 | `{ indexType: "kv_sortById" }` | A sorted key-value index supporting iteration through all entities, sorted by ID. |
 | `{ indexType: "kv_sortByAttribute", indexParams: { partition: "EthereumAccount", params: ["address"] }}` |  A sorted key-value index supporting iteration through all entities implementing the `EthereumAccount` interface, sorted by the `address` field. |
-| `kv:User:sortByField:name.first` `{ indexType: "kv_sortByAttribute", indexParams: { partition: "User", params: ["name.first", "name.last"]}}` | A sorted key-value index supporting iteration through all `User` entities, first sorted by the nested field `name.first` then by the nested field `name.last` (i.e., a compound index). |
+| `{ indexType: "kv_sortByAttribute", indexParams: { partition: "User", params: ["name.first", "name.last"]}}` | A sorted key-value index supporting iteration through all `User` entities, first sorted by the nested field `name.first` then by the nested field `name.last` (i.e., a compound index). |
 
 ### Index Abstract Data Structures
 

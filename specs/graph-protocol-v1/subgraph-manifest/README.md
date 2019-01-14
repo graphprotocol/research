@@ -8,7 +8,7 @@ The Subgraph manifest specifies all the information required to index and query 
 The subgraph manifest, and all the files linked from it, are what is deployed to IPFS, and hashed to produce a subgraph ID that can be referenced on Ethereum and used to retrieve your subgraph in The Graph.
 
 ## Format
-Any data format which has a well-defined 1:1 mapping with [IPLD Canonical Format](https://github.com/ipld/specs/blob/master/IPLD.md#serialized-data-formats) may be used to define a subgraph manifest. This includes YAML and JSON. Examples in this document will be provided in YAML.
+The subgraph manifest follows the IPLD specification, which defines a data model for linking decentralized and universally addressable data structures.[<sup>1</sup>](#footnotes) Supported formats include YAML and JSON. All examples in this section are written as YAML.
 
 ## Top-Level API
 
@@ -64,10 +64,14 @@ The `mapping` field may be one of the following supported mapping manifests:
 | **handler** | *String* | The name of an exported function in the mapping script which should handle the specified event. |
 
 ## Path
-A path has one field `path` which either refers to a path of a file on the local dev machine, or an [IPLD link](https://github.com/ipld/specs/blob/master/IPLD.md#linking-between-nodes).
+A path has one field `path` which either refers to a path of a file on the local dev machine, or an [IPLD link](#footnotes).
 
 When using the Graph-CLI, local paths may be used during development, and then the tool will take care of deploying linked files to IPFS and replacing the local paths with IPLD links at deploy time.
 
 | Field | Type | Description |
 | --- | --- | --- |
-| **path** | *String or [IPLD Link](https://github.com/ipld/specs/blob/master/IPLD.md#linking-between-nodes)* | A path to a local file or an IPLD link |
+| **path** | *String or IPLD Link* | A path to a local file or an IPLD link |
+
+## Footnotes
+- [1] https://github.com/ipld/specs
+- [2] https://github.com/ipld/specs/blob/master/Codecs/DAG-JSON.md

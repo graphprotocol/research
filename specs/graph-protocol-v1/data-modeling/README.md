@@ -1,15 +1,7 @@
 # Data Modeling
-The schema of your data source--that is, the entity types, values, and relationships that are available to query--are defined through the [GraphQL Interface Definition Language (IDL)](http://facebook.github.io/graphql/draft/#sec-Type-System).
+The schema of your dataset--that is, the entity types, values and relationships that are available to query--are defined through the  GraphQL Interface Definition Language (IDL)[<sup>1</sup>](#footnotes).
 
-## Basics
-
-GraphQL requests consist of three basic operations: `query`, `subscription`, and `mutation`. Each of these has a corresponding root-level `Query`, `Subscription`, and `Mutation` type in the schema of a GraphQL endpoint.
-
-**Note:** Our API does not expose mutations because developers are expected to issue transactions directly against the underlying blockchain from their applications.
-
-It is typical for developers to define their own root `Query` and `Subscription` types when building a GraphQL API server, but with The Graph, we generate these top-level types based on the entities that you define in your schema as well as several other types for exploring blockchain data, which we describe in depth in the [Query API](#Queries).
-
-**TODO** The Query API link does not work. Should it be ../query-processing?
+## Entities
 
 ## Entities
 
@@ -72,14 +64,12 @@ All number types other than `Int` and `Float`, which are serialized as JSON numb
 Even though the serialization format is the same, having the sizes captured in the type system provides better self-documentation and enables tooling that generates convenient deserializers in statically typed languages.
 
 ## Value Objects
-All types not decorated with the `@entity` decorator are value objects. Value object types may be used as the type of entity attributes but will not have fields generated at the top-level `Query` and `Subscription` type and cannot be queried by `ID` because they don't have one.
+All types not decorated with the `@entity` decorator are value objects. Value object types may be used as the type of entity attributes, and do not have unique `id` attributes themselves.
 
 ## Entity Relationships
-An entity may have a relationship to one or more other entities in your schema. These relationships may be traversed in your queries and subscriptions.
+An entity may have a relationship to one or more other entities in your data model. Relations are unidirectional.
 
-The Graph implements an [entity-attribute-value (EAV)](https://en.wikipedia.org/wiki/Entity%E2%80%93attribute%E2%80%93value_model) data model in which relationships are unidirectional.
-
-Despite being unidirectional, relationships may be traversed in *either* direction by defining reverse lookups on an entity.
+Despite being unidirectional, attributes may be defined on entities which facilitate navigating relationships in the reverse direction. See [Reverse Lookups](#reverse-lookups).
 
 ### Basics
 
@@ -139,3 +129,6 @@ type User {
   organizations: [Organization!] @derivedFrom(field: "members")
 }
 ```
+
+## Footnotes
+- [1] http://facebook.github.io/graphql/draft/#sec-Type-System

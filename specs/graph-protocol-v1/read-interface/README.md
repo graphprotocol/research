@@ -78,6 +78,7 @@ The `readIndex` method returns the following:
 }
 ```
 
+<<<<<<< HEAD
 ## Attestations
 Attestations are ECDSA (Elliptic-Curve Digital Signature Algorithm) signatures, which assert that a given response is true for a given read request.
 
@@ -107,11 +108,14 @@ Content IDs must use the canonical [CBOR encoding](https://tools.ietf.org/html/r
 
 In producing the `requestCID`, the optional `id` field from the JSON-RPC 2.0 specification should be omitted as well as the optional conditional micropayment in the `readIndex` params list.
 
+=======
+>>>>>>> v1-spec: Refactor Index Record format and update index types
 ## Indexes
-All read operations require that the caller specify an index. Index data structures efficiently organize the data to support different read access patterns. All indexes are covering indexes, meaning they store values directly rather than pointers.
+All read operations require that the caller specify an index. Index data structures efficiently organize the data to support different read access patterns.
 
 Indexes may include the entire dataset or cover only a subset. This is useful for enabling sharding, where different Indexing Nodes may store different subsets of the dataset to reduce the storage requirements for a single Indexing Node or enable better read performance.
 
+<<<<<<< HEAD
 Indexes are defined by an `IndexRecord`, which has the following shape:
 ```typescript
 interface IndexRecord {
@@ -128,6 +132,18 @@ interface IndexRecord {
 }
 ```
 ##### Example - Index Records
+=======
+Indexes are defined by an `IndexRecord` which has the following shape:
+
+| Field Name | Field Type | Description |
+| ---------- | ---------- | ----------- |
+| db | String | The identifier of the database model being used. |
+| indexType | String | An identifier of the index type used for the respective database model. |
+| partition | String | The name of the entity or interface which should be covered by the index. |  
+| options | Object | Options specific to the type of index. |
+
+###### Example Index Records
+>>>>>>> v1-spec: Refactor Index Record format and update index types
 
 Given a dataset with the following data model:
 ```graphql
@@ -156,11 +172,19 @@ Then, the following would be valid index names for that dataset:
 
 | Index Name | Description|
 | ---------- | ---------- |
+<<<<<<< HEAD
 | `{ indexType: "kv" }`       | A basic key-value index supporting constant-time lookup of all entities in the dataset. |
 | `{ indexType: "kv", partition: "User" }`  | A basic key-value index supporting constant-time lookup of `User` entities. |
 | `{ indexType: "kv_sortById" }` | A sorted key-value index supporting iteration through all entities, sorted by ID. |
 | `{ indexType: "kv_sortByAttribute", indexParams: { partition: "EthereumAccount", params: ["address"] }}` |  A sorted key-value index supporting iteration through all entities implementing the `EthereumAccount` interface, sorted by the `address` field. |
 | `{ indexType: "kv_sortByAttribute", indexParams: { partition: "User", params: ["name.first", "name.last"]}}` | A sorted key-value index supporting iteration through all `User` entities, first sorted by the nested field `name.first` then by the nested field `name.last` (i.e., a compound index). |
+=======
+| `{ db: "entitydb", indexType: "dictionary" }`       | A basic key-value index supporting constant-time lookup of all entities in dataset. |
+| `{ db: "entitydb", "indexType: "dictionary", partition: "User" }`  | A basic key-value index supporting constant-time lookup of `User` entities. |
+| `{ db: "entitydb", indexType: "searchTree", options: { sortBy: ["id"] } }` | A sorted key-value index supporting iteration through all entities, sorted by ID. |
+| `{ db: "entitydb", indexType: "searchTree", partition: "EthereumAccount", options: { sortBy: ["address"] }}` |  A sorted key-value index supporting iteration through all entities implementing the `EthereumAccount` interface, sorted by the `address` field. |
+| `{ db: "entitydb", indexType: "searchTree", partition: "User",  options: { sortBy: ["name.first", "name.last"] } }` | A sorted key-value index supporting iteration through all `User` entities, first sorted by the nested field `name.first`, then by the nested field `name.last` (i.e. a compound index). |
+>>>>>>> v1-spec: Refactor Index Record format and update index types
 
 ### Index Abstract Data Structures
 
@@ -169,6 +193,8 @@ All concrete index types implement an indexing abstract data structure, which sp
 The concrete types (i.e., `K` and `V` shown below), as well as the implicit comparator function to determine sort order, are specified by each concrete index type.
 
 #### Dictionary
+##### Type
+Dictionary<K,V>
 
 ##### Operations
 | Op  | Signature | Description | Gas Cost |
@@ -176,6 +202,9 @@ The concrete types (i.e., `K` and `V` shown below), as well as the implicit comp
 | get | `(key: K) => V` | Retrieves a value by its key. | `opCostDictionaryGet` (set via governance) |
 
 #### Search Tree
+
+##### Type
+`SearchTree<K,V>`
 
 ##### Operations
 | Op  | Signature           | Description  | Gas Cost |
@@ -312,54 +341,74 @@ The clauses in the filter predicate DSL can be grouped into several buckets of o
 
 
 ### Database Models
-The semantics of reading from an Indexing Node are determined by the database model that the index being read from implements, such as [key-value (KV)](https://en.wikipedia.org/wiki/Key-value_database), [entity-attribute-value (EAV)](https://en.wikipedia.org/wiki/Entity%E2%80%93attribute%E2%80%93value_model), and the [relational model](https://en.wikipedia.org/wiki/Relational_model). Index types are prefixed with a short label indicating the database model the index implements:
-- `kv_` - The index is based on a key-value database model.
-- `eav_` -  The index is based on an entity-attribute-value database model.
-- `rdb_` -  The index is based on a relational database model.
+The semantics of reading from an Indexing Node are determined by the database model that the index being read from implements, such as [key-value (KV)](https://en.wikipedia.org/wiki/Key-value_database), [entity-attribute-value (EAV)](https://en.wikipedia.org/wiki/Entity%E2%80%93attribute%E2%80%93value_model) and the [relational model](https://en.wikipedia.org/wiki/Relational_model). Index types are prefixed with a short label indicating the database model the index implements:
+- `entitydb` - An [entity database model](#entity-database-model).
+- `rdb` -  Relational database model. Not supported in this version of the protocol.
+- `eav` -  Entity-attribute-value database model. Not supported in this version of the protocol.
 
 The database model also defines the available partitions and index types for use in read operations.
 
-In the v1 protocol, we only support the KV database model.
+In the v1 protocol, we only support the entity database model.
 
-#### Key-Value Entity Database Model
-In the protocol's key-value database model, entities are stored as key-value pairs, where the key is a concatenation of the entity type and the entity ID, and the value is an entity object. Indexes that implement this database model start with `kv` in their `indexType`.
+#### Entity Database Model
+In the protocol's entity database model, entities are stored as key-value pairs, where the key is a concatenation of the entity type and the entity ID, and the value is an entity object.
+
+This database model is referenced as `entitydb` in Index Records.
+
 
 ##### Example - Entities Stored as Key-Value Pairs
 | Key | Value |
 | --- | ----- |
-| `user:1` | `{ user: "Alice", age: 17 }` |
-| `user:2` | `{ user: "Bob", age: 47 }` |
+| `user:1` | `{ id: "user:1", user: "Alice", age: 17 }` |
+| `user:2` | `{ id: "user:2", user: "Bob", age: 47 }` |
 
 #### Partitions
 Partitions define the subset of the data that is covered by the index.
 
-Possible values of `<partition>` in the index name:
- - `null` - Includes all entities in the dataset. Default partition, may be ommitted.
- - `"<entityType>"` - Includes entities of the type specified by `entityType`, which is case-sensitive.
- - `"<interface>"` - Includes entities that implement the provided interface, and the interface name is case-sensitive.
+Possible values of `<partition>` in an Index Record:
+ - none - Includes all entities in the dataset. Default partition, `partition` key should be ommitted in IndexRecord.
+ - `"<entityType>"` - Includes entities of the type specified by `entityType`. The entity type name is case-sensitive.
+ - `"<interface>"` - Includes entities that implement the provided interface. The interface name is case-sensitive.
 
 ### Index Types
 
-#### Entity Dictionary
-The entity dictionary supports simple key-value lookups of entities by their entity type and ID in constant time.
-- database model - Key-value
-- type - `Dictionary<String, Object>` where `Object` is an entity that conforms to its type as defined in the schema of the dataset.
-- `indexType` - `kv`
+#### Entity DB Indexes
 
-#### ID-Ordered Entity Index
-This index supports iterating through entities, ordered by their entity type and ID.
-- database model - Key-value
-- type - `SearchTree<String, Object>` where `Object` is an entity that conforms to its type as defined in the schema of the dataset.
-- `indexType` - `kv_sortById`
+##### Dictionary
+The entity dictionary supports simple key-value lookups of entities by their entity type and ID, in constant time.
 
-#### Attribute-Ordered Entity Index
-This index supports iterating through entities, ordered by possibly nested attribute values. Supports compound indexes, where an entity is sorted first by one attribute then by another.
-- database model - Key-value
-- type - `SearchTree<Object, Object>` where `Object` is an entity that conforms to its type as defined in the schema of the dataset.
-- `indexType` - `kv_sortByAttribute`
-- `indexParams.params`
-   - primaryAttribute - The first attribute to sort by, expressed as a `String`, using `.` to indicate nested attributes (i.e., `"name.first"`).
-   - secondaryAttribute -  The second attribute to sort by, expressed as a `String`, using `.` to indicate nested attributes (i.e., `"name.last"`).
+###### Name
+`dictionary`
+
+###### Database Model
+`entitydb`
+
+###### Type
+`Dictionary<K, V>`
+   - `K`: `String` - The id of the entity.
+   - `V`: `Object` -  An entity that conforms to its type as defined in the schema of the dataset.
+
+###### Options
+None
+
+##### Search Tree
+This index supports iterating through entities, ordered by possibly nested attribute values. Supports compound indexes, where an entity is sorted first by one attribute, then by another.
+
+###### Name
+`searchTree`
+
+###### Database Model
+`entitydb`
+
+###### Type
+`SearchTree<K, V>`
+   - `K`: `String` | `Number` | `Object` - The value of the sortKey, which is either a primitive value in the case of single-attribute indexes, or an object containing two attribute-value pairs in the case of compound indexes.
+   - `V`:  An entity that conforms to its type as defined in the schema of the dataset.
+
+###### Options
+- `sortBy`: `Array`
+  1. `String` - The first attribute to sort by, using `.` to indicate nested attributes (i.e., `"name.first"`)
+  2. `String` -  The second attribute to sort by, using `.` to indicate nested attributes (i.e., `"name.last"`)
 
 ## Footnotes
 - [1] https://www.jsonrpc.org/specification

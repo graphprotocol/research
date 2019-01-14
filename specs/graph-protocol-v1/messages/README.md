@@ -31,9 +31,9 @@ In producing CIDs for JSON RPC messages, the optional `id` field from the JSON-R
 | Field Name | Field Type | Description |
 | ---------- | ---------- | ----------- |
 | db | String | The identifier of the database model being used. |
-| index | String | An identifier of the index type used for the respective database model. |
+| indexType | String | An identifier of the index type used for the respective database model. |
 | partition | String | The name of the entity or interface which should be covered by the index. |  
-| params | Array<String> | Parameters specific to the type of index. |
+| options | Array<String> | Parameters specific to the type of index. |
 
 #### Read Response
 

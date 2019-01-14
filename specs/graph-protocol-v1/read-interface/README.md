@@ -334,10 +334,10 @@ The clauses in the filter predicate DSL can be grouped into several buckets of o
 
 | Operation Type | Description | Gas Cost |
 | --------- | ----------- | -------- |
-| Number Comparison | Includes `lt`, `lte`, `gt`, `gte`, `equals`, and `notEquals` clauses on Number types. | `opCostBitCompare * N ` where `N` is the number of bits compared in order to complete the operation, and `opCostBitCompare` is set via governance. |
-| String Comparison | Includes `lt`, `lte`, `gt`, `gte`, `startsWith`, `notStartsWith`, `endsWith`, `notEndsWith`, `equals`, and `notEquals` clauses on String types. | `opCostCharCompare * N ` where `N` is the number of characters compared in order to complete the operation, and `opCostCharCompare` is set via governance. |
+| Number Comparison | Includes `lt`, `lte`, `gt`, `gte`, `equals` and `notEquals` clauses on Number types. | `opCostByteCompare * B ` where `B` is the number of bytes in the number type, and `opCostByteCompare` is set via governance. |
+| String Comparison | Includes `lt`, `lte`, `gt`, `gte`, `startsWith`, `notStartsWith`, `endsWith`, `notEndsWith`, `equals` and `notEquals` clauses on String types. | `opCostCharCompare * N ` where `N` is the number of characters compared in order to complete the operation, and `opCostCharCompare` is set via governance. |
 | Bit Comparison | Includes `equals` and `notEquals` clauses on Boolean types. Also used for combining two filter predicate clauses via the Boolean operators `or` and `and` (including the implicit `and` described above). | `opCostBitCompare` where `opCostBitCompare` is set via governance. |
-| String Match | Used for `contains` and `notContains` clauses on String types. | `opCostStringSearch * (M + N)` where `N` is the number of characters in the pattern being matched, and `M` is the number of characters in the string being searched. `opCostStringSearch` is set via governance. |
+| String Match | Used for `contains` and `notContains` clauses on String types | `opCostStringSearch * (M + N)` where `N` is the number of characters in the pattern being matched, and `M` is the number of characters in the string being searched. `opCostStringSearch` is set via governance. |
 
 
 ### Database Models

@@ -8,8 +8,9 @@ The protocol's payment channel architecture follows the Raiden Network Specifica
 1. The Graph v1 introduces a new concept, *minting channels*, to get around prohibitively large balance requirements for the payment channel hub.
 1. The Graph uses an alternate locking mechanism for mediated payments that is tailored to the domain of reading data from indexes.
 1. Payment channels are one-way and may be withdrawn from by payment receiver without closing channel. See Payment Channel(#payment-channel).
+1. Balance Proofs may be exchanged off-chain directly between the sender and final recipient of a mediate transfer. See [Micropayment Routing](#micropayment-routing).
 
-A future version of this protocol will move away from the hub and spoke topology in favor of a decentralized payment channel network topology. At that point, minting channels will also likely be removed from the specification.
+In this construction, the Payment Channel Hub acts as a *trusted intermediary*, although users of the protocol have no counter-party risk with respect to one another. A future version of this protocol will move away from the hub and spoke topology in favor of a decentralized payment channel network topology. At that point, minting channels will also likely be removed from the specification.
 
 ## Hub-and-Spoke Topology
 ### Architecture
@@ -70,6 +71,9 @@ Traditional payment channels involve exchanging off-chain messages that are "bac
 Specifically, the Payment Channel Hub has the ability to mint Graph Tokens to pay Indexing Nodes an amount equivalent to the amount of ETH or DAI paid toward that Indexing Node by an end user. The minting channel acts as the second leg of a mediated transfer.
 
 The minting channel should be settled once per *round*. See [Mechanism Design](../mechanism-design) for more information.
+
+## Micropayment Routing
+Because of the hub-and-spoke payment channel, micropayment routing is trivial. Payment must always go through the Payment Channel Hub, and only deposits in the first leg of the mediate payment need be checked to confirm that there are sufficient funds to cover the transfer. As such, balance proofs may be exchanged directly between sender and final recipient of a mediated micropayment, and the receiver may send messages to the payment channel hub on the sender's behalf. This facilitates sending valid [Locked Transfer messages](.../messages) in-band with requests to the [JSON RPC API](../rpc-api).
 
 ## Token Auction
 With the minting channel construction, new Graph Tokens are minted in direct proportion to the amount of value exchanged between end users and Indexing Nodes in a given round. The Token Auction acts as a sink for these new Graph Tokens, whereby the Payment Channel "buys back" the Graph Tokens previously minted in exchange for the ETH or DAI collected in the payment channels through an on-chain auction mechanism.

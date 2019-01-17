@@ -35,6 +35,40 @@ In producing CIDs for JSON RPC messages, the optional `id` field from the JSON-R
 | partition | String | The name of the entity or interface which should be covered by the index. |  
 | options | Array<String> | Parameters specific to the type of index. |
 
+#### Locked Transfer
+A message intended to be exchanged off-chain as a conditional micropayment in the data retrieval market for a subgraph. Accompanied by a Payment Channel Balance Proof which may be redeemed on-chain.
+
+##### Fields
+
+| Field Name | Field Type | Description |
+| ---------- | ---------- | ----------- |
+| chainID  | Number | EIP155 chain ID. |
+| tokenDenomination | String | Token denomination. Must be "ETH" or "DAI". |
+| transferredAmount | Number | A monotonically increasing amount of tokens which have been sent in the channel.|
+| receiver | String | The Ethereum address of the final destination of the micropayment. Must be the address of an Indexing Node which is staked for the subgraph referenced in the payment. |
+| subgraphID | String | The ID of the subgraph for which the receiver must be staked. |
+| maxLockedAmount | Number | The maximum amount of tokens locked in pending transfers. |
+| locksRoot | String | The root of a Merkle tree containing all locked data retrieval timelocks. |
+| lock | Object | The [Off-chain Data Retrieval Timelock](#off-chain-data-retrieval-timelock) corresponding to the most recent lock added to the Balance Proof. |
+| nonce | Number | A monotonically increasing nonce value starting at `1`. Used for strictly ordering balance proofs. |
+| v | Number | The ECDSA recovery ID of the corresponding Payment Channel Balance Proof. |
+| r | String | The ECDSA signature r of the corresponding Payment Channel Balance Proof. |
+| s | String | The ECDSA signature v of the corresponding Payment Channel Balance Proof. |
+
+#### Off-chain Data Retrieval Timelock
+An off-chain representation of the [Data Retrieval Timelock](#data-retrieval-timelock)
+
+##### Fields
+| Field Name | Field Type | Description |
+| ---------- | ---------- | ----------- |
+| expiration | Number | The block until which the locked transfer may be settled on-chain.
+| gasPrice | Number | Amount of tokens locked.|
+| maxGas | Number | The maximum amount of gas to be consumed in the read operation. |
+| bytesPrice | Number | The price to pay per byte served.|
+| maxBytes | Number | The maximum amount of bytes to be sent over the wire |
+| maxTokens | Number | The maximum amount of tokens to be paid. |
+| requestCID | String | The content ID of the read operation to which the Indexing Node must respond with a valid attestation, in order to unlock the payment. |
+
 #### Read Response
 
 ##### Fields
@@ -140,17 +174,35 @@ struct Attestation {
 }
 ```
 
-#### Balance Proof
+#### Payment Channel Balance Proof
+The Payment Channel Balance Proof is a signed off-chain message which represents a micropayment between an end user of The Graph and the Payment Channel Hub via a payment channel. Because all payment channels have the Payment Channel Hub as the receiver, it is sufficient to be able to identify the token denomination and the sender's Ethereum address (this may be derived from the signature), as well as the subgraph on which they are staked, to uniquely identify the channel to which the balance proof applies.
 
 ##### Fields
 | Field Name | Field Type | Description |
 | ---------- | ---------- | ----------- |
 | chainID  | uint256 | EIP155 chain ID. |
-| tokenNetworkAddress | address | Address of TokenNetwork contract (see Raiden specification). |
-| channelID | uint256 | Channel identifier inside of TokenNetwork contract. |
+| tokenDenomination | string | Token denomination. Must be "ETH" or "DAI". |
+| transferredAmount | uint256 | A monotonically increasing amount of tokens which have been sent in the channel.|
+| receiver| address | The Ethereum address of the final destination of the micropayment. Must be the address of an Indexing Node which is staked for the subgraph referenced in the payment. |
+| subgraphID | bytes | The ID of the subgraph for which the receiver must be staked. |
+| maxLockedAmount | uint256 | The maximum amount of tokens locked in pending transfers. |
+| locksRoot | bytes32 | The root of a Merkle tree containing all locked data retrieval timelocks. |
+| nonce | uint256 | A monotonically increasing nonce value starting at `1`. Used for strictly ordering balance proofs. |
+| v | uint256 | The ECDSA recovery ID . |
+| r | bytes32 | The ECDSA signature r. |
+| s | bytes32 | The ECDSA signature v. |
+
+#### Minting Channel Balance Proof
+The Minting Channel Balance Proof is a signed off-chain message which represents a micropayment between the Payment Channel Hub and an Indexing Node in The Graph. Because all payment channels have the Payment Channel Hub as the sender, it is sufficient to be able to identify the token denomination and the receiver's Ethereum address to uniquely identify the channel to which the balance proof applies.
+
+##### Fields
+| Field Name | Field Type | Description |
+| ---------- | ---------- | ----------- |
+| chainID  | uint256 | EIP155 chain ID. |
+| tokenDenomination | string | Token denomination. Must be "ETH" or "DAI". |
 | transferredAmount | uint256 | A monotonically increasing amount of tokens which have been sent in the channel.|
 | maxLockedAmount | uint256 | The maximum amount of tokens locked in pending transfers. |
-| locksRoot | bytes32 | The root of a merkle tree containing all locked data retrieval timelocks. |
+| locksRoot | bytes32 | The root of a Merkle tree containing all locked data retrieval timelocks. |
 | nonce | uint256 | A monotonically increasing nonce value starting at `1`. Used for strictly ordering balance proofs. |
 | v | uint256 | The ECDSA recovery ID . |
 | r | bytes32 | The ECDSA signature r. |
@@ -158,7 +210,7 @@ struct Attestation {
 
 ###### EIP712 Struct Type
 ```solidity
-struct BalanceProof {
+struct MintingChannelBalanceProof {
   uint256 chainID;
   address tokenNetworkAddress;
   uint256 channelID;

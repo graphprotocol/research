@@ -76,9 +76,10 @@ Calls a low-level read operation on a database index.
 1. `Object`
  - `blockHash`: `String` - The hash of the Ethereum block as of which to read the data.
  - `subgraphID`: `String` - The ID of the subgraph to read from.
- - `index`: `Object` - The [IndexRecord](#indexes) of the index being read from.
+ - `index`: `Object` - The [Index Record](#indexes) of the index being read from.
  - `op`: `String` - The name of the read operation.
  - `params`: `[any]` - The parameters passed into the called read operation.
+2. `Object` - A [Locked Transfer](../messages#locked-transfer) message which serves as a conditional micropayment for the read operation.
 
 #### Returns
 Returns one of the following message types:

@@ -18,6 +18,7 @@ The method of interest here is `callReadOp` which accepts the following paramete
  - `index`: `Object` - The [IndexRecord](#indexes) of the index being read from.
  - `op`: `String` - The name of the read operation.
  - `params`: `[any]` - The parameters passed into the called read operation.
+2. `Object` - A [Locked Transfer](../messages#locked-transfer) message which serves as a conditional micropayment for the read operation.
 
 The `readIndex` method returns the following:
 1. `Object`

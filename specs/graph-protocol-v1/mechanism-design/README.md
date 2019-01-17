@@ -29,7 +29,7 @@ Indexing Nodes compete to have the most compelling combination of economic secur
 
 Indexing Nodes receive requests which include a [Read Operation](../messages#read-operation) and a Locked Transfer.
 
-The Read Operation fully defines the data that is being requested, while the Locked Transfer is a micropayment that is paid, conditional, on the Indexing Node producing a [Read Response](../messages#read-response) along with a signed [Attestation](../messages#attestation) message which certifies the response data is correct.
+The Read Operation fully defines the data that is being requested, while the [Locked Transfer](../messages#locked-transfer) is a micropayment that is paid, conditional, on the Indexing Node producing a [Read Response](../messages#read-response) along with a signed [Attestation](../messages#attestation) message which certifies the response data is correct.
 
 ## Data Retrieval Pricing
 Pricing in the data retrieval market is set according to the bandwidth and compute required to process a request.

@@ -8,7 +8,7 @@ Available read operations are defined by the respective interface of the index b
 
 While the read interfaces are described using a TypeScript notation, all the interfaces are language agnostic and defined in terms of JSON types.
 
-Calling these read operations is done via JSON RPC 2.0[[1]](#footnotes). See the full [JSON RPC API](../rpc-api).
+Calling these read operations is done via JSON RPC 2.0[<sup>1</sup>](#footnotes). See the full [JSON RPC API](../rpc-api).
 
 
 The method of interest here is `callReadOp` which accepts the following parameters:

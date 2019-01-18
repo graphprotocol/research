@@ -79,61 +79,11 @@ The `readIndex` method returns the following:
 }
 ```
 
-<<<<<<< HEAD
-## Attestations
-Attestations are ECDSA (Elliptic-Curve Digital Signature Algorithm) signatures, which assert that a given response is true for a given read request.
-
-An attestation message has the following structure:
-
-| Field Name  | Field Type | Description |
-| ----------- | ---------- | ----------- |
-| requestCID | bytes    | The content ID of the message. |
-| gasUsed     | uint256    | The gas used to process the read operation. |
-| bytes       | uint256    | The size of the response data in bytes. |
-| responseCID | bytes   | The content ID of the response. |
-| v | uint256 | The ECDSA recovery ID. |
-| r | bytes32 | The ECDSA signature r. |
-| s | bytes32 | The ECDSA signature v. |
-
-**TODO** Should "s" be ECDSA signature s instead of v? Is v also correct with ECDSA recovery ID?
-
-### Encoding
-The attestation message is encoded and signed according to the [EIP-712 specification](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-712.md) for hashing and signing typed structured data. See the [Smart Contract Architecture]() for more info on how the protocol utilizes said specification.
-
-**TODO** Add link to smart contract architecture section, when available.
-
-### Content IDs
-`requestCID` and `responseCID` are both produced according to the [IPLD CID v1 specification](https://github.com/ipld/cid#cidv1).
-
-Content IDs must use the canonical [CBOR encoding](https://tools.ietf.org/html/rfc7049#section-3.9) and SHA-256 multi-hash.
-
-In producing the `requestCID`, the optional `id` field from the JSON-RPC 2.0 specification should be omitted as well as the optional conditional micropayment in the `readIndex` params list.
-
-=======
->>>>>>> v1-spec: Refactor Index Record format and update index types
 ## Indexes
 All read operations require that the caller specify an index. Index data structures efficiently organize the data to support different read access patterns.
 
 Indexes may include the entire dataset or cover only a subset. This is useful for enabling sharding, where different Indexing Nodes may store different subsets of the dataset to reduce the storage requirements for a single Indexing Node or enable better read performance.
 
-<<<<<<< HEAD
-Indexes are defined by an `IndexRecord`, which has the following shape:
-```typescript
-interface IndexRecord {
-  // The type of the index (required).
-  indexType: String;
-  // Parameters specific to the type of index specified (optional).
-  indexParams?: {
-    // An identifier for the partition of data that the index will cover.
-    // Available partitions determined by the database model of the index (optional).
-    partition?: String;
-    // Parameters that are specific to the type of index specified (optional).
-    params?: [String];
-  };
-}
-```
-##### Example - Index Records
-=======
 Indexes are defined by an `IndexRecord` which has the following shape:
 
 | Field Name | Field Type | Description |
@@ -144,9 +94,8 @@ Indexes are defined by an `IndexRecord` which has the following shape:
 | options | Object | Options specific to the type of index. |
 
 ###### Example Index Records
->>>>>>> v1-spec: Refactor Index Record format and update index types
-
 Given a dataset with the following data model:
+
 ```graphql
 interface EthereumAccount {
   id: ID!
@@ -169,23 +118,16 @@ type FullName {
   last: String!
 }
 ```
+
 Then, the following would be valid index names for that dataset:
 
 | Index Name | Description|
 | ---------- | ---------- |
-<<<<<<< HEAD
-| `{ indexType: "kv" }`       | A basic key-value index supporting constant-time lookup of all entities in the dataset. |
-| `{ indexType: "kv", partition: "User" }`  | A basic key-value index supporting constant-time lookup of `User` entities. |
-| `{ indexType: "kv_sortById" }` | A sorted key-value index supporting iteration through all entities, sorted by ID. |
-| `{ indexType: "kv_sortByAttribute", indexParams: { partition: "EthereumAccount", params: ["address"] }}` |  A sorted key-value index supporting iteration through all entities implementing the `EthereumAccount` interface, sorted by the `address` field. |
-| `{ indexType: "kv_sortByAttribute", indexParams: { partition: "User", params: ["name.first", "name.last"]}}` | A sorted key-value index supporting iteration through all `User` entities, first sorted by the nested field `name.first` then by the nested field `name.last` (i.e., a compound index). |
-=======
 | `{ db: "entitydb", indexType: "dictionary" }`       | A basic key-value index supporting constant-time lookup of all entities in dataset. |
 | `{ db: "entitydb", "indexType: "dictionary", partition: "User" }`  | A basic key-value index supporting constant-time lookup of `User` entities. |
 | `{ db: "entitydb", indexType: "searchTree", options: { sortBy: ["id"] } }` | A sorted key-value index supporting iteration through all entities, sorted by ID. |
 | `{ db: "entitydb", indexType: "searchTree", partition: "EthereumAccount", options: { sortBy: ["address"] }}` |  A sorted key-value index supporting iteration through all entities implementing the `EthereumAccount` interface, sorted by the `address` field. |
-| `{ db: "entitydb", indexType: "searchTree", partition: "User",  options: { sortBy: ["name.first", "name.last"] } }` | A sorted key-value index supporting iteration through all `User` entities, first sorted by the nested field `name.first`, then by the nested field `name.last` (i.e. a compound index). |
->>>>>>> v1-spec: Refactor Index Record format and update index types
+| `{ db: "entitydb", indexType: "searchTree", partition: "User",  options: { sortBy: ["name.first", "name.last"] } }` | A sorted key-value index supporting iteration through all `User` entities, first sorted by the nested field `name.first`, then by the nested field `name.last` (i.e., a compound index). |
 
 ### Index Abstract Data Structures
 

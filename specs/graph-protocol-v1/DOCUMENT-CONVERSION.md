@@ -2,8 +2,9 @@
 
 Below are instructions for converting the markdown specification to a PDF.
 
-1. Download [Pandoc](https://pandoc.org/installing.html)
+1. Install [Pandoc](https://pandoc.org/installing.html)
 1. Install [LaTeX](https://www.latex-project.org/) on your machine
+1. (Mac OSX) You may also need to install `rsvg-convert` by running `brew install librsvg` in the terminal.
 1. Navigate to *this folder* in your Terminal
    - Run the following command:
  ```bash

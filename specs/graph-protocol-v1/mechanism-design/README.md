@@ -100,11 +100,7 @@ Let `participationReward[i]` be the participation reward allotted to Indexing No
 ### Curator Inflation Reward
 The `curationRewardRate` is defined as a percentage of the total Graph Token supply and is set via governance. As with the participation reward, it is paid via inflation.
 
-<<<<<<< HEAD
-Let `grossTransactionValue[s]` be the total value of all transactions in the data-retrieval market for a dataset `s` over a given inflation period. We can define `curationReward[s]`, the total curation reward shared by all Curators of a dataset `s` over a given inflation period:
-=======
 Let `aggregateTransactionValue[s]` be the total value of all transactions in the data retrieval market for a dataset `s` over a given inflation period. We can define `curationReward[s]`, the total curation reward shared by all Curators of a dataset `s` over a given inflation period:
->>>>>>> v1-spec: Update links and minor edits
 
 `curatorReward[s] = (aggregateTransactionValue[s] / totalTransactionValue) * curationRewardRate * totalTokenSupply`
 

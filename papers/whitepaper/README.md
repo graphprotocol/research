@@ -1,4 +1,6 @@
-# The Graph Whitepaper
+# The Graph Whitepaper [Deprecated]
+
+See the [v1 protocol specification](../../specs/graph-protocol-v1/README.md) for the latest protocol design.
 
 ## Install MacTeX / TeX Live
 

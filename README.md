@@ -16,7 +16,7 @@ The following stages apply to papers and specs in this repo.
 - ![Deferred Badge](https://img.shields.io/badge/stage-deferred-30324F.svg): [The Graph Whitepaper V1 [Deprecated]]() - This was the whitepaper we used to build interest in our protocol, early in 2018, before we had a team, or funding. Its a useful look into some of our early thinking, but should no longer be considered a source of truth for the protocol design.
 
 ## Specs
- - ![Draft Badge](https://img.shields.io/badge/stage-draft-%23E3CB63.svg):  [Hybrid Network Specification](./specs/graph-protocol-v1) - This specification is a hybrid protocol design, intended to bridge the gap between our [hosted service](http://thegraph.com) and our fully decentralized network design. Important elements of the decentralized network are covered here, including several economic mechanisms, interfaces and a high level architecture. Several elements are notably still centralized, such as the dispute management process, payment channels and governance.
+ - ![Draft Badge](https://img.shields.io/badge/stage-draft-%23E3CB63.svg):  [Hybrid Network Specification](./specs/graph-protocol-hybrid-network) - This specification is a hybrid protocol design, intended to bridge the gap between our [hosted service](http://thegraph.com) and our fully decentralized network design. Important elements of the decentralized network are covered here, including several economic mechanisms, interfaces and a high level architecture. Several elements are notably still centralized, such as the dispute management process, payment channels and governance.
 
 ## Implementations
 

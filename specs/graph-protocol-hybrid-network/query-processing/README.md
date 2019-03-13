@@ -23,7 +23,7 @@ The specification will omit detailed steps in the algorithms that are left to im
 ![Query Client Architecture](../assets/query-client-architecture.png)
 
 ## Overview
-As shown in the diagrams above, the query processing may take place via a Query Client, which is embedded in the end-user application, or it may take place via a Query Node that is external to the application. In the latter case, the Query Node may be running locally on the user's machine or as an external service that is accessed via the Internet.
+As shown in the diagrams above, the query processing may take place via a Query Client, which is embedded in the end-user application, or it may take place via a Query Node that is external to the application. In the latter case, the Query Node may be running locally on the user's machine or as an external service that is accessed via the Internet. Some extra-protocol Query Node providers may choose to also run Indexing Nodes to provide a low-latency GraphQL interface, optimized for specific datasets.
 
 In either construction, query processing consists of the following steps:
 1. Query Planning (Optional)

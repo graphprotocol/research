@@ -75,14 +75,10 @@ Subgraph tokens are issued according to a bonding curve, making it more expensiv
 
 **TODO** [Define bonding curve for curation market or bonding curve parameters](https://github.com/graphprotocol/research/issues/69).
 
-## Inflation Rewards
-The total monetary inflation rate of Graph Tokens over a given inflation period is the sum of its two constituent components:
+#### Curator Rewards
+Curators earn a percentage of the fees paid for queries on the subgraphs they curate. Each subgraph token minted corresponds to *one basis point (0.01%)* of the fees paid to Indexers of that subgraph.
 
-`inflationRate = curatorRewardRate + participationRewardRate`
-
-As indicated in the formula above, inflation is used to reward curation of datasets and participation in the network.
-
-### Participation Adjusted Inflation
+## Participation Adjusted Inflation Reward
 To encourage Graph Token holders to participate in the network, the protocol implements a participation-adjusted inflation[<sup>3</sup>](#footnotes) reward.
 
 The participation reward to the entire network is calculated as a function of a `targetParticipationRate` that is set via governance. If `actualParticipationRate == targetParticipationRate`, then `participationRewardRate = 0`. Conversely, the lower the actual participation rate is relative to the target participation rate, the higher the participation reward.
@@ -100,16 +96,7 @@ Then we can compute `participationReward[s][i]`, the participation reward allott
 
 `participationReward[s][i] = (stakedForCuration[s] / totalStakedForCuration) * (stakedForIndexing[s][i] / stakedForIndexing[s]) * participationRewardRate * totalTokenSupply`.
 
-### Curator Inflation Reward
-The `curationRewardRate` is defined as a percentage of the total Graph Token supply and is set via governance. As with the participation reward, it is paid via inflation.
-
-Let `aggregateTransactionValue[s]` be the total value of all transactions in the data retrieval market for a dataset `s` over a given inflation period. We can define `curationReward[s]`, the total curation reward shared by all Curators of a dataset `s` over a given inflation period:
-
-`curatorReward[s] = (aggregateTransactionValue[s] / totalTransactionValue) * curationRewardRate * totalTokenSupply`
-
-The share of this dataset-specific curation reward that an individual Curator receives is determined according to the share of the curator reward they acquired in the [curation market](#curation-market).
-
-### Inflation Periods
+## Rounds
 Inflation rewards are calculated over a period of time, measured in blocks, according to a `roundDuration` parameter that is set via governance.
 
 **TODO** [How should round duration be set to balance gas costs and facilitating a dynamic market?](https://github.com/graphprotocol/research/issues/75)

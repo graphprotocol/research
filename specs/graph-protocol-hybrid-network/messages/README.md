@@ -70,42 +70,41 @@ An off-chain representation of the [Data Retrieval Timelock](#data-retrieval-tim
 | requestCID | String | The content ID of the read operation to which the Indexing Node must respond with a valid attestation, in order to unlock the payment. |
 
 #### Read Response
+There are several possible statuses for a read response. Read responses must update the nonce of the balance proof and may be accompanied by an attestation. It may update balances or other state in the state channel and may be used as a part of settling the channel.
 
-##### Fields
-There are several possible types for a read response:
-
-###### Success
+##### Success
 Sent if the read operation was successful, within the gas and response size limits specified. Includes the return data an attestation that the response is correct.
 
 | Field Name | Field Type | Description |
 | ---------- | ---------- | ----------- |
 | status     | String     | The constant "SUCCESS"   |
 | data       | any        | The result of calling the read operation. |
-| attestation | Object | An Attestation, where the `requestCID` is the CID of the object containing the above fields. |
+| attestation | Object | An Attestation, where the `responseCID` is the CID of the object containing the above fields. |
 
-###### Max Gas Exceeded
+##### Max Gas Exceeded
 Sent if the maximum amount of gas specified was consumed before the read operation could complete. The caller of the read operation is responsible for paying for the computation, but not for any bandwidth.
 
 | Field Name | Field Type | Description |
 | ---------- | ---------- | ----------- |
 | status | String | The constant "MAX_GAS_EXCEEDED" |
-| attestation | Object | An Attestation, where the `requestCID` is the CID of the object containing the above field. |
+| attestation | Object | An Attestation, where the `responseCID` is the CID of the object containing the above field. |
 
-###### Max Bytes Exceeded
+##### Max Bytes Exceeded
 Sent if the result of calling the read operation is larger than the `maxBytes` parameter in the data retrieval timelock. The caller of the read operation is responsible for paying for the computation, but not for any bandwidth.
 
 | Field Name | Field Type | Description |
 | ---------- | ---------- | ----------- |
 | status | String | The constant "MAX_BYTES_EXCEEDED" |
+| attestation | Object | An Attestation, where the `responseCID` is the CID of the object containing the above field. |
 
-###### Insufficient Funds
+##### Insufficient Funds
 Sent if the maximum amount of tokens which may be consumed by the read operation would exceed the balance in the payment channel.
 
 | Field Name | Field Type | Description |
 | ---------- | ---------- | ----------- |
 | status | String | The constant "INSUFFICIENT_FUNDS". |
 
-###### Price Too Low
+##### Price Too Low
 Sent if the Indexing Node is unwilling to provide the service at the prices offered by the caller.
 
 | Field Name | Field Type | Description |
@@ -160,7 +159,7 @@ Additionally there are chain-specific parameters:
 | responseCID | bytes   | The content ID of the response. |
 | gasUsed     | uint256    | The gas used to process the read operation. |
 | responseBytes     | uint256    | The size of the response data in bytes. |
-| v | uint256 | The ECDSA recovery ID . |
+| v | uint8 | The ECDSA recovery ID . |
 | r | bytes32 | The ECDSA signature r. |
 | s | bytes32 | The ECDSA signature v. |
 
@@ -188,7 +187,7 @@ The Payment Channel Balance Proof is a signed off-chain message which represents
 | maxLockedAmount | uint256 | The maximum amount of tokens locked in pending transfers. |
 | locksRoot | bytes32 | The root of a Merkle tree containing all locked data retrieval timelocks. |
 | nonce | uint256 | A monotonically increasing nonce value starting at `1`. Used for strictly ordering balance proofs. |
-| v | uint256 | The ECDSA recovery ID . |
+| v | uint8 | The ECDSA recovery ID . |
 | r | bytes32 | The ECDSA signature r. |
 | s | bytes32 | The ECDSA signature v. |
 

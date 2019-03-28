@@ -89,13 +89,16 @@ The participation reward to the entire network is calculated as a function of a 
 
 **TODO** [Decide on actual function for relating `participationRewardRate` to `targetParticipationRate`](https://github.com/graphprotocol/research/issues/70).
 
-To incentivize actual work being provided to the network, not just staking, the participation reward will be distributed to Indexing Nodes who are staking for datasets with the most economic activity.
+To incentivize actual work being provided to the network, not just staking, the participation reward will be distributed to Indexing Nodes who are staking for datasets with the strongest market signal from curators.
 
-Let `participationReward[s[i]]` be the participation reward allotted to Indexing Node `i` staked on dataset `s`. Let `transactionVolume[s[i]]` be the economic value of all data retrieval fees paid to Indexing Node `i` for data from dataset `s` over a given inflation period, and `totalTransactionVolume` be the total transaction volume for the entire network over the same period, both measured in ETH. Then, we can define the participation reward as:
+ - Let `totalStakedForCuration` be the amount of Graph Tokens staked for curation in the entire network
+ - Let `stakedForCuration[s]` be the amount staked for curation for a particular dataset `s`.
+ - Let `stakedForIndexing[s]` be the total amount staked for indexing on a particular dataset `s`.
+ - Let `stakedForIndexing[s][i]` be the amount staked for indexing by Indexer `i` on dataset `s`.
 
-Let `participationReward[i]` be the participation reward allotted to Indexing Node `i`. Let `aggregateTransactionValue[i]` be the total value of all data retrieval fees paid to Indexing Node `i` over a given inflation period, and `totalTransactionValue` be the total value of all transactions in the network over the same period, both measured in ETH. Then we can define the participation reward as:
+Then we can compute `participationReward[s][i]`, the participation reward allotted to Indexer `i` staked on dataset `s`, as follows:
 
-`participationReward[i] = (aggregateTransactionValue[i] / totalTransactionValue) * participationRewardRate * totalTokenSupply`.
+`participationReward[s][i] = (stakedForCuration[s] / totalStakedForCuration) * (stakedForIndexing[s][i] / stakedForIndexing[s]) * participationRewardRate * totalTokenSupply`.
 
 ### Curator Inflation Reward
 The `curationRewardRate` is defined as a percentage of the total Graph Token supply and is set via governance. As with the participation reward, it is paid via inflation.

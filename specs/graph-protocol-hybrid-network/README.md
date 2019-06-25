@@ -22,17 +22,3 @@ See [this slide](https://www.slideshare.net/secret/AnB7pWnqZhiW2d/17) from this 
 
 ## Disclaimer
 This spec defines a protocol that is still being implemented. Until a fully stable reference implementation exists, the specification is likely to change in breaking ways.
-
-## Table of Contents
-
-1. [Architecture Overview](./architecture-overview)
-1. [Mechanism Design](./mechanism-design)
-1. [Query Processing](./query-processing)
-1. [Payment Channels](./payment-channels)
-1. [Read Interface](./read-interface)
-1. [Messages](./messages)
-1. [JSON-RPC API](./rpc-api)
-1. [Datasets](./datasets)
-1. [Data Modeling](./data-modeling)
-1. [Subgraph Manifest](./subgraph-manifest)
-1. [Mappings API](./mappings-api)

@@ -2,7 +2,7 @@
 
 ## High-Level Architecture
 
-```
+```ascii
     +------------------------------------------------------------------+
     |                                                                  |
     | Decentralized Application (dApp)                                 |

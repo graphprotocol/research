@@ -1,7 +1,7 @@
 # Datasets
 
 ## Object Diagram
-```
+```ascii
            +--------------+     +-------------------+
            |              |     |                   |
 Ethereum   | GNS Registry |     | Staking Contract  |

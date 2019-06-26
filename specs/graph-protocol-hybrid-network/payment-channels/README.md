@@ -14,7 +14,7 @@ In this construction, the Payment Channel Hub acts as a *trusted intermediary*, 
 
 ## Hub-and-Spoke Topology
 ### Architecture
-```
+```ascii
        +-------------------+-------------------+------------------+
        |                   |                   |                  |
        |                   |                   |                  |

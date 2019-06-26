@@ -14,3 +14,12 @@ before_script:
 
 script:
   - mdbook build specs && mdbook test specs
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  local-dir: specs
+  keep-history: false
+  on:
+    branch: master

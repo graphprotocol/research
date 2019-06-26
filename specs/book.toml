@@ -1,0 +1,11 @@
+[book]
+title = "Hybrid Network"
+authors = ["Developers of The Graph project"]
+description = "Hybrid Network Spec."
+src = "graph-protocol-hybrid-network"
+
+[build]
+create-missing = false
+
+[output.html]
+mathjax-support = true

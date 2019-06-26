@@ -6,3 +6,6 @@ src = "graph-protocol-hybrid-network"
 
 [build]
 create-missing = false
+
+[output.html]
+mathjax-support = true

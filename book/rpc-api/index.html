@@ -1,0 +1,391 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>JSON-RPC API - Hybrid Network</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="Hybrid Network Spec.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="affix"><a href="../index.html">Hybrid Network</a></li><li><a href="../architecture-overview/index.html"><strong aria-hidden="true">1.</strong> Architecture Overview</a></li><li><a href="../mechanism-design/index.html"><strong aria-hidden="true">2.</strong> Mechanism Design</a></li><li><a href="../query-processing/index.html"><strong aria-hidden="true">3.</strong> Query Processing</a></li><li><a href="../payment-channels/index.html"><strong aria-hidden="true">4.</strong> Payment Channels</a></li><li><a href="../read-interface/index.html"><strong aria-hidden="true">5.</strong> Read Interface</a></li><li><a href="../messages/index.html"><strong aria-hidden="true">6.</strong> Messages</a></li><li><a href="../rpc-api/index.html" class="active"><strong aria-hidden="true">7.</strong> JSON-RPC API</a></li><li><a href="../datasets/index.html"><strong aria-hidden="true">8.</strong> Datasets</a></li><li><a href="../data-modeling/index.html"><strong aria-hidden="true">9.</strong> Data Modeling</a></li><li><a href="../subgraph-manifest/index.html"><strong aria-hidden="true">10.</strong> Subgraph Manifest</a></li><li><a href="../mappings-api/index.html"><strong aria-hidden="true">11.</strong> Mappings API</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Hybrid Network</h1>
+
+                        <div class="right-buttons">
+                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#json-rpc-api" id="json-rpc-api">JSON RPC API</a></h1>
+<p>This API uses  JSON RPC 2.0<a href="#footnotes"><sup>1</sup></a>, a light-weight, transport agnostic RPC protocol.</p>
+<h2><a class="header" href="#methods" id="methods">Methods</a></h2>
+<ul>
+<li>getPrices</li>
+<li>ping</li>
+<li>callReadOp</li>
+</ul>
+<h2><a class="header" href="#reference" id="reference">Reference</a></h2>
+<h3><a class="header" href="#getprices" id="getprices">getPrices</a></h3>
+<p>Retrieves the gas and bandwidth pricing of an Indexing Node in a specific token denomination. Prices returned are informational only, they do not represent a commitment by the Indexing Node.</p>
+<h4><a class="header" href="#parameters" id="parameters">Parameters</a></h4>
+<ol>
+<li><code>String</code> (optional) - The symbol of the token which prices are being requested in. Valid values are 'ETH' or 'DAI'. If not specified, prices will be returned for all tokens the node denominates prices in.</li>
+</ol>
+<h4><a class="header" href="#returns" id="returns">Returns</a></h4>
+<p><code>Array&lt;Object&gt;</code></p>
+<ul>
+<li><code>token</code>: <code>String</code> - The symbol of the token which the prices are denominated in.</li>
+<li><code>gasPrice</code>: <code>Number</code> | <code>null</code> - The price of a unit of gas. If no price denominated in the specified token, <code>null</code>.</li>
+<li><code>bandwidthPrice</code>: <code>Number</code> | <code>null</code> - The price of sending one byte over the network. If no price denominated in the specified token, <code>null</code>.</li>
+</ul>
+<h4><a class="header" href="#example" id="example">Example</a></h4>
+<pre><code class="language-js">{
+  &quot;method&quot;: &quot;getPrices&quot;,
+  &quot;params&quot;: [&quot;DAI&quot;],
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+
+// response
+{
+  &quot;result&quot;: [
+    {
+      &quot;token&quot;: &quot;DAI&quot;,
+      &quot;bandwidthPrice&quot;: 0.01,
+      &quot;gasPrice&quot;: 0.025
+
+    }
+  ],
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+</code></pre>
+<h3><a class="header" href="#ping" id="ping">ping</a></h3>
+<p>Pings a node to check that is it is available and gauge the latency of the 'pong' response.</p>
+<h4><a class="header" href="#parameters-1" id="parameters-1">Parameters</a></h4>
+<p>None</p>
+<h4><a class="header" href="#returns-1" id="returns-1">Returns</a></h4>
+<p><code>String</code> - The string &quot;pong&quot;.</p>
+<h4><a class="header" href="#example-1" id="example-1">Example</a></h4>
+<pre><code class="language-js">// request
+{
+  &quot;method&quot;: &quot;ping&quot;,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+
+// response
+{
+  &quot;result&quot;: &quot;pong&quot;
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+</code></pre>
+<h3><a class="header" href="#callreadop" id="callreadop">callReadOp</a></h3>
+<p>Calls a low-level read operation on a database index.</p>
+<h4><a class="header" href="#parameters-2" id="parameters-2">Parameters</a></h4>
+<ol>
+<li><code>Object</code></li>
+</ol>
+<ul>
+<li><code>blockHash</code>: <code>String</code> - The hash of the Ethereum block as of which to read the data.</li>
+<li><code>subgraphID</code>: <code>String</code> - The ID of the subgraph to read from.</li>
+<li><code>index</code>: <code>Object</code> - The <a href="#indexes">Index Record</a> of the index being read from.</li>
+<li><code>op</code>: <code>String</code> - The name of the read operation.</li>
+<li><code>params</code>: <code>[any]</code> - The parameters passed into the called read operation.</li>
+</ul>
+<ol start="2">
+<li><code>Object</code> - A <a href="../messages#locked-transfer">Locked Transfer</a> message which serves as a conditional micropayment for the read operation.</li>
+</ol>
+<h4><a class="header" href="#returns-2" id="returns-2">Returns</a></h4>
+<p>Returns one of the following message types:</p>
+<h5><a class="header" href="#read-result" id="read-result">Read Result</a></h5>
+<p><code>Object</code></p>
+<ul>
+<li><code>type</code>: <code>String</code> - The constant &quot;READ_RESULT&quot;</li>
+<li><code>data</code>: <code>any</code> - The data retrieved by the read operation, if any.</li>
+<li><code>attestation</code>: Object - An attestation that <code>data</code> and <code>type</code> is a correct response for the given read operation (see <a href="#attestation">Attestation</a>).</li>
+</ul>
+<h5><a class="header" href="#not-enough-gas" id="not-enough-gas">Not Enough Gas</a></h5>
+<p>Indicates that that the gas limit was consumed without completing the computation. Payment will still be made to the Indexing Node for computation performed. No data is returned.
+<code>Object</code></p>
+<ul>
+<li><code>type</code>: <code>String</code> - The constant &quot;NOT_ENOUGH_GAS&quot;</li>
+<li><code>attestation</code>: Object - An attestation that <code>type</code> is a correct response for the given read operation (see <a href="#attestation">Attestation</a>).</li>
+</ul>
+<h5><a class="header" href="#not-enough-bandwidth" id="not-enough-bandwidth">Not Enough Bandwidth</a></h5>
+<p>Indicates that that the bandwidth limit is insufficient to cover the response size. Payment will still be made to the Indexing Node for computation performed (but not for bandwidth). No data is returned.
+<code>Object</code></p>
+<ul>
+<li><code>type</code>: <code>String</code> - The constant &quot;NOT_ENOUGH_BANDWIDTH&quot;</li>
+<li><code>attestation</code>: Object - An attestation that <code>type</code> is a correct response for the given read operation (see <a href="#attestation">Attestation</a>).</li>
+</ul>
+<h5><a class="header" href="#insufficient-funds" id="insufficient-funds">Insufficient Funds</a></h5>
+<p>Indicates that that there are insufficient funds in the payment channel to cover the maximum amount of tokens that may be spent completing the read operation.
+<code>Object</code></p>
+<ul>
+<li><code>type</code>: <code>String</code> - The constant &quot;INSUFFICIENT_FUNDS&quot;</li>
+</ul>
+<h5><a class="header" href="#price-too-low" id="price-too-low">Price Too Low</a></h5>
+<p>Indicates that the price offered for gas or bandwidth is lower than what the Indexing Node will accept. Response includes up-to-date prices.
+<code>Object</code></p>
+<ul>
+<li><code>type</code>: <code>String</code> - The constant &quot;PRICE_TOO_LOW&quot;</li>
+<li><code>prices</code>: <code>Object</code> - The currently advertised prices for the Indexing Node
+<ul>
+<li><code>token</code>: <code>String</code> - The symbol of the token which the prices are denominated in.</li>
+<li><code>gasPrice</code>: <code>Number</code> | <code>null</code> - The price of a unit of gas. If no price denominated in the specified token, <code>null</code>.</li>
+<li><code>bandwidthPrice</code>: <code>Number</code> | <code>null</code> - The price of sending one byte over the network. If no price denominated in the specified token, <code>null</code>.</li>
+</ul>
+</li>
+</ul>
+<h5><a class="header" href="#must-include-payment" id="must-include-payment">Must Include Payment</a></h5>
+<p>Indicates that the Indexing Nodes expects a conditional micropayment to be included with the request.</p>
+<p><code>Object</code></p>
+<ul>
+<li><code>type</code>: <code>String</code> - The constant &quot;MUST_INCLUDE_PAYMENT&quot;</li>
+</ul>
+<h4><a class="header" href="#example-2" id="example-2">Example</a></h4>
+<h6><a class="header" href="#example---entity-exists" id="example---entity-exists">Example - Entity exists</a></h6>
+<pre><code class="language-js">// request
+{
+  &quot;method&quot;: &quot;callReadOp&quot;,
+  &quot;params&quot;: [
+    {
+      &quot;blockHash&quot;: &quot;xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1&quot;,
+      &quot;subgraphID&quot;: &quot;QmTeW79w7QQ6Npa3b1d5tANreCDxF2iDaAPsDvW6KtLmfB&quot;,
+      &quot;index&quot;: {
+        &quot;indexType&quot;: &quot;kv&quot;
+      },
+      &quot;op&quot;: &quot;get&quot;
+      &quot;params&quot;: [&quot;User:1&quot;]
+    }
+  ],
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+// response
+{
+  &quot;data&quot;: {
+    &quot;firstName&quot;: &quot;Vitalik&quot;,
+    &quot;lastName&quot;: &quot;Buterin&quot;,
+  },
+  // TODO: Provide more realistic attestations
+  &quot;attestation&quot;: 0x0122340
+}
+</code></pre>
+<h6><a class="header" href="#example---entity-doesnt-exist" id="example---entity-doesnt-exist">Example - Entity doesn't exist</a></h6>
+<pre><code class="language-js">// request
+{
+  &quot;method&quot;: &quot;callReadOp&quot;,
+  &quot;params&quot;: [
+    {
+      &quot;blockHash&quot;: &quot;xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1&quot;,
+      &quot;index&quot;: {
+        &quot;indexType&quot;: &quot;kv&quot;
+      },
+      &quot;op&quot;: &quot;get&quot;
+      &quot;params&quot;: [&quot;User:1&quot;]
+    }
+  ],
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+// response
+{
+  &quot;data&quot;: null,
+  // TODO: Provide more realistic attestations
+  &quot;attestation&quot;: 0x0122340
+}
+</code></pre>
+<h2><a class="header" href="#footnotes" id="footnotes">Footnotes</a></h2>
+<ul>
+<li>[1] https://www.jsonrpc.org/specification</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../messages/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../datasets/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../messages/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../datasets/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Messages - Hybrid Network</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="Hybrid Network Spec.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="affix"><a href="../index.html">Hybrid Network</a></li><li><a href="../architecture-overview/index.html"><strong aria-hidden="true">1.</strong> Architecture Overview</a></li><li><a href="../mechanism-design/index.html"><strong aria-hidden="true">2.</strong> Mechanism Design</a></li><li><a href="../query-processing/index.html"><strong aria-hidden="true">3.</strong> Query Processing</a></li><li><a href="../payment-channels/index.html"><strong aria-hidden="true">4.</strong> Payment Channels</a></li><li><a href="../read-interface/index.html"><strong aria-hidden="true">5.</strong> Read Interface</a></li><li><a href="../messages/index.html" class="active"><strong aria-hidden="true">6.</strong> Messages</a></li><li><a href="../rpc-api/index.html"><strong aria-hidden="true">7.</strong> JSON-RPC API</a></li><li><a href="../datasets/index.html"><strong aria-hidden="true">8.</strong> Datasets</a></li><li><a href="../data-modeling/index.html"><strong aria-hidden="true">9.</strong> Data Modeling</a></li><li><a href="../subgraph-manifest/index.html"><strong aria-hidden="true">10.</strong> Subgraph Manifest</a></li><li><a href="../mappings-api/index.html"><strong aria-hidden="true">11.</strong> Mappings API</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Hybrid Network</h1>
+
+                        <div class="right-buttons">
+                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#messages" id="messages">Messages</a></h1>
+<h2><a class="header" href="#off-chain-messages" id="off-chain-messages">Off-Chain Messages</a></h2>
+<h3><a class="header" href="#encoding" id="encoding">Encoding</a></h3>
+<p>Off-chain messages are encoded using JSON<a href="#footnotes"><sup>1</sup></a>, a light-weight data interchange format, and the mostly commonly used format for exchanging data on the web.</p>
+<p>Off-chain messages may be referenced in an on-chain message via a Content ID (CID). These are produced according to the IPLD CID V1 specification<a href="#footnotes"><sup>2</sup></a>.</p>
+<p>CIDs must use the canonical CBOR encoding<a href="#footnotes"><sup>3</sup></a>, and SHA-256 multi-hash.</p>
+<p>In producing CIDs for JSON RPC messages, the optional <code>id</code> field from the JSON-RPC 2.0 specification should be omitted, as well as the optional conditional micropayment in the <code>readIndex</code> params list.</p>
+<h3><a class="header" href="#message-types" id="message-types">Message Types</a></h3>
+<h4><a class="header" href="#read-operation" id="read-operation">Read Operation</a></h4>
+<h5><a class="header" href="#fields" id="fields">Fields</a></h5>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>blockHash</td><td>String</td><td>The hash of the Ethereum block as of which to read the data.</td></tr>
+<tr><td>subgraphID</td><td>String</td><td>The ID of the subgraph to read from.</td></tr>
+<tr><td>index</td><td>Object</td><td>The Index Record corresponding to the index being read from.</td></tr>
+<tr><td>op</td><td>String</td><td>The name of the read operation.</td></tr>
+<tr><td>params</td><td>Array<any></td><td>The parameters passed into the called read operation.</td></tr>
+</tbody></table>
+<h4><a class="header" href="#index-record" id="index-record">Index Record</a></h4>
+<h4><a class="header" href="#fields-1" id="fields-1">Fields</a></h4>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>db</td><td>String</td><td>The identifier of the database model being used.</td></tr>
+<tr><td>indexType</td><td>String</td><td>An identifier of the index type used for the respective database model.</td></tr>
+<tr><td>partition</td><td>String</td><td>The name of the entity or interface which should be covered by the index.</td></tr>
+<tr><td>options</td><td>Array<String></td><td>Parameters specific to the type of index.</td></tr>
+</tbody></table>
+<h4><a class="header" href="#locked-transfer" id="locked-transfer">Locked Transfer</a></h4>
+<p>A message intended to be exchanged off-chain as a conditional micropayment in the data retrieval market for a subgraph. Accompanied by a Payment Channel Balance Proof which may be redeemed on-chain.</p>
+<h5><a class="header" href="#fields-2" id="fields-2">Fields</a></h5>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>chainID</td><td>Number</td><td>EIP155 chain ID.</td></tr>
+<tr><td>tokenDenomination</td><td>String</td><td>Token denomination. Must be &quot;ETH&quot; or &quot;DAI&quot;.</td></tr>
+<tr><td>transferredAmount</td><td>Number</td><td>A monotonically increasing amount of tokens which have been sent in the channel.</td></tr>
+<tr><td>receiver</td><td>String</td><td>The Ethereum address of the final destination of the micropayment. Must be the address of an Indexing Node which is staked for the subgraph referenced in the payment.</td></tr>
+<tr><td>subgraphID</td><td>String</td><td>The ID of the subgraph for which the receiver must be staked.</td></tr>
+<tr><td>maxLockedAmount</td><td>Number</td><td>The maximum amount of tokens locked in pending transfers.</td></tr>
+<tr><td>locksRoot</td><td>String</td><td>The root of a Merkle tree containing all locked data retrieval timelocks.</td></tr>
+<tr><td>lock</td><td>Object</td><td>The <a href="#off-chain-data-retrieval-timelock">Off-chain Data Retrieval Timelock</a> corresponding to the most recent lock added to the Balance Proof.</td></tr>
+<tr><td>nonce</td><td>Number</td><td>A monotonically increasing nonce value starting at <code>1</code>. Used for strictly ordering balance proofs.</td></tr>
+<tr><td>v</td><td>Number</td><td>The ECDSA recovery ID of the corresponding Payment Channel Balance Proof.</td></tr>
+<tr><td>r</td><td>String</td><td>The ECDSA signature r of the corresponding Payment Channel Balance Proof.</td></tr>
+<tr><td>s</td><td>String</td><td>The ECDSA signature v of the corresponding Payment Channel Balance Proof.</td></tr>
+</tbody></table>
+<h4><a class="header" href="#off-chain-data-retrieval-timelock" id="off-chain-data-retrieval-timelock">Off-chain Data Retrieval Timelock</a></h4>
+<p>An off-chain representation of the <a href="#data-retrieval-timelock">Data Retrieval Timelock</a></p>
+<h5><a class="header" href="#fields-3" id="fields-3">Fields</a></h5>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>expiration</td><td>Number</td><td>The block until which the locked transfer may be settled on-chain.</td></tr>
+<tr><td>gasPrice</td><td>Number</td><td>Amount of tokens locked.</td></tr>
+<tr><td>maxGas</td><td>Number</td><td>The maximum amount of gas to be consumed in the read operation.</td></tr>
+<tr><td>bytesPrice</td><td>Number</td><td>The price to pay per byte served.</td></tr>
+<tr><td>maxBytes</td><td>Number</td><td>The maximum amount of bytes to be sent over the wire</td></tr>
+<tr><td>maxTokens</td><td>Number</td><td>The maximum amount of tokens to be paid.</td></tr>
+<tr><td>requestCID</td><td>String</td><td>The content ID of the read operation to which the Indexing Node must respond with a valid attestation, in order to unlock the payment.</td></tr>
+</tbody></table>
+<h4><a class="header" href="#read-response" id="read-response">Read Response</a></h4>
+<p>There are several possible statuses for a read response. Read responses must update the nonce of the balance proof and may be accompanied by an attestation. It may update balances or other state in the state channel and may be used as a part of settling the channel.</p>
+<h5><a class="header" href="#success" id="success">Success</a></h5>
+<p>Sent if the read operation was successful, within the gas and response size limits specified. Includes the return data an attestation that the response is correct.</p>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>status</td><td>String</td><td>The constant &quot;SUCCESS&quot;</td></tr>
+<tr><td>data</td><td>any</td><td>The result of calling the read operation.</td></tr>
+<tr><td>attestation</td><td>Object</td><td>An Attestation, where the <code>responseCID</code> is the CID of the object containing the above fields.</td></tr>
+</tbody></table>
+<h5><a class="header" href="#max-gas-exceeded" id="max-gas-exceeded">Max Gas Exceeded</a></h5>
+<p>Sent if the maximum amount of gas specified was consumed before the read operation could complete. The caller of the read operation is responsible for paying for the computation, but not for any bandwidth.</p>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>status</td><td>String</td><td>The constant &quot;MAX_GAS_EXCEEDED&quot;</td></tr>
+<tr><td>attestation</td><td>Object</td><td>An Attestation, where the <code>responseCID</code> is the CID of the object containing the above field.</td></tr>
+</tbody></table>
+<h5><a class="header" href="#max-bytes-exceeded" id="max-bytes-exceeded">Max Bytes Exceeded</a></h5>
+<p>Sent if the result of calling the read operation is larger than the <code>maxBytes</code> parameter in the data retrieval timelock. The caller of the read operation is responsible for paying for the computation, but not for any bandwidth.</p>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>status</td><td>String</td><td>The constant &quot;MAX_BYTES_EXCEEDED&quot;</td></tr>
+<tr><td>attestation</td><td>Object</td><td>An Attestation, where the <code>responseCID</code> is the CID of the object containing the above field.</td></tr>
+</tbody></table>
+<h5><a class="header" href="#insufficient-funds" id="insufficient-funds">Insufficient Funds</a></h5>
+<p>Sent if the maximum amount of tokens which may be consumed by the read operation would exceed the balance in the payment channel.</p>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>status</td><td>String</td><td>The constant &quot;INSUFFICIENT_FUNDS&quot;.</td></tr>
+</tbody></table>
+<h5><a class="header" href="#price-too-low" id="price-too-low">Price Too Low</a></h5>
+<p>Sent if the Indexing Node is unwilling to provide the service at the prices offered by the caller.</p>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>status</td><td>String</td><td>The constant &quot;PRICE_TOO_LOW&quot;.</td></tr>
+<tr><td>askingPrice</td><td>Object</td><td>A price listing object.</td></tr>
+</tbody></table>
+<h4><a class="header" href="#price-listing" id="price-listing">Price Listing</a></h4>
+<p>A price listing advertising an Indexing Nodes asking price for computation and bandwidth, denominated in a specific token.</p>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>token</td><td>String</td><td></td></tr>
+<tr><td>gasPrice</td><td>Number</td><td>The price of a unit of gas, denominated in the token included in the listing. Must be an integer.</td></tr>
+<tr><td>bytesPrice</td><td>Number</td><td>The price per byte in the read operation result data, denominated in the token included in the listing. Must be an integer.</td></tr>
+</tbody></table>
+<h2><a class="header" href="#on-chain-messages" id="on-chain-messages">On-Chain Messages</a></h2>
+<h3><a class="header" href="#encoding-1" id="encoding-1">Encoding</a></h3>
+<p>Unsigned messages are encoded according to the ABIv2 specification<a href="#footnotes"><sup>4</sup></a>, while signed messages are encoded according to [EIP 712 specification<a href="#footnotes"><sup>5</sup></a>.</p>
+<p>Signed message formats are accompanied by a typed structured data definition, which can be used to compute the type, the type hash, and the data of a message according to the EIP 712 specification. Types are written as Solidity code, but are intended to be compatible with any language that compiles to EVM bytecode.</p>
+<h4><a class="header" href="#eip-712-domain-separator" id="eip-712-domain-separator">EIP 712 Domain Separator</a></h4>
+<p>The EIP 712 specification requires defining a domain separator to disambiguate signed messages intended for different chains, different protocols, or different versions of the same protocol.</p>
+<p>The domain separator for the protocol has the following chain-agnostic parameters:</p>
+<ul>
+<li><strong>name</strong> - 'graphprotocol'</li>
+<li><strong>version</strong> - '0'</li>
+</ul>
+<p>Additionally there are chain-specific parameters:</p>
+<ul>
+<li>mainnet
+<ul>
+<li><strong>chainid</strong> - 1</li>
+<li><strong>verifyingContract</strong> - TBD</li>
+</ul>
+</li>
+<li>ropsten
+<ul>
+<li><strong>chainid</strong> - 3</li>
+<li><strong>verifyingContract</strong> - TBD</li>
+</ul>
+</li>
+<li>kovan
+<ul>
+<li><strong>chainid</strong> - 42</li>
+<li><strong>verifyingContract</strong> - TBD</li>
+</ul>
+</li>
+<li>rinkeby
+<ul>
+<li><strong>chainid</strong> - 4</li>
+<li><strong>verifyingContract</strong> - TBD</li>
+</ul>
+</li>
+</ul>
+<h3><a class="header" href="#message-types-1" id="message-types-1">Message Types</a></h3>
+<h4><a class="header" href="#attestation" id="attestation">Attestation</a></h4>
+<h5><a class="header" href="#fields-4" id="fields-4">Fields</a></h5>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>requestCID</td><td>bytes</td><td>The content ID of the message.</td></tr>
+<tr><td>responseCID</td><td>bytes</td><td>The content ID of the response.</td></tr>
+<tr><td>gasUsed</td><td>uint256</td><td>The gas used to process the read operation.</td></tr>
+<tr><td>responseBytes</td><td>uint256</td><td>The size of the response data in bytes.</td></tr>
+<tr><td>v</td><td>uint8</td><td>The ECDSA recovery ID .</td></tr>
+<tr><td>r</td><td>bytes32</td><td>The ECDSA signature r.</td></tr>
+<tr><td>s</td><td>bytes32</td><td>The ECDSA signature v.</td></tr>
+</tbody></table>
+<h6><a class="header" href="#eip712-struct-type" id="eip712-struct-type">EIP712 Struct Type</a></h6>
+<pre><code class="language-solidity">struct Attestation {
+  bytes requestCID;
+  bytes responseCID;
+  uint256 gasUsed;
+  uint256 responseBytes;
+}
+</code></pre>
+<h4><a class="header" href="#payment-channel-balance-proof" id="payment-channel-balance-proof">Payment Channel Balance Proof</a></h4>
+<p>The Payment Channel Balance Proof is a signed off-chain message which represents a micropayment between an end user of The Graph and the Payment Channel Hub via a payment channel. Because all payment channels have the Payment Channel Hub as the receiver, it is sufficient to be able to identify the token denomination and the sender's Ethereum address (this may be derived from the signature), as well as the subgraph on which they are staked, to uniquely identify the channel to which the balance proof applies.</p>
+<h5><a class="header" href="#fields-5" id="fields-5">Fields</a></h5>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>chainID</td><td>uint256</td><td>EIP155 chain ID.</td></tr>
+<tr><td>tokenDenomination</td><td>string</td><td>Token denomination. Must be &quot;ETH&quot; or &quot;DAI&quot;.</td></tr>
+<tr><td>transferredAmount</td><td>uint256</td><td>A monotonically increasing amount of tokens which have been sent in the channel.</td></tr>
+<tr><td>receiver</td><td>address</td><td>The Ethereum address of the final destination of the micropayment. Must be the address of an Indexing Node which is staked for the subgraph referenced in the payment.</td></tr>
+<tr><td>subgraphID</td><td>bytes</td><td>The ID of the subgraph for which the receiver must be staked.</td></tr>
+<tr><td>maxLockedAmount</td><td>uint256</td><td>The maximum amount of tokens locked in pending transfers.</td></tr>
+<tr><td>locksRoot</td><td>bytes32</td><td>The root of a Merkle tree containing all locked data retrieval timelocks.</td></tr>
+<tr><td>nonce</td><td>uint256</td><td>A monotonically increasing nonce value starting at <code>1</code>. Used for strictly ordering balance proofs.</td></tr>
+<tr><td>v</td><td>uint8</td><td>The ECDSA recovery ID .</td></tr>
+<tr><td>r</td><td>bytes32</td><td>The ECDSA signature r.</td></tr>
+<tr><td>s</td><td>bytes32</td><td>The ECDSA signature v.</td></tr>
+</tbody></table>
+<h4><a class="header" href="#minting-channel-balance-proof" id="minting-channel-balance-proof">Minting Channel Balance Proof</a></h4>
+<p>The Minting Channel Balance Proof is a signed off-chain message which represents a micropayment between the Payment Channel Hub and an Indexing Node in The Graph. Because all payment channels have the Payment Channel Hub as the sender, it is sufficient to be able to identify the token denomination and the receiver's Ethereum address to uniquely identify the channel to which the balance proof applies.</p>
+<h5><a class="header" href="#fields-6" id="fields-6">Fields</a></h5>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>chainID</td><td>uint256</td><td>EIP155 chain ID.</td></tr>
+<tr><td>tokenDenomination</td><td>string</td><td>Token denomination. Must be &quot;ETH&quot; or &quot;DAI&quot;.</td></tr>
+<tr><td>transferredAmount</td><td>uint256</td><td>A monotonically increasing amount of tokens which have been sent in the channel.</td></tr>
+<tr><td>maxLockedAmount</td><td>uint256</td><td>The maximum amount of tokens locked in pending transfers.</td></tr>
+<tr><td>locksRoot</td><td>bytes32</td><td>The root of a Merkle tree containing all locked data retrieval timelocks.</td></tr>
+<tr><td>nonce</td><td>uint256</td><td>A monotonically increasing nonce value starting at <code>1</code>. Used for strictly ordering balance proofs.</td></tr>
+<tr><td>v</td><td>uint256</td><td>The ECDSA recovery ID .</td></tr>
+<tr><td>r</td><td>bytes32</td><td>The ECDSA signature r.</td></tr>
+<tr><td>s</td><td>bytes32</td><td>The ECDSA signature v.</td></tr>
+</tbody></table>
+<h6><a class="header" href="#eip712-struct-type-1" id="eip712-struct-type-1">EIP712 Struct Type</a></h6>
+<pre><code class="language-solidity">struct MintingChannelBalanceProof {
+  uint256 chainID;
+  address tokenNetworkAddress;
+  uint256 channelID;
+  uint256 transferredAmount;
+  uint256 maxLockedAmount;
+  bytes32 locksRoot;
+  uint256 nonce;
+}
+</code></pre>
+<h4><a class="header" href="#data-retrieval-timelock" id="data-retrieval-timelock">Data Retrieval Timelock</a></h4>
+<h5><a class="header" href="#fields-7" id="fields-7">Fields</a></h5>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>expiration</td><td>uint256</td><td>The block until which the locked transfer may be settled on-chain.</td></tr>
+<tr><td>gasPrice</td><td>uint256</td><td>Amount of tokens locked.</td></tr>
+<tr><td>maxGas</td><td>uint256</td><td>The maximum amount of gas to be consumed in the read operation.</td></tr>
+<tr><td>bytesPrice</td><td>uint256</td><td>The price to pay per byte served.</td></tr>
+<tr><td>maxBytes</td><td>uint256</td><td>The maximum amount of bytes to be sent over the wire</td></tr>
+<tr><td>maxTokens</td><td>uint256</td><td>The maximum amount of tokens to be paid.</td></tr>
+<tr><td>requestCID</td><td>bytes</td><td>The content ID of the read operation to which the Indexing Node must respond with a valid attestation, in order to unlock the payment.</td></tr>
+</tbody></table>
+<h2><a class="header" href="#footnotes" id="footnotes">Footnotes</a></h2>
+<ul>
+<li>[1] http://json.org</li>
+<li>[2] https://github.com/ipld/cid#cidv1</li>
+<li>[3] https://tools.ietf.org/html/rfc7049#section-3.9</li>
+<li>[4] https://solidity.readthedocs.io/en/develop/abi-spec.html</li>
+<li>[5] https://github.com/ethereum/EIPs/blob/master/EIPS/eip-712.md</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../read-interface/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../rpc-api/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../read-interface/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../rpc-api/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

@@ -1,0 +1,1548 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Hybrid Network</title>
+        
+        <meta name="robots" content="noindex" />
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="Hybrid Network Spec.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="affix"><a href="index.html">Hybrid Network</a></li><li><a href="architecture-overview/index.html"><strong aria-hidden="true">1.</strong> Architecture Overview</a></li><li><a href="mechanism-design/index.html"><strong aria-hidden="true">2.</strong> Mechanism Design</a></li><li><a href="query-processing/index.html"><strong aria-hidden="true">3.</strong> Query Processing</a></li><li><a href="payment-channels/index.html"><strong aria-hidden="true">4.</strong> Payment Channels</a></li><li><a href="read-interface/index.html"><strong aria-hidden="true">5.</strong> Read Interface</a></li><li><a href="messages/index.html"><strong aria-hidden="true">6.</strong> Messages</a></li><li><a href="rpc-api/index.html"><strong aria-hidden="true">7.</strong> JSON-RPC API</a></li><li><a href="datasets/index.html"><strong aria-hidden="true">8.</strong> Datasets</a></li><li><a href="data-modeling/index.html"><strong aria-hidden="true">9.</strong> Data Modeling</a></li><li><a href="subgraph-manifest/index.html"><strong aria-hidden="true">10.</strong> Subgraph Manifest</a></li><li><a href="mappings-api/index.html"><strong aria-hidden="true">11.</strong> Mappings API</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Hybrid Network</h1>
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#graph-protocol-specification" id="graph-protocol-specification">Graph Protocol Specification</a></h1>
+<p><strong>Version</strong>: 0.0.1</p>
+<p><strong>Stage</strong>:
+<img src="https://img.shields.io/badge/stage-wip-%23C25F38.svg" alt="WIP Badge" /></p>
+<p><strong>Authors</strong>:</p>
+<ul>
+<li><a href="github.com/zerim">Brandon Ramirez</a></li>
+</ul>
+<h2><a class="header" href="#abstract" id="abstract">Abstract</a></h2>
+<p>This document presents <em>Graph Protocol</em> (&quot;the protocol&quot;), a protocol for indexing public blockchain data and querying this data via a decentralized network. The canonical network implementing the protocol is referred to as <em>The Graph</em> (&quot;the network&quot;).</p>
+<p>Graph Protocol falls into a category we refer to as a <em>layer 2 read-scalability</em> solution. Its purpose is to enable decentralized applications (dApps) to query public blockchain data efficiently and trustlessly via a service that, like blockchains and the Internet itself, operates as a public utility. This is in the interest of minimizing the role of brittle, centralized infrastructure seen in many &quot;decentralized&quot; application architectures today.</p>
+<p>This specification covers the network architecture, protocol interfaces, algorithms, and economic incentives required to build a network that is robust, performant, cost-efficient, and enables a high margin of economic security for queries processed via the network.</p>
+<h2><a class="header" href="#philosophy" id="philosophy">Philosophy</a></h2>
+<p>This spec defines a hybrid network design in which the core mechanisms are decentralized and run on the blockchain, but some building blocks are still centralized. A future version of this specification will target full decentralization. This is in keeping with our team's philosophy of shipping early and delivering immediate value, while incrementally decentralizing, as research and the state of external ecosystem dependencies progress.</p>
+<p>See <a href="https://www.slideshare.net/secret/AnB7pWnqZhiW2d/17">this slide</a> from this <a href="https://www.youtube.com/watch?v=eRnYgXHQnlA&amp;t=586s">recent research talk</a> for more info on this approach.</p>
+<h2><a class="header" href="#disclaimer" id="disclaimer">Disclaimer</a></h2>
+<p>This spec defines a protocol that is still being implemented. Until a fully stable reference implementation exists, the specification is likely to change in breaking ways.</p>
+<h1><a class="header" href="#architecture-overview" id="architecture-overview">Architecture Overview</a></h1>
+<h2><a class="header" href="#high-level-architecture" id="high-level-architecture">High-Level Architecture</a></h2>
+<pre><code class="language-ascii">    +------------------------------------------------------------------+
+    |                                                                  |
+    | Decentralized Application (dApp)                                 |
+    |                                                                  |
+    +-+---------------------------------^--------------------------+---+
+      |                                 |                          |
+      |                              Queries                       |
+      |                                 |                          |
+      |   +-----------------------------+--------------------+     |
+      |   |                                                  |     |
+      |   |  Query Nodes and Clients                         | Micropayments
+      |   |                                                  |     |
+      |   +---------+-------------------^--------------------+     |
+      |             |                   |                          |
+Transactions   Attestations     (Reads, Attestations)              |
+      |             |                   |                          |
+      |   +---------v-----------+  +----+--------------------------v---+
+      |   |                     |  |                                   |
+      |   |  Fisherman Service  |  | Indexing Nodes                    |
+      |   |                     |  |                                   |
+      |   +---------+-----------+  +----^-------------------^----------+
+      |             |                   |                   |
+      |         Disputes          (Events, Data)          Data
+      |             |                   |                   |
+    +-v-------------v-------------------+-----+ +-----------+----------+
+    |                                         | |                      |
+    |                Ethereum                 | |   IPFS               |
+    |                                         | |                      |
+    +-----------------------------------------+ +----------------------+
+</code></pre>
+<h2><a class="header" href="#overview" id="overview">Overview</a></h2>
+<p>The Graph supports a command query responsibility segregation (CQRS) pattern where dApps send commands (transactions) directly to the underlying Ethereum blockchain, but issue queries (reads) against the layer 2 Indexing Nodes, in exchange for micropayments, via a Query Node or Query Client. In addition to being able to scale reads independently from transactions, there is the added benefit of being able to specify read semantics which differ from the more limited write semantics supported by the Ethereum blockchain (see <a href="architecture-overview/../data-modeling">Data Modeling</a>). Indeed it allows the dApp to query a completely different view on the underlying blockchain data, which may be augmented by data that is stored off-chain on IPFS. Read responses are accompanied by <a href="architecture-overview/../messages#attestation">attestations</a>, messages which certify the correctness of a response, which a Query Node may optionally provide to a Fisherman Service to improve the economic security guarantees as to the correctness of responses in the network (see <a href="architecture-overview/../mechanism-design">Mechanism Design</a>).</p>
+<p><strong>Note:</strong> While the above diagram conveys the full architecture of a dApp interacting with The Graph, the protocol is primarily concerned with the interface to the Indexing Nodes, as well as as the mechanisms implemented by a series of smart contracts which shall be deployed to the Ethereum mainnet. Query Nodes, Query Clients, and Fisherman Services are &quot;extra-protocol&quot;, which is to say that while they may be described in this document to add color, the protocol is agnostic to their specific interfaces and logic, and indeed we expect there to arise multiple implementations with distinct interfaces and logic. There may also arise multiple implementations for the Indexing Nodes, in a variety of languages, however, the service interfaces of each implementation must adhere strictly to the protocol defined in this specification.</p>
+<h2><a class="header" href="#components" id="components">Components</a></h2>
+<h3><a class="header" href="#decentralized-application-dapp" id="decentralized-application-dapp">Decentralized Application (dApp)</a></h3>
+<p>This is an application run by an end user in their browser or on their device. Its data and business logic primarily live on the Ethereum blockchain and IPFS, meaning that it is safe from censorship and the economic risks of the developers shutting down or going out of business. In exchange for this robustness, a user assumes the cost of operating the infrastructure required to power the dApp by paying gas costs to transact against the Ethereum blockchain and making micropayments for metered usage of The Graph to query the data required to power the dApp. The dApp may interact with The Graph via an embedded Query Client or external Query Node.</p>
+<h3><a class="header" href="#query-nodes--clients" id="query-nodes--clients">Query [Nodes | Clients]</a></h3>
+<p>Query Nodes provide an abstraction on top of the low-level read API provided by the Indexing Nodes. The Query Nodes may optionally choose to provide a GraphQL interface, SQL interface, or traditional REST interface, whatever is best-suited toward the respective domain in which it will be used. We include a reference JavaScript Query Node that provides a GraphQL interface and may be embedded and extended in a server or browser application as a Query Client.</p>
+<p>In addition to providing an interface to dApps, the Query Node is responsible for discovering Indexing Nodes in the network that are indexing a specific dataset, and selecting an Indexing Node to read from based on factors such as price and performance (see <a href="architecture-overview/../query-processing">Query Processing</a>). It may also optionally forward attestations along to a Fisherman Service.</p>
+<h3><a class="header" href="#indexing-nodes" id="indexing-nodes">Indexing Nodes</a></h3>
+<p>Indexing Nodes index one or more user-defined datasets, called <em>subgraphs</em>. These nodes perform a deterministic streaming extract, transform and load (ETL) of events emitted by the Ethereum blockchain. These events are processed by user-defined logic called <em>mappings</em> which run deterministically inside a WASM runtime, and are also able to load additional data from the Ethereum blockchain or IPFS, in order to compute the current state of a subgraph. See <a href="architecture-overview/../datasets">Datasets</a>) for more information.</p>
+<p><strong>Note:</strong> Here, and throughout this document, &quot;event&quot; is used in its standard usage, meaning data which is emitted asynchronously and may act as a trigger for computation. This is to disambiguate from &quot;Solidity events,&quot; which build atop Ethereum's low-level logging facilities, and will be referred to throughout this specification as &quot;Solidity events&quot; or &quot;Ethereum logs&quot;. Indexing Nodes will process events which include Ethereum logs, new blocks, as well as internal and external Ethereum transactions.</p>
+<p>Indexing Nodes implement a standard interface for reading from indexes and to advertise compute and bandwidth prices for read operations. See <a href="architecture-overview/../rpc-api">JSON-RPC API</a>) for full interface.</p>
+<h2><a class="header" href="#fisherman-service" id="fisherman-service">Fisherman Service</a></h2>
+<p>Fisherman Services accept read responses and attestations which they may verify, and in the event of an invalid response, may file a protocol-level dispute (see <a href="architecture-overview/../mechanism-design">Mechanism Design</a>). Note that whether or not the Fisherman Service actually verifies the response is completely opaque to the end-user and the protocol.</p>
+<p>In the v1 of the protocol, the Graph Protocol team will operate a Fisherman service.</p>
+<h3><a class="header" href="#ipfs" id="ipfs">IPFS</a></h3>
+<p>&quot;IPFS&quot; refers to the Interplanetary File Service, a decentralized content-addressed storage network. Data stored on IPFS is identified by a content ID (CID) which is computed by encoding and hashing the content being stored.<a href="architecture-overview/#footnotes"><sup>1</sup></a> It has become a common pattern to store these CIDs in Ethereum contracts, providing a form of cheap, decentralized, off-chain storage. The Graph will index data linked in IPFS, referenced in Ethereum smart contracts, to support this use case.</p>
+<p>The Graph also uses IPFS in this way - subgraph manifests, are stored on IPFS and referenced on-chain in the protocol's smart contracts (see <a href="architecture-overview/../subgraph-manifest">Subgraph Manifest</a>). In the future, we may store indexed data and even query results on IPFS, as having data stored in a global decentralized file system increases chances for reuse, adds redundancy for widely used data and effectively gives you caching for free.</p>
+<h3><a class="header" href="#ethereum" id="ethereum">Ethereum</a></h3>
+<p>Ethereum is a blockchain that can run small Turing-complete executable programs called smart contracts. Consensus is built around the results of these computations, using a Byzantine fault tolerant (BFT) consensus algorithm, meaning that a centralized actor cannot easily tamper with or rewrite the results of past computations.<a href="architecture-overview/#footnotes"><sup>2</sup></a></p>
+<p>The Ethereum blockchain plays two principle roles in the protocol. First, dApps include business logic implemented as smart contracts deployed to the Ethereum blockchain, which in turn emit events and store data that is indexed by The Graph. Second, the mechanisms that define the incentives and economic security of The Graph are themselves implemented as smart contracts deployed to the Ethereum blockchain.</p>
+<h2><a class="header" href="#footnotes" id="footnotes">Footnotes</a></h2>
+<ul>
+<li>[1] https://ipfs.io/ipfs/QmR7GSQM93Cx5eAg6a6yRzNde1FQv7uL6X1o4k7zrJa3LX/ipfs.draft3.pdf</li>
+<li>[2] https://github.com/ethereum/wiki/wiki/White-Paper</li>
+</ul>
+<h1><a class="header" href="#mechanism-design" id="mechanism-design">Mechanism Design</a></h1>
+<h2><a class="header" href="#overview-1" id="overview-1">Overview</a></h2>
+<p>The protocol implements a <em>work token</em> token model<a href="mechanism-design/#footnotes"><sup>1</sup></a> in which Indexing Node operators stake deposits of Graph Tokens for particular datasets, called subgraphs, to gain the right to participate in the data retrieval marketplaces for that dataset--indexing data and responding to read requests in exchange for micropayments. This deposit is forfeit in the event that the work is not performed correctly, or is performed maliciously, as defined in the <a href="mechanism-design/#dispute-resolution">slashing conditions</a>.</p>
+<p>There are secondary mechanisms in the protocol that also require a staking of tokens, such as curation, stake delegation, and name registration, all of which will be expanded upon in their respective sections.</p>
+<h2><a class="header" href="#graph-token" id="graph-token">Graph Token</a></h2>
+<p>We introduce a native token for the protocol, Graph Tokens, which are the only token that may be used for staking in the network. However, ETH or DAI is used for paying for read operations, thus reducing friction and balance sheet risk for end-users of dApps that query The Graph. Graph Tokens will have variable inflation to reward specific activities in the network, as described in <a href="mechanism-design/#inflation-rewards">Inflation Rewards</a>.</p>
+<h2><a class="header" href="#governance" id="governance">Governance</a></h2>
+<p>There are several parameters throughout this mechanism design that are set via a governance process. In the v1 specification, governance will consist of a multi-sig wallet contract controlled by the Graph Protocol team.</p>
+<p>In future versions of the protocol, more decentralized forms of governance will explored.</p>
+<h2><a class="header" href="#staking" id="staking">Staking</a></h2>
+<p>Indexing Nodes deposit a <code>stakingAmount</code> of Graph Tokens to process read requests for a specific dataset, which is identified by its <code>subgraphID</code>.</p>
+<p>For a <code>stakingAmount</code> to be considered valid, it must meet the following requirements:</p>
+<ul>
+<li><code>stakingAmount &gt;= minStakingAmount</code> where <code>minStakingAmount</code> is set via governance.</li>
+<li>The <code>stakingAmount</code> must be in the set of the top N staking amounts, where N is determined by the <code>maxIndexers</code> parameter that is set via governance.</li>
+</ul>
+<p>Indexing Nodes that have staked for a dataset are not limited by the protocol in how many read requests they may process for that dataset. However, it may be assumed that Indexing Nodes with higher deposits will receive more read requests and, thus, collect more fees, if all else is equal, as this represents a greater economic security margin to the end user.</p>
+<h2><a class="header" href="#data-retrieval-market" id="data-retrieval-market">Data Retrieval Market</a></h2>
+<p>Indexing Nodes which have staked to index a particular dataset, will be discoverable in the data retrieval market for that dataset.</p>
+<p>Indexing Nodes compete to have the most compelling combination of economic security margin (the amount of tokens staked), performance and price to attract read requests from users of the network. See <a href="mechanism-design/../query-processing">Query Processing</a> for an example market interaction.</p>
+<p>Indexing Nodes receive requests which include a <a href="mechanism-design/../messages#read-operation">Read Operation</a> and a Locked Transfer.</p>
+<p>The Read Operation fully defines the data that is being requested, while the <a href="mechanism-design/../messages#locked-transfer">Locked Transfer</a> is a micropayment that is paid, conditional, on the Indexing Node producing a <a href="mechanism-design/../messages#read-response">Read Response</a> along with a signed <a href="mechanism-design/../messages#attestation">Attestation</a> message which certifies the response data is correct.</p>
+<h2><a class="header" href="#data-retrieval-pricing" id="data-retrieval-pricing">Data Retrieval Pricing</a></h2>
+<p>Pricing in the data retrieval market is set according to the bandwidth and compute required to process a request.</p>
+<p>Compute is priced as a <code>gasPrice</code>, denominated in ETH or DAI, where the <code>gas</code> required for a request is determined by the specific read operation and parameters. See <a href="mechanism-design/../read-interface">Read Interface</a> for operation specific gas prices.</p>
+<p>Bandwidth is priced in <code>bytesPrice</code>, denominated in ETH or DAI, where <code>bytes</code> refers to the size of the <code>data</code> portion of the response, measured in bytes.</p>
+<p>Indexing Nodes respond with their compute and bandwidth costs in response to the <code>getPrices</code> method in the <a href="mechanism-design/../rpc-api">JSON-RPC API</a>.</p>
+<h2><a class="header" href="#verification" id="verification">Verification</a></h2>
+<h3><a class="header" href="#fisherman-service-1" id="fisherman-service-1">Fisherman Service</a></h3>
+<p>A Fisherman Service is an economic agent who verifies read responses in exchange for a reward in cases where they detect that an Indexing Node has attested to an incorrect response, and the Fisherman successfully disputes the response on-chain.</p>
+<p>In the v1 of the protocol, the Graph Protocol team will operate a Fisherman service. This is to accommodate the fact, that in the absence of forced errors in the v1 protocol, Fisherman rewards should go to zero overtime, and thus must have altruistic motives in order to perform their service.</p>
+<h3><a class="header" href="#dispute-resolution" id="dispute-resolution">Dispute Resolution</a></h3>
+<p>Dispute resolution is handled through an on-chain dispute resolution process. In future versions of the protocol, this may involve programmatically verifying proofs or using a Truebit-style verification game, but in the v1 specification, the outcome of a dispute will be decided by a centralized arbitrator interacting with the on-chain dispute resolution process.</p>
+<p>To dispute a response, a Fisherman must submit the attestation of the response they are disputing as well as a deposit.</p>
+<p><strong>TODO</strong> <a href="https://github.com/graphprotocol/research/issues/76">Define deposit amount for Fisherman disputes</a></p>
+<p>In the event of a successful dispute the Indexing Node forfeits the entire deposit of tokens they staked on the dataset for which they produced an incorrect response. The Fisherman, in turn, receives a reward equal to a percentage of the slashed deposit.</p>
+<p><strong>TODO</strong> <a href="https://github.com/graphprotocol/research/issues/77">Define slashing reward for successful disputes</a></p>
+<p>In the event of an unsuccessful dispute, the Fisherman forfeits the entire deposit they submitted with their dispute.</p>
+<h2><a class="header" href="#market-discovery" id="market-discovery">Market Discovery</a></h2>
+<p>Market discovery is the process by which Indexing Nodes choose which datasets to index and serve data on.</p>
+<p>When the data retrieval market for a particular dataset is active, an Indexing Node may observe payment activity on-chain to decide if it would be profitable to participate in that market.</p>
+<p>With little to no activity for a newly created dataset, however, payment activity provides a poor signal. Instead, this signal to the network is provided by a <em>Curation Market</em>.<a href="mechanism-design/#footnotes"><sup>2</sup></a></p>
+<h3><a class="header" href="#curation-market" id="curation-market">Curation Market</a></h3>
+<p>Curators are economic agents who earn rewards by betting on the future economic value of datasets, perhaps with the benefit of private information.</p>
+<p>A Curator stakes a deposit of Graph Tokens for a particular dataset in exchange for dataset-specific <em>subgraph tokens</em>. These tokens entitle the holder to a portion of a curation reward, which is paid in Graph Tokens through inflation. See <a href="mechanism-design/#inflation-rewards">Inflation Rewards</a> for how curation reward is calculated for each dataset.</p>
+<p>Subgraph tokens are issued according to a bonding curve, making it more expensive to mint subgraph tokens by locking up Graph Tokens as the amount of bonded tokens increases, thus making it more expensive to purchase a share of future curator inflation rewards.</p>
+<p><strong>TODO</strong> <a href="https://github.com/graphprotocol/research/issues/69">Define bonding curve for curation market or bonding curve parameters</a>.</p>
+<h4><a class="header" href="#curator-rewards" id="curator-rewards">Curator Rewards</a></h4>
+<p>Curators earn a percentage of the fees paid for queries on the subgraphs they curate. Each subgraph token minted corresponds to <em>one basis point (0.01%)</em> of the fees paid to Indexers of that subgraph.</p>
+<h2><a class="header" href="#participation-adjusted-inflation-reward" id="participation-adjusted-inflation-reward">Participation Adjusted Inflation Reward</a></h2>
+<p>To encourage Graph Token holders to participate in the network, the protocol implements a participation-adjusted inflation<a href="mechanism-design/#footnotes"><sup>3</sup></a> reward.</p>
+<p>The participation reward to the entire network is calculated as a function of a <code>targetParticipationRate</code> that is set via governance. If <code>actualParticipationRate == targetParticipationRate</code>, then <code>participationRewardRate = 0</code>. Conversely, the lower the actual participation rate is relative to the target participation rate, the higher the participation reward.</p>
+<p><strong>TODO</strong> <a href="https://github.com/graphprotocol/research/issues/70">Decide on actual function for relating <code>participationRewardRate</code> to <code>targetParticipationRate</code></a>.</p>
+<p>To incentivize actual work being provided to the network, not just staking, the participation reward will be distributed to Indexing Nodes who are staking for datasets with the strongest market signal from curators.</p>
+<ul>
+<li>Let <code>totalStakedForCuration</code> be the amount of Graph Tokens staked for curation in the entire network</li>
+<li>Let <code>stakedForCuration[s]</code> be the amount staked for curation for a particular dataset <code>s</code>.</li>
+<li>Let <code>stakedForIndexing[s]</code> be the total amount staked for indexing on a particular dataset <code>s</code>.</li>
+<li>Let <code>stakedForIndexing[s][i]</code> be the amount staked for indexing by Indexer <code>i</code> on dataset <code>s</code>.</li>
+</ul>
+<p>Then we can compute <code>participationReward[s][i]</code>, the participation reward allotted to Indexer <code>i</code> staked on dataset <code>s</code>, as follows:</p>
+<p><code>participationReward[s][i] = (stakedForCuration[s] / totalStakedForCuration) * (stakedForIndexing[s][i] / stakedForIndexing[s]) * participationRewardRate * totalTokenSupply</code>.</p>
+<h2><a class="header" href="#rounds" id="rounds">Rounds</a></h2>
+<p>Inflation rewards are calculated over a period of time, measured in blocks, according to a <code>roundDuration</code> parameter that is set via governance.</p>
+<p><strong>TODO</strong> <a href="https://github.com/graphprotocol/research/issues/75">How should round duration be set to balance gas costs and facilitating a dynamic market?</a></p>
+<p>For a given round <code>R</code>, the inflation rewards for that round are made available at the end of round <code>R+1</code>.</p>
+<p>This provides adequate time for off-chain micropayments to be settled on-chain. This settlement on-chain also provides a <a href="mechanism-design/#market-signals">market signal</a>. So, <code>roundDuration</code> should be set sufficiently small to provide a good market signal, but sufficiently large to reduce the amount of on-chain transactions required to redeem inflation rewards on an on-going basis.</p>
+<h2><a class="header" href="#stake-delegation" id="stake-delegation">Stake Delegation</a></h2>
+<p>Participation in the protocol is a specialized activity. In the case of Curators, it entails accurately predicting the future value of datasets to the network, while in the case of Indexing Nodes, it requires operating infrastructure to index and serve data.</p>
+<p>Token holders who do not feel equipped to perform one of these functions may <em>delegate</em> their tokens to an Indexing Node that is staked for a particular dataset. In this case, the delegator is the residual claimant for their stake, earning participation rewards according to the activities of the delegatee Indexing Node but also forfeiting their stake in the event that the delagatee Indexing Node is slashed.</p>
+<h2><a class="header" href="#footnotes-1" id="footnotes-1">Footnotes</a></h2>
+<ul>
+<li>[1] https://multicoin.capital/2018/02/13/new-models-utility-tokens/</li>
+<li>[2] https://medium.com/@simondlr/introducing-curation-markets-trade-popularity-of-memes-information-with-code-70bf6fed9881</li>
+<li>[3] https://medium.com/@petkanics/inflation-and-participation-in-stake-based-token-protocols-1593688612bf</li>
+</ul>
+<h1><a class="header" href="#query-processing" id="query-processing">Query Processing</a></h1>
+<h2><a class="header" href="#background" id="background">Background</a></h2>
+<p>In some respects, The Graph resembles a traditional distributed query engine, where users may retrieve data that is distributed across a variety of stores via a single query interface, typically SQL.</p>
+<p>In this analogy, Query Nodes play the role of query engine, and Indexing Nodes play the role of data stores.</p>
+<p>Notably, the protocol only defines the <em>read interface</em> to the Indexing Nodes, which is consumed by the Query Nodes, while remaining agnostic to the actual implementation of the Query Nodes.</p>
+<p>Some Query Node implementations may provide an SQL interface, while others may provide a GraphQL interface. Query Nodes may implement different heuristics for balancing the requirements of price, performance, and economic security or make these algorithms pluggable. Indeed, some users may choose to forgo the Query Node altogether and directly consume the lower-level read interface exposed by the Indexing Nodes.</p>
+<p>While this last case is certainly possible, we present the architecture and high-level algorithms for consuming the data indexed by The Graph via a distributed query engine because that is the intended usage pattern of the protocol.</p>
+<p>The specification will omit detailed steps in the algorithms that are left to implementers. However, the Graph Protocol team will implement a reference Query Node/Client that provides a concrete example of how these algorithms might be implemented in order to provide a GraphQL interface to The Graph.</p>
+<h2><a class="header" href="#query-processing-architecture" id="query-processing-architecture">Query Processing Architecture</a></h2>
+<h3><a class="header" href="#with-query-node" id="with-query-node">With Query Node</a></h3>
+<p><img src="query-processing/../assets/query-node-architecture.png" alt="Query Node Architecture" /></p>
+<h3><a class="header" href="#with-query-client" id="with-query-client">With Query Client</a></h3>
+<p><img src="query-processing/../assets/query-client-architecture.png" alt="Query Client Architecture" /></p>
+<h2><a class="header" href="#overview-2" id="overview-2">Overview</a></h2>
+<p>As shown in the diagrams above, the query processing may take place via a Query Client, which is embedded in the end-user application, or it may take place via a Query Node that is external to the application. In the latter case, the Query Node may be running locally on the user's machine or as an external service that is accessed via the Internet. Some extra-protocol Query Node providers may choose to also run Indexing Nodes to provide a low-latency GraphQL interface, optimized for specific datasets.</p>
+<p>In either construction, query processing consists of the following steps:</p>
+<ol>
+<li>Query Planning (Optional)</li>
+<li>Service Discovery</li>
+<li>Service Selection</li>
+<li>Processing and Payment</li>
+<li>Response Collation</li>
+</ol>
+<h2><a class="header" href="#design" id="design">Design</a></h2>
+<h3><a class="header" href="#query-planning" id="query-planning">Query Planning</a></h3>
+<p>In this stage, the Query Node transforms a query into a plan, consisting of an ordered set of lower-level read operations that may be used to retrieve the data specified by the query. These steps are encapsulated in some intermediate representation (IR).</p>
+<table><thead><tr><th>Implementor's Note</th></tr></thead><tbody>
+<tr><td>Query planning is optional. For example, producing a query plan is common for most SQL databases, but for GraphQL server implementations, it is common to directly process the query in field-level resolvers.</td></tr>
+</tbody></table>
+<h2><a class="header" href="#query-optimization" id="query-optimization">Query Optimization</a></h2>
+<p>Query plans may optionally be optimized based on a variety of heuristics and algorithms, which are out of the scope of this specification.</p>
+<h3><a class="header" href="#service-discovery" id="service-discovery">Service Discovery</a></h3>
+<p>Processing a query plan, or processing a query directly, results in low-level read operations being made to Indexing Nodes. Each read operation corresponds to a specific dataset and, thus, needs to be made against an Indexing Node for that dataset. In the Service Discovery step, the Query Node locates Indexing Nodes for a specific dataset as well as important metadata that is useful in deciding which Indexing Node to issue read operations to, such as price, performance, and economic security margin.</p>
+<h4><a class="header" href="#locating-indexing-nodes" id="locating-indexing-nodes">Locating Indexing Nodes</a></h4>
+<p>To locate Indexing Nodes with data for a specific dataset, the Query Node makes several calls to the service discovery layer, which is implemented as several smart contracts on the Ethereum mainnet:</p>
+<ol>
+<li>Resolve subgraph names via the Graph Name Service (GNS).</li>
+<li>Identify per-subgraph Indexing Nodes via the Staking Contract.</li>
+<li>Identify Indexing Node URLs via the Service Registry.</li>
+</ol>
+<h4><a class="header" href="#collecting-indexing-node-metadata" id="collecting-indexing-node-metadata">Collecting Indexing Node Metadata</a></h4>
+<p>After identifying the URLs of all Indexing Nodes for a given dataset, the next step is to collect the metadata for price, performance, and economic security margin. This information should be cached for future Service Discovery steps for subsequent queries.</p>
+<p>Fetching price and latency for a node is done via a single call to the Indexing Node RPC API and returns the following data: the latency required to fulfill the request; a <code>bandwidthPrice</code> measured in price per byte transmitted over the network; and a <code>gasPrice</code>, which captures the cost of compute and IO for a given read operation.</p>
+<p>Economic security margin is the amount that an Indexing Node has staked and is willing to forfeit in the event that they provide an incorrect response to a read operation. The Query Node receives this in the previously made call to the Staking Contract.</p>
+<table><thead><tr><th>Implementor's Note</th></tr></thead><tbody>
+<tr><td>The Query Node does not need to make calls to every Indexing Node for a given dataset. It could choose to only contact a randomly selected subset or to keep contacting Indexing Nodes until it finds one that meets its selection criteria.</td></tr>
+</tbody></table>
+<h3><a class="header" href="#service-selection" id="service-selection">Service Selection</a></h3>
+<p>In the Service Selection stage, Query Nodes choose which Indexing Nodes to transact with for each read operation. An algorithm for this stage could incorporate <code>latency</code> (measured in ms), <code>economicSecurityMargin</code> (measured in Graph Tokens), <code>gasPrice</code>, and <code>bytesPrice</code> (the cost of sending a byte over the network).</p>
+<p>A naive algorithm for service selection could look like the following:</p>
+<ol>
+<li>Filter Indexing Nodes where <code>economicSecurityMargin &lt; minEconomicSecurityMargin</code>.
+<ul>
+<li>If no Indexing Nodes remain, return an error to the sender of the query for this piece of data, and specify the reason.</li>
+</ul>
+</li>
+<li>Filter Indexing Nodes where <code>latency &lt; minLatency</code>.
+<ul>
+<li>If no Indexing Nodes remain, increase <code>minLatency</code> by 33%, and repeat the step.</li>
+</ul>
+</li>
+<li>Estimate the cost of the read operation for each remaining Index.
+<ul>
+<li>Assume 80% of the maximum possible entities returnable by the query will be returned.</li>
+<li>Assume 25% of the max field size (in bytes) for each entity field with variable size.</li>
+<li>Calculate the bandwidth and gas costs based on the above assumptions and the gas costs specified in the <a href="query-processing/../read-interface">Read Interface</a>.</li>
+</ul>
+</li>
+<li>Choose the Indexing Node with the lowest estimated cost for the read operation.</li>
+</ol>
+<p>In this example algorithm, <code>minLatency</code> and <code>minEconomicSecurityMargin</code> could be set per dataset or for all datasets. Additionally, it could be set by the Query Node or sent as metadata with an individual query.</p>
+<h3><a class="header" href="#processing-and-payment" id="processing-and-payment">Processing and Payment</a></h3>
+<p>Available read operations are defined in the <a href="query-processing/../read-interface">Read Interface</a>, and are sent to the Indexing Nodes via the <a href="query-processing/../rpc-api">JSON-RPC API</a>. They are accompanied by Locked Transfers, conditional micropayments that may be unlocked by the Indexing Node producing a Read Response and a signed <a href="query-processing/../messages#attestation">Attestation</a> message certifying the response data is correct.
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; v1-spec: Update links and minor edits</p>
+<h3><a class="header" href="#response-collation" id="response-collation">Response Collation</a></h3>
+<p>Once all read operations have been processed, the resulting data must be collated into a response that fulfills the read schema of the query interface provided by the Query Node. This response is then returned to the sender of the query.</p>
+<h1><a class="header" href="#payment-channels" id="payment-channels">Payment Channels</a></h1>
+<h2><a class="header" href="#overview-3" id="overview-3">Overview</a></h2>
+<p>The protocol adopts payment channels, as a means of facilitating micropayments that are paid to Indexing Nodes in exchange for reading from indexes.</p>
+<p>The protocol's payment channel architecture follows the Raiden Network Specification<a href="payment-channels/#footnotes"><sup>1</sup></a>, with a few notable differences:</p>
+<ol>
+<li>The Graph v1 implements a hub-and-spoke topology that dramatically simplifies payment routing, compared to a fully distributed network topology.</li>
+<li>The Graph v1 introduces a new concept, <em>minting channels</em>, to get around prohibitively large balance requirements for the payment channel hub.</li>
+<li>The Graph uses an alternate locking mechanism for mediated payments that is tailored to the domain of reading data from indexes.</li>
+<li>Payment channels are one-way and may be withdrawn from by payment receiver without closing channel. See Payment Channel(#payment-channel).</li>
+<li>Balance Proofs may be exchanged off-chain directly between the sender and final recipient of a mediate transfer. See <a href="payment-channels/#micropayment-routing">Micropayment Routing</a>.</li>
+</ol>
+<p>In this construction, the Payment Channel Hub acts as a <em>trusted intermediary</em>, although users of the protocol have no counter-party risk with respect to one another. A future version of this protocol will move away from the hub and spoke topology in favor of a decentralized payment channel network topology. At that point, minting channels will also likely be removed from the specification.</p>
+<h2><a class="header" href="#hub-and-spoke-topology" id="hub-and-spoke-topology">Hub-and-Spoke Topology</a></h2>
+<h3><a class="header" href="#architecture" id="architecture">Architecture</a></h3>
+<pre><code class="language-ascii">       +-------------------+-------------------+------------------+
+       |                   |                   |                  |
+       |                   |                   |                  |
+  +----+-----+        +----+-----+       +-----+----+             |
+  |          |        |          |       |          |             |
+  | Indexing |        | Indexing |       | Indexing |             |
+  | Node     |        | Node     |       | Node     |             |
+  |          |        |          |       |          |             |
+  +-----^----+        +----^-----+       +-----^----+         Sell GRT/
+        |                  |                   |              Buy ETH
+        |                  |                   |                  |
+        |                  |                   |                  |
+        +---GRT-----+     GRT     +-----GRT----+                  |
+                    |      |      |                               |
+ minting channels   |      |      |                               |
+                    |      |      |                               |
+                +---+------+------+---+                  +--------v------+
+                |                     |      Sell ETH/   |               |
+                | Payment Channel Hub +------------------&gt; Token Auction |
+                |                     |      Buy GRT     |               |
+                +---^------^------^---+                  +---------------+
+                    |      |      |
+ payment channels   |      |      |
+                    |      |      |
+      +-----ETH-----+     ETH     +----ETH---+
+      |                    |                 |
+      |                    |                 |
++-----+------+      +------+-----+     +-----+------+
+|            |      |            |     |            |
+|  End user  |      |  End user  |     |  End user  |
+|            |      |            |     |            |
++------------+      +------------+     +------------+
+</code></pre>
+<h3><a class="header" href="#high-level-design" id="high-level-design">High-Level Design</a></h3>
+<p>End users pay Indexing Nodes via the Payment Channel Hub. Micropayments from end users to the Payment Channel Hub are denominated in ETH or DAI, while micropayments from the Payment Channel Hub to Indexing Nodes are denominated in Graph Tokens, which the Payment Channel Hub mints.</p>
+<p>To determine the exchange rate between ETH or DAI and Graph Tokens, the Payment Channel Hub reads from an on-chain Token Auction contract that acts as a price feed. The Token Auction contract also acts as a sink for the Graph Tokens that are minted by the Payment Channel Hub and provides a mechanism for selling the ETH or DAI that the Payment Channel Hub collects.</p>
+<h2><a class="header" href="#payment-channel-hub" id="payment-channel-hub">Payment Channel Hub</a></h2>
+<p>The Payment Channel Hub is a service, an externally owned Ethereum account operated by the Graph Protocol Team. It acts as a counter party for payment channels with end users and for minting channels with Indexing Nodes.</p>
+<p>To act as a counterparty for the minting channel contract, the Ethereum account corresponding to the Payment Channel Hub must be designated as a <em>treasurer</em> of the Graph Token (GRT) ERC-20 contract, which grants the hub the right to mint Graph Tokens.</p>
+<h2><a class="header" href="#payment-channel" id="payment-channel">Payment Channel</a></h2>
+<p>The payment channel presented here is modeled off the payment channel design in the Raiden Specification<a href="payment-channels/#footnotes"><sup>2</sup></a> with the key difference that payments are only made in one direction from the end-user to the Payment Channel Hub. This difference enables other simplifications in the design:</p>
+<ol>
+<li>Balance proofs may be settled on-chain continuously, without closing the channel.</li>
+<li>Tokens may be withdrawn from the channel by the Payment Channel Hub continuously, without closing the channel.</li>
+</ol>
+<p>As is the case with normal payment channel contracts, deposits may be made by participants, specifically the end-user, on an ongoing basis. For the end-user to withdraw tokens that they deposited, the channel must be closed and settled.</p>
+<h2><a class="header" href="#minting-channel" id="minting-channel">Minting Channel</a></h2>
+<p>Traditional payment channels involve exchanging off-chain messages that are &quot;backed&quot; by a deposit in a channel on-chain, which may be used to settle the final balance when the payment channel is closed. We present a variation on this construction, where instead of being backed by a deposit, payments in the channel are backed by the ability of one participant, the sender, to mint the token that the micropayments are denominated in.</p>
+<p>Specifically, the Payment Channel Hub has the ability to mint Graph Tokens to pay Indexing Nodes an amount equivalent to the amount of ETH or DAI paid toward that Indexing Node by an end user. The minting channel acts as the second leg of a mediated transfer.</p>
+<p>The minting channel should be settled once per <em>round</em>. See <a href="payment-channels/../mechanism-design">Mechanism Design</a> for more information.</p>
+<h2><a class="header" href="#micropayment-routing" id="micropayment-routing">Micropayment Routing</a></h2>
+<p>Because of the hub-and-spoke payment channel, micropayment routing is trivial. Payment must always go through the Payment Channel Hub, and only deposits in the first leg of the mediate payment need be checked to confirm that there are sufficient funds to cover the transfer. As such, balance proofs may be exchanged directly between sender and final recipient of a mediated micropayment, and the receiver may send messages to the payment channel hub on the sender's behalf. This facilitates sending valid <a href="payment-channels/.../messages">Locked Transfer messages</a> in-band with requests to the <a href="payment-channels/../rpc-api">JSON RPC API</a>.</p>
+<h2><a class="header" href="#token-auction" id="token-auction">Token Auction</a></h2>
+<p>With the minting channel construction, new Graph Tokens are minted in direct proportion to the amount of value exchanged between end users and Indexing Nodes in a given round. The Token Auction acts as a sink for these new Graph Tokens, whereby the Payment Channel &quot;buys back&quot; the Graph Tokens previously minted in exchange for the ETH or DAI collected in the payment channels through an on-chain auction mechanism.</p>
+<p><strong>TODO</strong> <a href="https://github.com/graphprotocol/research/issues/79">Select on-chain auction/ price feed mechanism.</a></p>
+<p>The Token Auctions implemented as smart contracts on the Ethereum blockchain also act as on-chain price feeds, indicating an exchange rate between the supported tokens and GRT. This may be used by the Payment Channel Hub to determine the amount of Graph Tokens to send on the second leg of the mediated transfer via the minting channel.</p>
+<h2><a class="header" href="#data-retrieval-timelock" id="data-retrieval-timelock">Data Retrieval Timelock</a></h2>
+<p>Traditional mediated transfers via payment channels use a hash timelock, in which payments are unlocked by providing the pre-image to a hash. In The Graph, micropayments are unlocked by the Indexing Node performing useful work, that of reading from an index, and providing an attestation that the work was performed correctly. Rather than having a fixed amount of tokens locked, the amount of tokens unlocked are dynamic, based on the amount of bandwidth and computation required to fulfill the request, and maximum computation and bandwidth limits which is defined in the lock.</p>
+<p>See <a href="payment-channels/../messages#data-retrieval-timelock">Data Retrieval Timelock</a> in the Messages section of the specification.</p>
+<h2><a class="header" href="#footnotes-2" id="footnotes-2">Footnotes</a></h2>
+<ul>
+<li>[1] https://github.com/raiden-network/spec</li>
+<li>[2] https://raiden-network-specification.readthedocs.io/en/latest/smart_contracts.html#tokennetwork-channel-protocol-overview</li>
+</ul>
+<h1><a class="header" href="#read-interface" id="read-interface">Read Interface</a></h1>
+<h2><a class="header" href="#overview-4" id="overview-4">Overview</a></h2>
+<p>To participate in the data retrieval market, Indexing Nodes implement a low-level read interface to the indexed data in their store. The read interface not only provides the means of retrieving data from an Indexing Node, but it also defines a contract that an Indexing Node is agreeing to uphold or else be slashed. This is enabled by attestations, which assert that a response was produced correctly and may be verified on-chain.</p>
+<h2><a class="header" href="#calling-read-operations" id="calling-read-operations">Calling Read Operations</a></h2>
+<p>Available read operations are defined by the respective interface of the index being read from. See <a href="read-interface/#index-abstract-data-structures">Index Abstract Data Structures</a> and <a href="read-interface/#index-types">Index Types</a> for more information.</p>
+<p>While the read interfaces are described using a TypeScript notation, all the interfaces are language agnostic and defined in terms of JSON types.</p>
+<p>Calling these read operations is done via JSON RPC 2.0<a href="read-interface/#footnotes"><sup>1</sup></a>. See the full <a href="read-interface/../rpc-api">JSON RPC API</a>.</p>
+<p>The method of interest here is <code>callReadOp</code> which accepts the following parameters:</p>
+<ol>
+<li><code>Object</code></li>
+</ol>
+<ul>
+<li><code>blockHash</code>: <code>String</code> - The hash of the Ethereum block from which to read the data.</li>
+<li><code>subgraphID</code>: <code>String</code> - The ID of the subgraph to read from.</li>
+<li><code>index</code>: <code>Object</code> - The <a href="read-interface/#indexes">IndexRecord</a> of the index being read from.</li>
+<li><code>op</code>: <code>String</code> - The name of the read operation.</li>
+<li><code>params</code>: <code>[any]</code> - The parameters passed into the called read operation.</li>
+</ul>
+<ol start="2">
+<li><code>Object</code> - A <a href="read-interface/../messages#locked-transfer">Locked Transfer</a> message which serves as a conditional micropayment for the read operation.</li>
+</ol>
+<p>The <code>readIndex</code> method returns the following:</p>
+<ol>
+<li><code>Object</code></li>
+</ol>
+<ul>
+<li><code>data</code>: <code>any</code> - The data retrieved by the read operation.</li>
+<li><code>attestation</code>: Object - An attestation that <code>data</code> is a correct response for the given read operation (see <a href="read-interface/#attestation">Attestation</a>).</li>
+</ul>
+<pre><code class="language-js">// request
+{
+  &quot;method&quot;: &quot;readIndex&quot;,
+  &quot;params&quot;: [
+    {
+      &quot;blockHash&quot;: &quot;xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1&quot;,
+      &quot;subgraphID&quot;: &quot;QmTeW79w7QQ6Npa3b1d5tANreCDxF2iDaAPsDvW6KtLmfB&quot;,
+      &quot;index&quot;: {
+        &quot;indexType&quot;: &quot;kv&quot;
+      },
+      &quot;op&quot;: &quot;get&quot;
+      &quot;params&quot;: [&quot;User:1&quot;]
+    }
+  ],
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+// response
+{
+  &quot;data&quot;: {
+    &quot;firstName&quot;: &quot;Vitalik&quot;,
+    &quot;lastName&quot;: &quot;Buterin&quot;,
+  },
+  // TODO: Provide more realistic attestations
+  &quot;attestation&quot;: 0x0122340
+}
+</code></pre>
+<h5><a class="header" href="#example---entity-doesnt-exist" id="example---entity-doesnt-exist">Example - Entity doesn't exist</a></h5>
+<pre><code class="language-js">// request
+{
+  &quot;method&quot;: &quot;readIndex&quot;,
+  &quot;params&quot;: [
+    {
+      &quot;blockHash&quot;: &quot;xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1&quot;,
+      &quot;index&quot;: {
+        &quot;indexType&quot;: &quot;kv&quot;
+      },
+      &quot;op&quot;: &quot;get&quot;
+      &quot;params&quot;: [&quot;User:1&quot;]
+    }
+  ],
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+// response
+{
+  &quot;data&quot;: null,
+  // TODO: Provide more realistic attestations
+  &quot;attestation&quot;: 0x0122340
+}
+</code></pre>
+<h2><a class="header" href="#indexes" id="indexes">Indexes</a></h2>
+<p>All read operations require that the caller specify an index. Index data structures efficiently organize the data to support different read access patterns.</p>
+<p>Indexes may include the entire dataset or cover only a subset. This is useful for enabling sharding, where different Indexing Nodes may store different subsets of the dataset to reduce the storage requirements for a single Indexing Node or enable better read performance.</p>
+<p>Indexes are defined by an <code>IndexRecord</code> which has the following shape:</p>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>db</td><td>String</td><td>The identifier of the database model being used.</td></tr>
+<tr><td>indexType</td><td>String</td><td>An identifier of the index type used for the respective database model.</td></tr>
+<tr><td>partition</td><td>String</td><td>The name of the entity or interface which should be covered by the index.</td></tr>
+<tr><td>options</td><td>Object</td><td>Options specific to the type of index.</td></tr>
+</tbody></table>
+<h6><a class="header" href="#example-index-records" id="example-index-records">Example Index Records</a></h6>
+<p>Given a dataset with the following data model:</p>
+<pre><code class="language-graphql">interface EthereumAccount {
+  id: ID!
+  address: String!
+}
+
+type Contract implements EthereumAccount {
+  id: ID!
+  address: String!
+}
+
+type User implements EthereumAccount {
+  id: ID!
+  address: String!
+  name: FullName
+}
+
+type FullName {
+  first: String!
+  last: String!
+}
+</code></pre>
+<p>Then, the following would be valid index names for that dataset:</p>
+<table><thead><tr><th>Index Name</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>{ db: &quot;entitydb&quot;, indexType: &quot;dictionary&quot; }</code></td><td>A basic key-value index supporting constant-time lookup of all entities in dataset.</td></tr>
+<tr><td><code>{ db: &quot;entitydb&quot;, &quot;indexType: &quot;dictionary&quot;, partition: &quot;User&quot; }</code></td><td>A basic key-value index supporting constant-time lookup of <code>User</code> entities.</td></tr>
+<tr><td><code>{ db: &quot;entitydb&quot;, indexType: &quot;searchTree&quot;, options: { sortBy: [&quot;id&quot;] } }</code></td><td>A sorted key-value index supporting iteration through all entities, sorted by ID.</td></tr>
+<tr><td><code>{ db: &quot;entitydb&quot;, indexType: &quot;searchTree&quot;, partition: &quot;EthereumAccount&quot;, options: { sortBy: [&quot;address&quot;] }}</code></td><td>A sorted key-value index supporting iteration through all entities implementing the <code>EthereumAccount</code> interface, sorted by the <code>address</code> field.</td></tr>
+<tr><td><code>{ db: &quot;entitydb&quot;, indexType: &quot;searchTree&quot;, partition: &quot;User&quot;,  options: { sortBy: [&quot;name.first&quot;, &quot;name.last&quot;] } }</code></td><td>A sorted key-value index supporting iteration through all <code>User</code> entities, first sorted by the nested field <code>name.first</code>, then by the nested field <code>name.last</code> (i.e., a compound index).</td></tr>
+</tbody></table>
+<h3><a class="header" href="#index-abstract-data-structures" id="index-abstract-data-structures">Index Abstract Data Structures</a></h3>
+<p>All concrete index types implement an indexing abstract data structure, which specify the interface, semantics, and gas costs for read operations against that index.</p>
+<p>The concrete types (i.e., <code>K</code> and <code>V</code> shown below), as well as the implicit comparator function to determine sort order, are specified by each concrete index type.</p>
+<h4><a class="header" href="#dictionary" id="dictionary">Dictionary</a></h4>
+<h5><a class="header" href="#type" id="type">Type</a></h5>
+<p>Dictionary&lt;K,V&gt;</p>
+<h5><a class="header" href="#operations" id="operations">Operations</a></h5>
+<table><thead><tr><th>Op</th><th>Signature</th><th>Description</th><th>Gas Cost</th></tr></thead><tbody>
+<tr><td>get</td><td><code>(key: K) =&gt; V</code></td><td>Retrieves a value by its key.</td><td><code>opCostDictionaryGet</code> (set via governance)</td></tr>
+</tbody></table>
+<h4><a class="header" href="#search-tree" id="search-tree">Search Tree</a></h4>
+<h5><a class="header" href="#type-1" id="type-1">Type</a></h5>
+<p><code>SearchTree&lt;K,V&gt;</code></p>
+<h5><a class="header" href="#operations-1" id="operations-1">Operations</a></h5>
+<table><thead><tr><th>Op</th><th>Signature</th><th>Description</th><th>Gas Cost</th></tr></thead><tbody>
+<tr><td>find</td><td><code>(predicate: FilterPredicate, options?: { gte?: K, lt?: K } ) =&gt; V</code></td><td>Retrieves the first value for which the <code>FilterPredicate</code> returns true, searching in ascending order. If specified, only take values whose sort keys are between the range parameters <code>gte</code> (inclusive) and <code>lt</code> (exclusive).</td><td><code>(opCostSearchTreeStep opCostFilterPredicate) * N</code> where <code>N</code> is the number of iterations taken to find the value, <code>opCostSearchTreeStep</code> is set via governance, and <code>opCostFilterPredicate</code> is calculated for the specific filter predicate provided.</td></tr>
+<tr><td>findLast</td><td><code>(predicate: FilterPredicate, options?: { gt?: K, lte?: K } ) =&gt; V</code></td><td>Retrieves the first value for which the <code>FilterPredicate</code> returns true, searching in descending order. If specified, only take values whose sort keys are between the range parameters <code>gt</code> (exclusive) and <code>lte</code> (inclusive).</td><td><code>(opCostSearchTreeStep opCostFilterPredicate) * N</code> where <code>N</code> is the number of iterations taken to find the value, <code>opCostSearchTreeStep</code> is set via governance, and <code>opCostFilterPredicate</code> is calculated for the specific filter predicate provided.</td></tr>
+<tr><td>get</td><td><code>(key: K) =&gt; V</code></td><td>Retrieves a value by its sort key. If multiple values share the same sort key, it will retrieve the first value inserted with the sort key.</td><td><code>opCostSearchTreeGetPerH * H</code> where <code>H</code> is the height of a binary search tree, and <code>opCostSearchTreeGetPerH</code> is set via governance.</td></tr>
+<tr><td>take</td><td><code>(count: Number, options?: { skip?: Number, gte?: K, lt?: K}) =&gt; [V]</code></td><td>Retrieves the first N values, specified by <code>count</code>, from the index in ascending order, optionally skipping the number of values specified by <code>skip</code>. If specified, it only takes values whose sort keys are between the range parameters <code>gte</code> (inclusive) and <code>lt</code> (exclusive).</td><td><code>opCostSearchTreeStep * N</code> where <code>N</code> is the number of iterations taken including skipped values.</td></tr>
+<tr><td>takeUntil</td><td><code>(predicate: FilterPredicate, options?:{ skip?: Number, gte?: K, lt?: K}) =&gt; [V]</code></td><td>Retrieves values from the index in ascending order until <code>FilterPredicate</code> returns false, optionally skipping the number of values specified by <code>skip</code>. If specified, it only takes values whose sort keys are between the range parameters <code>gte</code> (inclusive) and <code>lt</code> (exclusive).</td><td><code>(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S</code> where <code>N</code> is the number of iterations taken not including skipped values, <code>S</code> is the number of values skipped over, <code>opCostSearchTreeStep</code> is set via governance, and <code>opCostFilterPredicate</code> is calculated for the specific filter predicate provided.</td></tr>
+<tr><td>takeWhile</td><td><code>(predicate: FilterPredicate, options?:{ skip?: Number, gte?: K, lt?: K}) =&gt; [V]</code></td><td>Retrieves values from the index in ascending order, while <code>FilterPredicate</code> returns true, optionally skipping the number of values specified by <code>skip</code>. If specified, it only takes values whose sort keys are between the range parameters <code>gte</code> (inclusive) and <code>lt</code> (exclusive).</td><td><code>(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S</code> where <code>N</code> is the number of iterations taken not including skipped values, <code>S</code> is the number of values skipped over, <code>opCostSearchTreeStep</code> is set via governance, and <code>opCostFilterPredicate</code> is calculated for the specific filter predicate provided.</td></tr>
+<tr><td>takeLast</td><td><code>(count: Number, options?: { skip?: Number, gt?: K, lte?: K })</code></td><td>Retrieves the last N values, specified by <code>count</code>, from the index in descending order, optionally skipping the number of values specified by <code>skip</code>. If specified, it only takes values whose sort keys are between the range parameters <code>gt</code> (exclusive) and <code>lte</code> (inclusive).</td><td><code>opCostSearchTreeStep * N</code> where <code>N</code> is the number of iterations taken including skipped values.</td></tr>
+<tr><td>takeLastUntil</td><td><code>(predicate: FilterPredicate, options?:{ skip?: Number, gt?: K, lte?: K}) =&gt; [V]</code></td><td>Retrieves values from the index in descending order, until <code>FilterPredicate</code> returns false, optionally skipping the number of values specified by <code>skip</code>. If specified, it only takes values whose sort keys are between the range parameters <code>gt</code> (exclusive) and <code>lte</code> (inclusive).</td><td><code>(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S</code> where <code>N</code> is the number of iterations taken not including skipped values, <code>S</code> is the number of values skipped over, <code>opCostSearchTreeStep</code> is set via governance, and <code>opCostFilterPredicate</code> is calculated for the specific filter predicate provided.</td></tr>
+<tr><td>takeLastWhile</td><td><code>(predicate: FilterPredicate, options?:{ skip?: Number, gt?: K, lte?: K}) =&gt; [V]</code></td><td>Retrieves values from the index in descending order, while <code>FilterPredicate</code> returns true, optionally skipping the number of values specified by <code>skip</code>. If specified, it only takes values whose sort keys are between the range parameters <code>gt</code> (exclusive) and <code>lte</code> (inclusive).</td><td><code>(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S</code> where <code>N</code> is the number of iterations taken not including skipped values, <code>S</code> is the number of values skipped over, <code>opCostSearchTreeStep</code> is set via governance, and <code>opCostFilterPredicate</code> is calculated for the specific filter predicate provided.</td></tr>
+</tbody></table>
+<h3><a class="header" href="#filter-predicates" id="filter-predicates">Filter Predicates</a></h3>
+<p>Filter predicates allow for declaratively asserting whether a value meets certain criteria. Filter predicates are expressed as objects that can be passed into several low-level index read operations, such as <code>takeWhile</code> and <code>find</code>.</p>
+<h4><a class="header" href="#structure" id="structure">Structure</a></h4>
+<p>Filter predicates are expressed through a simple DSL:</p>
+<pre><code class="language-typescript">type FilterPredicate = FilterPredicateAnd | FilterPredicateOr | FilterPredicateLeaf
+
+interface FilterPredicateAnd {
+  and: [FilterPredicate];
+}
+
+interface FilterPredicateOr {
+  or: [FilterPredicate];
+}
+
+type FilterPredicateLeaf = StringFilter | NumberFilter | BooleanFilter
+
+interface BaseFilter {
+  // The field the predicate will be applied to. Nested fields may be
+  // specified by concatenating field names with a &quot;.&quot;
+  // If no field is specified, the predicate will be applied to the value. This
+  // is only supported if the value is a primitive type.
+  field?: String;
+}
+
+// If multiple filter clauses are supplied, they will be treated as a logical AND.
+interface StringFilter extends BaseFilter {
+  equals?: String;
+  notEquals?: String;
+  // Contains string
+  contains?: String;
+  // Does not contain string
+  notContains?: String;
+  startsWith?: String;
+  notStartsWith?: String;
+  endsWith?: String;
+  notEndsWith?: String;
+  // Less than
+  lt?: String;
+  // Less than or equal to
+  lte?: String;
+  // Greater than
+  gt?: String;
+  // Greater than or equal to
+  gte?: String;
+  // Contained in list
+  in?: [String];
+  // Not contained in list
+  notIn?: [String];
+}
+
+
+// If multiple filter clauses are supplied, they will be treated as a logical AND.
+interface NumberFilter extends BaseFilter {
+  equals?: Number;
+  notEquals?: Number;
+  // Less than
+  lt?: Number;
+  // Less than or equal to
+  lte?: Number;
+  // Greater than
+  gt?: Number;
+  // Greater than or equal to
+  gte?: Number;
+  // Contained in list
+  in?: [Number];
+  // Not contained in list
+  notIn?: [Number];
+}
+
+// If multiple filter clauses are supplied, they will be treated as a logical AND.
+interface BooleanFilter extends BaseFilter {
+  equals?: Boolean;
+  notEquals?: Boolean;
+}
+</code></pre>
+<h5><a class="header" href="#example---simple-value-filter-predicate" id="example---simple-value-filter-predicate">Example - Simple Value Filter Predicate</a></h5>
+<pre><code class="language-js">{
+  equals: 12
+}
+</code></pre>
+<h5><a class="header" href="#example---object-filter-predicate" id="example---object-filter-predicate">Example - Object Filter Predicate</a></h5>
+<pre><code class="language-js">{
+  field: &quot;fullName&quot;,
+  contains: &quot;Vitalik&quot;
+}
+</code></pre>
+<h5><a class="header" href="#example---filter-predicate-with-boolean-operators-and-nested-fields" id="example---filter-predicate-with-boolean-operators-and-nested-fields">Example - Filter Predicate with Boolean Operators and Nested Fields</a></h5>
+<pre><code class="language-js">{
+ and: [
+   {
+     field: &quot;name.first&quot;,
+     equals: &quot;Vitalik&quot;
+   },
+   {
+     field: &quot;name.last&quot;,
+     equals: &quot;Buterin&quot;
+   }
+ ]
+}
+</code></pre>
+<h4><a class="header" href="#gas-cost" id="gas-cost">Gas Cost</a></h4>
+<p>The clauses in the filter predicate DSL can be grouped into several buckets of operation types, which share equivalent gas cost calculations:</p>
+<table><thead><tr><th>Operation Type</th><th>Description</th><th>Gas Cost</th></tr></thead><tbody>
+<tr><td>Number Comparison</td><td>Includes <code>lt</code>, <code>lte</code>, <code>gt</code>, <code>gte</code>, <code>equals</code> and <code>notEquals</code> clauses on Number types.</td><td><code>opCostByteCompare * B </code> where <code>B</code> is the number of bytes in the number type, and <code>opCostByteCompare</code> is set via governance.</td></tr>
+<tr><td>String Comparison</td><td>Includes <code>lt</code>, <code>lte</code>, <code>gt</code>, <code>gte</code>, <code>startsWith</code>, <code>notStartsWith</code>, <code>endsWith</code>, <code>notEndsWith</code>, <code>equals</code> and <code>notEquals</code> clauses on String types.</td><td><code>opCostCharCompare * N </code> where <code>N</code> is the number of characters compared in order to complete the operation, and <code>opCostCharCompare</code> is set via governance.</td></tr>
+<tr><td>Bit Comparison</td><td>Includes <code>equals</code> and <code>notEquals</code> clauses on Boolean types. Also used for combining two filter predicate clauses via the Boolean operators <code>or</code> and <code>and</code> (including the implicit <code>and</code> described above).</td><td><code>opCostBitCompare</code> where <code>opCostBitCompare</code> is set via governance.</td></tr>
+<tr><td>String Match</td><td>Used for <code>contains</code> and <code>notContains</code> clauses on String types</td><td><code>opCostStringSearch * (M + N)</code> where <code>N</code> is the number of characters in the pattern being matched, and <code>M</code> is the number of characters in the string being searched. <code>opCostStringSearch</code> is set via governance.</td></tr>
+</tbody></table>
+<h3><a class="header" href="#database-models" id="database-models">Database Models</a></h3>
+<p>The semantics of reading from an Indexing Node are determined by the database model that the index being read from implements, such as <a href="https://en.wikipedia.org/wiki/Key-value_database">key-value (KV)</a>, <a href="https://en.wikipedia.org/wiki/Entity%E2%80%93attribute%E2%80%93value_model">entity-attribute-value (EAV)</a> and the <a href="https://en.wikipedia.org/wiki/Relational_model">relational model</a>. Index types are prefixed with a short label indicating the database model the index implements:</p>
+<ul>
+<li><code>entitydb</code> - An <a href="read-interface/#entity-database-model">entity database model</a>.</li>
+<li><code>rdb</code> -  Relational database model. Not supported in this version of the protocol.</li>
+<li><code>eav</code> -  Entity-attribute-value database model. Not supported in this version of the protocol.</li>
+</ul>
+<p>The database model also defines the available partitions and index types for use in read operations.</p>
+<p>In the v1 protocol, we only support the entity database model.</p>
+<h4><a class="header" href="#entity-database-model" id="entity-database-model">Entity Database Model</a></h4>
+<p>In the protocol's entity database model, entities are stored as key-value pairs, where the key is a concatenation of the entity type and the entity ID, and the value is an entity object.</p>
+<p>This database model is referenced as <code>entitydb</code> in Index Records.</p>
+<h5><a class="header" href="#example---entities-stored-as-key-value-pairs" id="example---entities-stored-as-key-value-pairs">Example - Entities Stored as Key-Value Pairs</a></h5>
+<table><thead><tr><th>Key</th><th>Value</th></tr></thead><tbody>
+<tr><td><code>user:1</code></td><td><code>{ id: &quot;user:1&quot;, user: &quot;Alice&quot;, age: 17 }</code></td></tr>
+<tr><td><code>user:2</code></td><td><code>{ id: &quot;user:2&quot;, user: &quot;Bob&quot;, age: 47 }</code></td></tr>
+</tbody></table>
+<h4><a class="header" href="#partitions" id="partitions">Partitions</a></h4>
+<p>Partitions define the subset of the data that is covered by the index.</p>
+<p>Possible values of <code>&lt;partition&gt;</code> in an Index Record:</p>
+<ul>
+<li>none - Includes all entities in the dataset. Default partition, <code>partition</code> key should be ommitted in IndexRecord.</li>
+<li><code>&quot;&lt;entityType&gt;&quot;</code> - Includes entities of the type specified by <code>entityType</code>. The entity type name is case-sensitive.</li>
+<li><code>&quot;&lt;interface&gt;&quot;</code> - Includes entities that implement the provided interface. The interface name is case-sensitive.</li>
+</ul>
+<h3><a class="header" href="#index-types" id="index-types">Index Types</a></h3>
+<h4><a class="header" href="#entity-db-indexes" id="entity-db-indexes">Entity DB Indexes</a></h4>
+<h5><a class="header" href="#dictionary-1" id="dictionary-1">Dictionary</a></h5>
+<p>The entity dictionary supports simple key-value lookups of entities by their entity type and ID, in constant time.</p>
+<h6><a class="header" href="#name" id="name">Name</a></h6>
+<p><code>dictionary</code></p>
+<h6><a class="header" href="#database-model" id="database-model">Database Model</a></h6>
+<p><code>entitydb</code></p>
+<h6><a class="header" href="#type-2" id="type-2">Type</a></h6>
+<p><code>Dictionary&lt;K, V&gt;</code></p>
+<ul>
+<li><code>K</code>: <code>String</code> - The id of the entity.</li>
+<li><code>V</code>: <code>Object</code> -  An entity that conforms to its type as defined in the schema of the dataset.</li>
+</ul>
+<h6><a class="header" href="#options" id="options">Options</a></h6>
+<p>None</p>
+<h5><a class="header" href="#search-tree-1" id="search-tree-1">Search Tree</a></h5>
+<p>This index supports iterating through entities, ordered by possibly nested attribute values. Supports compound indexes, where an entity is sorted first by one attribute, then by another.</p>
+<h6><a class="header" href="#name-1" id="name-1">Name</a></h6>
+<p><code>searchTree</code></p>
+<h6><a class="header" href="#database-model-1" id="database-model-1">Database Model</a></h6>
+<p><code>entitydb</code></p>
+<h6><a class="header" href="#type-3" id="type-3">Type</a></h6>
+<p><code>SearchTree&lt;K, V&gt;</code></p>
+<ul>
+<li><code>K</code>: <code>String</code> | <code>Number</code> | <code>Object</code> - The value of the sortKey, which is either a primitive value in the case of single-attribute indexes, or an object containing two attribute-value pairs in the case of compound indexes.</li>
+<li><code>V</code>:  An entity that conforms to its type as defined in the schema of the dataset.</li>
+</ul>
+<h6><a class="header" href="#options-1" id="options-1">Options</a></h6>
+<ul>
+<li><code>sortBy</code>: <code>Array</code>
+<ol>
+<li><code>String</code> - The first attribute to sort by, using <code>.</code> to indicate nested attributes (i.e., <code>&quot;name.first&quot;</code>)</li>
+<li><code>String</code> -  The second attribute to sort by, using <code>.</code> to indicate nested attributes (i.e., <code>&quot;name.last&quot;</code>)</li>
+</ol>
+</li>
+</ul>
+<h2><a class="header" href="#footnotes-3" id="footnotes-3">Footnotes</a></h2>
+<ul>
+<li>[1] https://www.jsonrpc.org/specification</li>
+<li>[2] https://github.com/multiformats/multicodec</li>
+</ul>
+<h1><a class="header" href="#messages" id="messages">Messages</a></h1>
+<h2><a class="header" href="#off-chain-messages" id="off-chain-messages">Off-Chain Messages</a></h2>
+<h3><a class="header" href="#encoding" id="encoding">Encoding</a></h3>
+<p>Off-chain messages are encoded using JSON<a href="messages/#footnotes"><sup>1</sup></a>, a light-weight data interchange format, and the mostly commonly used format for exchanging data on the web.</p>
+<p>Off-chain messages may be referenced in an on-chain message via a Content ID (CID). These are produced according to the IPLD CID V1 specification<a href="messages/#footnotes"><sup>2</sup></a>.</p>
+<p>CIDs must use the canonical CBOR encoding<a href="messages/#footnotes"><sup>3</sup></a>, and SHA-256 multi-hash.</p>
+<p>In producing CIDs for JSON RPC messages, the optional <code>id</code> field from the JSON-RPC 2.0 specification should be omitted, as well as the optional conditional micropayment in the <code>readIndex</code> params list.</p>
+<h3><a class="header" href="#message-types" id="message-types">Message Types</a></h3>
+<h4><a class="header" href="#read-operation" id="read-operation">Read Operation</a></h4>
+<h5><a class="header" href="#fields" id="fields">Fields</a></h5>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>blockHash</td><td>String</td><td>The hash of the Ethereum block as of which to read the data.</td></tr>
+<tr><td>subgraphID</td><td>String</td><td>The ID of the subgraph to read from.</td></tr>
+<tr><td>index</td><td>Object</td><td>The Index Record corresponding to the index being read from.</td></tr>
+<tr><td>op</td><td>String</td><td>The name of the read operation.</td></tr>
+<tr><td>params</td><td>Array<any></td><td>The parameters passed into the called read operation.</td></tr>
+</tbody></table>
+<h4><a class="header" href="#index-record" id="index-record">Index Record</a></h4>
+<h4><a class="header" href="#fields-1" id="fields-1">Fields</a></h4>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>db</td><td>String</td><td>The identifier of the database model being used.</td></tr>
+<tr><td>indexType</td><td>String</td><td>An identifier of the index type used for the respective database model.</td></tr>
+<tr><td>partition</td><td>String</td><td>The name of the entity or interface which should be covered by the index.</td></tr>
+<tr><td>options</td><td>Array<String></td><td>Parameters specific to the type of index.</td></tr>
+</tbody></table>
+<h4><a class="header" href="#locked-transfer" id="locked-transfer">Locked Transfer</a></h4>
+<p>A message intended to be exchanged off-chain as a conditional micropayment in the data retrieval market for a subgraph. Accompanied by a Payment Channel Balance Proof which may be redeemed on-chain.</p>
+<h5><a class="header" href="#fields-2" id="fields-2">Fields</a></h5>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>chainID</td><td>Number</td><td>EIP155 chain ID.</td></tr>
+<tr><td>tokenDenomination</td><td>String</td><td>Token denomination. Must be &quot;ETH&quot; or &quot;DAI&quot;.</td></tr>
+<tr><td>transferredAmount</td><td>Number</td><td>A monotonically increasing amount of tokens which have been sent in the channel.</td></tr>
+<tr><td>receiver</td><td>String</td><td>The Ethereum address of the final destination of the micropayment. Must be the address of an Indexing Node which is staked for the subgraph referenced in the payment.</td></tr>
+<tr><td>subgraphID</td><td>String</td><td>The ID of the subgraph for which the receiver must be staked.</td></tr>
+<tr><td>maxLockedAmount</td><td>Number</td><td>The maximum amount of tokens locked in pending transfers.</td></tr>
+<tr><td>locksRoot</td><td>String</td><td>The root of a Merkle tree containing all locked data retrieval timelocks.</td></tr>
+<tr><td>lock</td><td>Object</td><td>The <a href="messages/#off-chain-data-retrieval-timelock">Off-chain Data Retrieval Timelock</a> corresponding to the most recent lock added to the Balance Proof.</td></tr>
+<tr><td>nonce</td><td>Number</td><td>A monotonically increasing nonce value starting at <code>1</code>. Used for strictly ordering balance proofs.</td></tr>
+<tr><td>v</td><td>Number</td><td>The ECDSA recovery ID of the corresponding Payment Channel Balance Proof.</td></tr>
+<tr><td>r</td><td>String</td><td>The ECDSA signature r of the corresponding Payment Channel Balance Proof.</td></tr>
+<tr><td>s</td><td>String</td><td>The ECDSA signature v of the corresponding Payment Channel Balance Proof.</td></tr>
+</tbody></table>
+<h4><a class="header" href="#off-chain-data-retrieval-timelock" id="off-chain-data-retrieval-timelock">Off-chain Data Retrieval Timelock</a></h4>
+<p>An off-chain representation of the <a href="messages/#data-retrieval-timelock">Data Retrieval Timelock</a></p>
+<h5><a class="header" href="#fields-3" id="fields-3">Fields</a></h5>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>expiration</td><td>Number</td><td>The block until which the locked transfer may be settled on-chain.</td></tr>
+<tr><td>gasPrice</td><td>Number</td><td>Amount of tokens locked.</td></tr>
+<tr><td>maxGas</td><td>Number</td><td>The maximum amount of gas to be consumed in the read operation.</td></tr>
+<tr><td>bytesPrice</td><td>Number</td><td>The price to pay per byte served.</td></tr>
+<tr><td>maxBytes</td><td>Number</td><td>The maximum amount of bytes to be sent over the wire</td></tr>
+<tr><td>maxTokens</td><td>Number</td><td>The maximum amount of tokens to be paid.</td></tr>
+<tr><td>requestCID</td><td>String</td><td>The content ID of the read operation to which the Indexing Node must respond with a valid attestation, in order to unlock the payment.</td></tr>
+</tbody></table>
+<h4><a class="header" href="#read-response" id="read-response">Read Response</a></h4>
+<p>There are several possible statuses for a read response. Read responses must update the nonce of the balance proof and may be accompanied by an attestation. It may update balances or other state in the state channel and may be used as a part of settling the channel.</p>
+<h5><a class="header" href="#success" id="success">Success</a></h5>
+<p>Sent if the read operation was successful, within the gas and response size limits specified. Includes the return data an attestation that the response is correct.</p>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>status</td><td>String</td><td>The constant &quot;SUCCESS&quot;</td></tr>
+<tr><td>data</td><td>any</td><td>The result of calling the read operation.</td></tr>
+<tr><td>attestation</td><td>Object</td><td>An Attestation, where the <code>responseCID</code> is the CID of the object containing the above fields.</td></tr>
+</tbody></table>
+<h5><a class="header" href="#max-gas-exceeded" id="max-gas-exceeded">Max Gas Exceeded</a></h5>
+<p>Sent if the maximum amount of gas specified was consumed before the read operation could complete. The caller of the read operation is responsible for paying for the computation, but not for any bandwidth.</p>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>status</td><td>String</td><td>The constant &quot;MAX_GAS_EXCEEDED&quot;</td></tr>
+<tr><td>attestation</td><td>Object</td><td>An Attestation, where the <code>responseCID</code> is the CID of the object containing the above field.</td></tr>
+</tbody></table>
+<h5><a class="header" href="#max-bytes-exceeded" id="max-bytes-exceeded">Max Bytes Exceeded</a></h5>
+<p>Sent if the result of calling the read operation is larger than the <code>maxBytes</code> parameter in the data retrieval timelock. The caller of the read operation is responsible for paying for the computation, but not for any bandwidth.</p>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>status</td><td>String</td><td>The constant &quot;MAX_BYTES_EXCEEDED&quot;</td></tr>
+<tr><td>attestation</td><td>Object</td><td>An Attestation, where the <code>responseCID</code> is the CID of the object containing the above field.</td></tr>
+</tbody></table>
+<h5><a class="header" href="#insufficient-funds" id="insufficient-funds">Insufficient Funds</a></h5>
+<p>Sent if the maximum amount of tokens which may be consumed by the read operation would exceed the balance in the payment channel.</p>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>status</td><td>String</td><td>The constant &quot;INSUFFICIENT_FUNDS&quot;.</td></tr>
+</tbody></table>
+<h5><a class="header" href="#price-too-low" id="price-too-low">Price Too Low</a></h5>
+<p>Sent if the Indexing Node is unwilling to provide the service at the prices offered by the caller.</p>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>status</td><td>String</td><td>The constant &quot;PRICE_TOO_LOW&quot;.</td></tr>
+<tr><td>askingPrice</td><td>Object</td><td>A price listing object.</td></tr>
+</tbody></table>
+<h4><a class="header" href="#price-listing" id="price-listing">Price Listing</a></h4>
+<p>A price listing advertising an Indexing Nodes asking price for computation and bandwidth, denominated in a specific token.</p>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>token</td><td>String</td><td></td></tr>
+<tr><td>gasPrice</td><td>Number</td><td>The price of a unit of gas, denominated in the token included in the listing. Must be an integer.</td></tr>
+<tr><td>bytesPrice</td><td>Number</td><td>The price per byte in the read operation result data, denominated in the token included in the listing. Must be an integer.</td></tr>
+</tbody></table>
+<h2><a class="header" href="#on-chain-messages" id="on-chain-messages">On-Chain Messages</a></h2>
+<h3><a class="header" href="#encoding-1" id="encoding-1">Encoding</a></h3>
+<p>Unsigned messages are encoded according to the ABIv2 specification<a href="messages/#footnotes"><sup>4</sup></a>, while signed messages are encoded according to [EIP 712 specification<a href="messages/#footnotes"><sup>5</sup></a>.</p>
+<p>Signed message formats are accompanied by a typed structured data definition, which can be used to compute the type, the type hash, and the data of a message according to the EIP 712 specification. Types are written as Solidity code, but are intended to be compatible with any language that compiles to EVM bytecode.</p>
+<h4><a class="header" href="#eip-712-domain-separator" id="eip-712-domain-separator">EIP 712 Domain Separator</a></h4>
+<p>The EIP 712 specification requires defining a domain separator to disambiguate signed messages intended for different chains, different protocols, or different versions of the same protocol.</p>
+<p>The domain separator for the protocol has the following chain-agnostic parameters:</p>
+<ul>
+<li><strong>name</strong> - 'graphprotocol'</li>
+<li><strong>version</strong> - '0'</li>
+</ul>
+<p>Additionally there are chain-specific parameters:</p>
+<ul>
+<li>mainnet
+<ul>
+<li><strong>chainid</strong> - 1</li>
+<li><strong>verifyingContract</strong> - TBD</li>
+</ul>
+</li>
+<li>ropsten
+<ul>
+<li><strong>chainid</strong> - 3</li>
+<li><strong>verifyingContract</strong> - TBD</li>
+</ul>
+</li>
+<li>kovan
+<ul>
+<li><strong>chainid</strong> - 42</li>
+<li><strong>verifyingContract</strong> - TBD</li>
+</ul>
+</li>
+<li>rinkeby
+<ul>
+<li><strong>chainid</strong> - 4</li>
+<li><strong>verifyingContract</strong> - TBD</li>
+</ul>
+</li>
+</ul>
+<h3><a class="header" href="#message-types-1" id="message-types-1">Message Types</a></h3>
+<h4><a class="header" href="#attestation" id="attestation">Attestation</a></h4>
+<h5><a class="header" href="#fields-4" id="fields-4">Fields</a></h5>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>requestCID</td><td>bytes</td><td>The content ID of the message.</td></tr>
+<tr><td>responseCID</td><td>bytes</td><td>The content ID of the response.</td></tr>
+<tr><td>gasUsed</td><td>uint256</td><td>The gas used to process the read operation.</td></tr>
+<tr><td>responseBytes</td><td>uint256</td><td>The size of the response data in bytes.</td></tr>
+<tr><td>v</td><td>uint8</td><td>The ECDSA recovery ID .</td></tr>
+<tr><td>r</td><td>bytes32</td><td>The ECDSA signature r.</td></tr>
+<tr><td>s</td><td>bytes32</td><td>The ECDSA signature v.</td></tr>
+</tbody></table>
+<h6><a class="header" href="#eip712-struct-type" id="eip712-struct-type">EIP712 Struct Type</a></h6>
+<pre><code class="language-solidity">struct Attestation {
+  bytes requestCID;
+  bytes responseCID;
+  uint256 gasUsed;
+  uint256 responseBytes;
+}
+</code></pre>
+<h4><a class="header" href="#payment-channel-balance-proof" id="payment-channel-balance-proof">Payment Channel Balance Proof</a></h4>
+<p>The Payment Channel Balance Proof is a signed off-chain message which represents a micropayment between an end user of The Graph and the Payment Channel Hub via a payment channel. Because all payment channels have the Payment Channel Hub as the receiver, it is sufficient to be able to identify the token denomination and the sender's Ethereum address (this may be derived from the signature), as well as the subgraph on which they are staked, to uniquely identify the channel to which the balance proof applies.</p>
+<h5><a class="header" href="#fields-5" id="fields-5">Fields</a></h5>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>chainID</td><td>uint256</td><td>EIP155 chain ID.</td></tr>
+<tr><td>tokenDenomination</td><td>string</td><td>Token denomination. Must be &quot;ETH&quot; or &quot;DAI&quot;.</td></tr>
+<tr><td>transferredAmount</td><td>uint256</td><td>A monotonically increasing amount of tokens which have been sent in the channel.</td></tr>
+<tr><td>receiver</td><td>address</td><td>The Ethereum address of the final destination of the micropayment. Must be the address of an Indexing Node which is staked for the subgraph referenced in the payment.</td></tr>
+<tr><td>subgraphID</td><td>bytes</td><td>The ID of the subgraph for which the receiver must be staked.</td></tr>
+<tr><td>maxLockedAmount</td><td>uint256</td><td>The maximum amount of tokens locked in pending transfers.</td></tr>
+<tr><td>locksRoot</td><td>bytes32</td><td>The root of a Merkle tree containing all locked data retrieval timelocks.</td></tr>
+<tr><td>nonce</td><td>uint256</td><td>A monotonically increasing nonce value starting at <code>1</code>. Used for strictly ordering balance proofs.</td></tr>
+<tr><td>v</td><td>uint8</td><td>The ECDSA recovery ID .</td></tr>
+<tr><td>r</td><td>bytes32</td><td>The ECDSA signature r.</td></tr>
+<tr><td>s</td><td>bytes32</td><td>The ECDSA signature v.</td></tr>
+</tbody></table>
+<h4><a class="header" href="#minting-channel-balance-proof" id="minting-channel-balance-proof">Minting Channel Balance Proof</a></h4>
+<p>The Minting Channel Balance Proof is a signed off-chain message which represents a micropayment between the Payment Channel Hub and an Indexing Node in The Graph. Because all payment channels have the Payment Channel Hub as the sender, it is sufficient to be able to identify the token denomination and the receiver's Ethereum address to uniquely identify the channel to which the balance proof applies.</p>
+<h5><a class="header" href="#fields-6" id="fields-6">Fields</a></h5>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>chainID</td><td>uint256</td><td>EIP155 chain ID.</td></tr>
+<tr><td>tokenDenomination</td><td>string</td><td>Token denomination. Must be &quot;ETH&quot; or &quot;DAI&quot;.</td></tr>
+<tr><td>transferredAmount</td><td>uint256</td><td>A monotonically increasing amount of tokens which have been sent in the channel.</td></tr>
+<tr><td>maxLockedAmount</td><td>uint256</td><td>The maximum amount of tokens locked in pending transfers.</td></tr>
+<tr><td>locksRoot</td><td>bytes32</td><td>The root of a Merkle tree containing all locked data retrieval timelocks.</td></tr>
+<tr><td>nonce</td><td>uint256</td><td>A monotonically increasing nonce value starting at <code>1</code>. Used for strictly ordering balance proofs.</td></tr>
+<tr><td>v</td><td>uint256</td><td>The ECDSA recovery ID .</td></tr>
+<tr><td>r</td><td>bytes32</td><td>The ECDSA signature r.</td></tr>
+<tr><td>s</td><td>bytes32</td><td>The ECDSA signature v.</td></tr>
+</tbody></table>
+<h6><a class="header" href="#eip712-struct-type-1" id="eip712-struct-type-1">EIP712 Struct Type</a></h6>
+<pre><code class="language-solidity">struct MintingChannelBalanceProof {
+  uint256 chainID;
+  address tokenNetworkAddress;
+  uint256 channelID;
+  uint256 transferredAmount;
+  uint256 maxLockedAmount;
+  bytes32 locksRoot;
+  uint256 nonce;
+}
+</code></pre>
+<h4><a class="header" href="#data-retrieval-timelock-1" id="data-retrieval-timelock-1">Data Retrieval Timelock</a></h4>
+<h5><a class="header" href="#fields-7" id="fields-7">Fields</a></h5>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>expiration</td><td>uint256</td><td>The block until which the locked transfer may be settled on-chain.</td></tr>
+<tr><td>gasPrice</td><td>uint256</td><td>Amount of tokens locked.</td></tr>
+<tr><td>maxGas</td><td>uint256</td><td>The maximum amount of gas to be consumed in the read operation.</td></tr>
+<tr><td>bytesPrice</td><td>uint256</td><td>The price to pay per byte served.</td></tr>
+<tr><td>maxBytes</td><td>uint256</td><td>The maximum amount of bytes to be sent over the wire</td></tr>
+<tr><td>maxTokens</td><td>uint256</td><td>The maximum amount of tokens to be paid.</td></tr>
+<tr><td>requestCID</td><td>bytes</td><td>The content ID of the read operation to which the Indexing Node must respond with a valid attestation, in order to unlock the payment.</td></tr>
+</tbody></table>
+<h2><a class="header" href="#footnotes-4" id="footnotes-4">Footnotes</a></h2>
+<ul>
+<li>[1] http://json.org</li>
+<li>[2] https://github.com/ipld/cid#cidv1</li>
+<li>[3] https://tools.ietf.org/html/rfc7049#section-3.9</li>
+<li>[4] https://solidity.readthedocs.io/en/develop/abi-spec.html</li>
+<li>[5] https://github.com/ethereum/EIPs/blob/master/EIPS/eip-712.md</li>
+</ul>
+<h1><a class="header" href="#json-rpc-api" id="json-rpc-api">JSON RPC API</a></h1>
+<p>This API uses  JSON RPC 2.0<a href="rpc-api/#footnotes"><sup>1</sup></a>, a light-weight, transport agnostic RPC protocol.</p>
+<h2><a class="header" href="#methods" id="methods">Methods</a></h2>
+<ul>
+<li>getPrices</li>
+<li>ping</li>
+<li>callReadOp</li>
+</ul>
+<h2><a class="header" href="#reference" id="reference">Reference</a></h2>
+<h3><a class="header" href="#getprices" id="getprices">getPrices</a></h3>
+<p>Retrieves the gas and bandwidth pricing of an Indexing Node in a specific token denomination. Prices returned are informational only, they do not represent a commitment by the Indexing Node.</p>
+<h4><a class="header" href="#parameters" id="parameters">Parameters</a></h4>
+<ol>
+<li><code>String</code> (optional) - The symbol of the token which prices are being requested in. Valid values are 'ETH' or 'DAI'. If not specified, prices will be returned for all tokens the node denominates prices in.</li>
+</ol>
+<h4><a class="header" href="#returns" id="returns">Returns</a></h4>
+<p><code>Array&lt;Object&gt;</code></p>
+<ul>
+<li><code>token</code>: <code>String</code> - The symbol of the token which the prices are denominated in.</li>
+<li><code>gasPrice</code>: <code>Number</code> | <code>null</code> - The price of a unit of gas. If no price denominated in the specified token, <code>null</code>.</li>
+<li><code>bandwidthPrice</code>: <code>Number</code> | <code>null</code> - The price of sending one byte over the network. If no price denominated in the specified token, <code>null</code>.</li>
+</ul>
+<h4><a class="header" href="#example" id="example">Example</a></h4>
+<pre><code class="language-js">{
+  &quot;method&quot;: &quot;getPrices&quot;,
+  &quot;params&quot;: [&quot;DAI&quot;],
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+
+// response
+{
+  &quot;result&quot;: [
+    {
+      &quot;token&quot;: &quot;DAI&quot;,
+      &quot;bandwidthPrice&quot;: 0.01,
+      &quot;gasPrice&quot;: 0.025
+
+    }
+  ],
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+</code></pre>
+<h3><a class="header" href="#ping" id="ping">ping</a></h3>
+<p>Pings a node to check that is it is available and gauge the latency of the 'pong' response.</p>
+<h4><a class="header" href="#parameters-1" id="parameters-1">Parameters</a></h4>
+<p>None</p>
+<h4><a class="header" href="#returns-1" id="returns-1">Returns</a></h4>
+<p><code>String</code> - The string &quot;pong&quot;.</p>
+<h4><a class="header" href="#example-1" id="example-1">Example</a></h4>
+<pre><code class="language-js">// request
+{
+  &quot;method&quot;: &quot;ping&quot;,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+
+// response
+{
+  &quot;result&quot;: &quot;pong&quot;
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+</code></pre>
+<h3><a class="header" href="#callreadop" id="callreadop">callReadOp</a></h3>
+<p>Calls a low-level read operation on a database index.</p>
+<h4><a class="header" href="#parameters-2" id="parameters-2">Parameters</a></h4>
+<ol>
+<li><code>Object</code></li>
+</ol>
+<ul>
+<li><code>blockHash</code>: <code>String</code> - The hash of the Ethereum block as of which to read the data.</li>
+<li><code>subgraphID</code>: <code>String</code> - The ID of the subgraph to read from.</li>
+<li><code>index</code>: <code>Object</code> - The <a href="rpc-api/#indexes">Index Record</a> of the index being read from.</li>
+<li><code>op</code>: <code>String</code> - The name of the read operation.</li>
+<li><code>params</code>: <code>[any]</code> - The parameters passed into the called read operation.</li>
+</ul>
+<ol start="2">
+<li><code>Object</code> - A <a href="rpc-api/../messages#locked-transfer">Locked Transfer</a> message which serves as a conditional micropayment for the read operation.</li>
+</ol>
+<h4><a class="header" href="#returns-2" id="returns-2">Returns</a></h4>
+<p>Returns one of the following message types:</p>
+<h5><a class="header" href="#read-result" id="read-result">Read Result</a></h5>
+<p><code>Object</code></p>
+<ul>
+<li><code>type</code>: <code>String</code> - The constant &quot;READ_RESULT&quot;</li>
+<li><code>data</code>: <code>any</code> - The data retrieved by the read operation, if any.</li>
+<li><code>attestation</code>: Object - An attestation that <code>data</code> and <code>type</code> is a correct response for the given read operation (see <a href="rpc-api/#attestation">Attestation</a>).</li>
+</ul>
+<h5><a class="header" href="#not-enough-gas" id="not-enough-gas">Not Enough Gas</a></h5>
+<p>Indicates that that the gas limit was consumed without completing the computation. Payment will still be made to the Indexing Node for computation performed. No data is returned.
+<code>Object</code></p>
+<ul>
+<li><code>type</code>: <code>String</code> - The constant &quot;NOT_ENOUGH_GAS&quot;</li>
+<li><code>attestation</code>: Object - An attestation that <code>type</code> is a correct response for the given read operation (see <a href="rpc-api/#attestation">Attestation</a>).</li>
+</ul>
+<h5><a class="header" href="#not-enough-bandwidth" id="not-enough-bandwidth">Not Enough Bandwidth</a></h5>
+<p>Indicates that that the bandwidth limit is insufficient to cover the response size. Payment will still be made to the Indexing Node for computation performed (but not for bandwidth). No data is returned.
+<code>Object</code></p>
+<ul>
+<li><code>type</code>: <code>String</code> - The constant &quot;NOT_ENOUGH_BANDWIDTH&quot;</li>
+<li><code>attestation</code>: Object - An attestation that <code>type</code> is a correct response for the given read operation (see <a href="rpc-api/#attestation">Attestation</a>).</li>
+</ul>
+<h5><a class="header" href="#insufficient-funds-1" id="insufficient-funds-1">Insufficient Funds</a></h5>
+<p>Indicates that that there are insufficient funds in the payment channel to cover the maximum amount of tokens that may be spent completing the read operation.
+<code>Object</code></p>
+<ul>
+<li><code>type</code>: <code>String</code> - The constant &quot;INSUFFICIENT_FUNDS&quot;</li>
+</ul>
+<h5><a class="header" href="#price-too-low-1" id="price-too-low-1">Price Too Low</a></h5>
+<p>Indicates that the price offered for gas or bandwidth is lower than what the Indexing Node will accept. Response includes up-to-date prices.
+<code>Object</code></p>
+<ul>
+<li><code>type</code>: <code>String</code> - The constant &quot;PRICE_TOO_LOW&quot;</li>
+<li><code>prices</code>: <code>Object</code> - The currently advertised prices for the Indexing Node
+<ul>
+<li><code>token</code>: <code>String</code> - The symbol of the token which the prices are denominated in.</li>
+<li><code>gasPrice</code>: <code>Number</code> | <code>null</code> - The price of a unit of gas. If no price denominated in the specified token, <code>null</code>.</li>
+<li><code>bandwidthPrice</code>: <code>Number</code> | <code>null</code> - The price of sending one byte over the network. If no price denominated in the specified token, <code>null</code>.</li>
+</ul>
+</li>
+</ul>
+<h5><a class="header" href="#must-include-payment" id="must-include-payment">Must Include Payment</a></h5>
+<p>Indicates that the Indexing Nodes expects a conditional micropayment to be included with the request.</p>
+<p><code>Object</code></p>
+<ul>
+<li><code>type</code>: <code>String</code> - The constant &quot;MUST_INCLUDE_PAYMENT&quot;</li>
+</ul>
+<h4><a class="header" href="#example-2" id="example-2">Example</a></h4>
+<h6><a class="header" href="#example---entity-exists" id="example---entity-exists">Example - Entity exists</a></h6>
+<pre><code class="language-js">// request
+{
+  &quot;method&quot;: &quot;callReadOp&quot;,
+  &quot;params&quot;: [
+    {
+      &quot;blockHash&quot;: &quot;xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1&quot;,
+      &quot;subgraphID&quot;: &quot;QmTeW79w7QQ6Npa3b1d5tANreCDxF2iDaAPsDvW6KtLmfB&quot;,
+      &quot;index&quot;: {
+        &quot;indexType&quot;: &quot;kv&quot;
+      },
+      &quot;op&quot;: &quot;get&quot;
+      &quot;params&quot;: [&quot;User:1&quot;]
+    }
+  ],
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+// response
+{
+  &quot;data&quot;: {
+    &quot;firstName&quot;: &quot;Vitalik&quot;,
+    &quot;lastName&quot;: &quot;Buterin&quot;,
+  },
+  // TODO: Provide more realistic attestations
+  &quot;attestation&quot;: 0x0122340
+}
+</code></pre>
+<h6><a class="header" href="#example---entity-doesnt-exist-1" id="example---entity-doesnt-exist-1">Example - Entity doesn't exist</a></h6>
+<pre><code class="language-js">// request
+{
+  &quot;method&quot;: &quot;callReadOp&quot;,
+  &quot;params&quot;: [
+    {
+      &quot;blockHash&quot;: &quot;xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1&quot;,
+      &quot;index&quot;: {
+        &quot;indexType&quot;: &quot;kv&quot;
+      },
+      &quot;op&quot;: &quot;get&quot;
+      &quot;params&quot;: [&quot;User:1&quot;]
+    }
+  ],
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+// response
+{
+  &quot;data&quot;: null,
+  // TODO: Provide more realistic attestations
+  &quot;attestation&quot;: 0x0122340
+}
+</code></pre>
+<h2><a class="header" href="#footnotes-5" id="footnotes-5">Footnotes</a></h2>
+<ul>
+<li>[1] https://www.jsonrpc.org/specification</li>
+</ul>
+<h1><a class="header" href="#datasets" id="datasets">Datasets</a></h1>
+<h2><a class="header" href="#object-diagram" id="object-diagram">Object Diagram</a></h2>
+<pre><code class="language-ascii">           +--------------+     +-------------------+
+           |              |     |                   |
+Ethereum   | GNS Registry |     | Staking Contract  |
+           |              |     | (Indexing Records)|
+           |              |     |                   |
+           +--------------+     +-------------------+
+                  |1                    |1
+                  |                     |
++---------------------------------------------------------------------------------+
+                  |                     |
+                  |     +------------+  |  +------------+
+                  |     |            |  |  |            |
+                  |    *|  Subgraph  | *|  |  Index     |
+IPFS              +-----&gt;  Manifest  +--v--+  Records   |
+                        |            |1   *|            |
+                        +-----+------+     +------------+
+                              |
+                 +------------+----------+
+                 |                       |
+        +--------v-------+       +-------v-------+
+        |                |       |               |
+        | Mapping        |       | Data Model    |
+        | (WASM Module)  |       | (GraphQL IDL) |
+        |                |       |               |
+        +----------------+       +---------------+
+
+</code></pre>
+<h2><a class="header" href="#overview-5" id="overview-5">Overview</a></h2>
+<p>Datasets that may be queried through The Graph are referred to as <em>subgraphs</em> because they represent a subset of the data that is available to query in the network. Subgraphs are defined in a <em>subgraph manifest</em>, which is a top-level IPLD document that defines how Ethereum and IPFS data is ingested and loaded into The Graph. Importantly, while the subgraph manifest includes a logical data model for the dataset, it does not specify a specific storage format, database model, or index method. These are defined as <em>Index Records</em> and are associated with a subgraph manifest by indexing nodes in the Staking Contract on-chain.</p>
+<p>Subgraph manifests are immutable and referenced according to the <a href="https://github.com/ipld/cid#cidv1">IPLD CID v1 specification</a>. This CID is referred to in this specification as a <em>Subgraph ID</em>. Mutable names may be assigned to subgraph IDs via the Graph Name Service (GNS). These are not consumed on-chain anywhere in the protocol and are mainly a convenience for users interacting with The Graph. These names may also be used in composing a unified global schema in the query interface of Query Nodes. See <a href="datasets/../query-processing">Query Processing</a> for more information. In future versions of the protocol, names will play a more useful role in various forms of the subgraph composition.</p>
+<h2><a class="header" href="#subgraph-creation" id="subgraph-creation">Subgraph Creation</a></h2>
+<p>Creating a subgraph involves the following steps, in no specific order:</p>
+<ul>
+<li>Create subgraph manifest (<a href="datasets/../subgraph-manifest">Subgraph Manifest</a>)</li>
+<li>Define data model (<a href="datasets/../data-modeling">Data Modeling</a>)</li>
+<li>Define mappings (<a href="datasets/../mappings-api">Mappings API</a>)</li>
+</ul>
+<h2><a class="header" href="#subgraph-deployment" id="subgraph-deployment">Subgraph Deployment</a></h2>
+<p>Deploying a subgraph involves the following steps:</p>
+<ol>
+<li>Deploy subgraph manifest to IPLD and get subgraph ID.</li>
+<li>Curate or index the subgraph, referenced by subgraph ID, in the Staking Contract (<a href="datasets/../mechanism-design">Mechanism Design</a>).</li>
+<li>(Optional) Associate a human-friendly name with the SubgraphID in the Graph Name Service.</li>
+</ol>
+<h1><a class="header" href="#data-modeling" id="data-modeling">Data Modeling</a></h1>
+<p>The schema of your dataset--that is, the entity types, values and relationships that are available to query--are defined through the  GraphQL Interface Definition Language (IDL)<a href="data-modeling/#footnotes"><sup>1</sup></a>.</p>
+<h2><a class="header" href="#entities" id="entities">Entities</a></h2>
+<h2><a class="header" href="#entities-1" id="entities-1">Entities</a></h2>
+<p>Entities are defined as GraphQL types decorated with an <code>@entity</code>. All entities must have an <code>id: ID!</code> field defined.</p>
+<h4><a class="header" href="#example-3" id="example-3">Example</a></h4>
+<p>Define a <code>Token</code> entity:</p>
+<pre><code class="language-graphql">@entity
+type Token {
+  # The unique ID of this entity
+  id: ID!
+  name: String!
+  symbol: String!
+  decimals: Int!
+}
+</code></pre>
+<p>An attribute on an entity type may be specified as unique, in which case the value for that attribute must be unique among all instances of that entity type.</p>
+<h3><a class="header" href="#example-4" id="example-4">Example</a></h3>
+<p>Define a <code>File</code> entity with a unique content hash:</p>
+<pre><code class="language-graphql">@entity
+type File {
+  id: ID!
+  name: String!
+  bytes: Bytes!
+  length: Int!
+  # Only one File entity may be created with a given
+  # content hash.
+  hash: String! @unique
+}
+</code></pre>
+<h2><a class="header" href="#built-in-types" id="built-in-types">Built-In Types</a></h2>
+<h3><a class="header" href="#graphql-built-in-scalars" id="graphql-built-in-scalars">GraphQL Built-In Scalars</a></h3>
+<p>All the scalars defined in the GraphQL spec are supported: <code>Int</code>, <code>Float</code>, <code>String</code>, <code>Boolean</code>, and <code>ID</code>.</p>
+<h3><a class="header" href="#bytes" id="bytes">Bytes</a></h3>
+<p>There is a <code>Bytes</code> scalar for variable-length byte arrays.</p>
+<p>Additionally, fixed-length byte scalar types between 1 and 32 bytes are supported: <code>Byte</code>, <code>Bytes1</code> (an alias for <code>Byte</code>), <code>Bytes2</code>, <code>Bytes3</code> ... <code>Bytes31</code>, and <code>Bytes32</code>.</p>
+<h3><a class="header" href="#numbers" id="numbers">Numbers</a></h3>
+<p>The GraphQL spec defines <code>Int</code> and <code>Float</code> to have sizes of 32 bytes.</p>
+<p>This API additionally includes <code>BigInt</code> and <code>BigFloat</code> number types to represent arbitrarily large integer or floating point numbers, respectively.</p>
+<p>There are also fixed-size number types to represent numbers between 1 and 32 bytes long. The suffix is specified by the number of bits.</p>
+<p>Signed integers all share the <code>Int</code> prefix: <code>Int8</code>, <code>Int16</code>, <code>Int24</code>, <code>Int32</code> (an alias of <code>Int</code>) ... <code>Int240</code>, <code>Int248</code>, and <code>Int256</code>.</p>
+<p>There are corresponding unsigned integer types prefixed with <code>UInt</code>: <code>UInt8</code>, <code>UInt16</code>, <code>UInt24</code>, <code>UInt32</code> ... <code>UInt240</code>, <code>UInt248</code>, and <code>UInt256</code>.</p>
+<p>All number types other than <code>Int</code> and <code>Float</code>, which are serialized as JSON number types, are serialized as strings.</p>
+<p>Even though the serialization format is the same, having the sizes captured in the type system provides better self-documentation and enables tooling that generates convenient deserializers in statically typed languages.</p>
+<h2><a class="header" href="#value-objects" id="value-objects">Value Objects</a></h2>
+<p>All types not decorated with the <code>@entity</code> decorator are value objects. Value object types may be used as the type of entity attributes, and do not have unique <code>id</code> attributes themselves.</p>
+<h2><a class="header" href="#entity-relationships" id="entity-relationships">Entity Relationships</a></h2>
+<p>An entity may have a relationship to one or more other entities in your data model. Relations are unidirectional.</p>
+<p>Despite being unidirectional, attributes may be defined on entities which facilitate navigating relationships in the reverse direction. See <a href="data-modeling/#reverse-lookups">Reverse Lookups</a>.</p>
+<h3><a class="header" href="#basics" id="basics">Basics</a></h3>
+<p>Relationships are defined on entities just like any other scalar type, except that the type specified is that of another entity.</p>
+<h4><a class="header" href="#example-5" id="example-5">Example</a></h4>
+<p>Define a <code>Transaction</code> entity type with an optional one-to-one relationship with a <code>TransactionReceipt</code> entity type:</p>
+<pre><code class="language-graphql">@entity
+type Transaction {
+  id: ID!
+  transactionReceipt: TransactionReceipt
+}
+
+@entity
+type TransactionReceipt {
+  id: ID!
+  transaction: Transaction
+}
+</code></pre>
+<h4><a class="header" href="#example-6" id="example-6">Example</a></h4>
+<p>Define a <code>Token</code> entity type with a required one-to-many relationship with a <code>TokenBalance</code> entity type:</p>
+<pre><code class="language-graphql">@entity
+type Token {
+  id: ID!
+  tokenBalances: [TokenBalance!]!
+}
+
+@entity
+type TokenBalance {
+  id: ID!
+  amount: Int!
+}
+</code></pre>
+<h3><a class="header" href="#reverse-lookups" id="reverse-lookups">Reverse Lookups</a></h3>
+<p>Reverse lookups can be defined on an entity through the <code>@derivedFrom</code> field. This creates a &quot;virtual&quot; field on the entity that may be queried but cannot be set manually through the mappings API. Rather, it is derived from the relationship defined on the other entity.</p>
+<p>The type of a <code>@derivedFrom</code> field must be a collection since multiple entities may specify relationships to a single entity.</p>
+<h4><a class="header" href="#example-7" id="example-7">Example</a></h4>
+<p>Define a reverse lookup from a <code>User</code> entity type to an <code>Organization</code> entity type:</p>
+<pre><code class="language-graphql">@entity
+type Organization {
+  id: ID!
+  name: String!
+  members: [User]!
+}
+
+@entity
+type User {
+  id: ID!
+  name: String!
+  organizations: [Organization!] @derivedFrom(field: &quot;members&quot;)
+}
+</code></pre>
+<h2><a class="header" href="#footnotes-6" id="footnotes-6">Footnotes</a></h2>
+<ul>
+<li>[1] http://facebook.github.io/graphql/draft/#sec-Type-System</li>
+</ul>
+<h1><a class="header" href="#subgraph-manifest" id="subgraph-manifest">Subgraph Manifest</a></h1>
+<p><strong>TODO</strong> This file has moved to https://github.com/graphprotocol/graph-node. Please confirm. Datasets references this file with ../subgraph-manifest, so it needs to remain in this repo.</p>
+<h2><a class="header" href="#overview-6" id="overview-6">Overview</a></h2>
+<p>The Subgraph manifest specifies all the information required to index and query a specific subgraph. It is the entry point to your subgraph, so to speak.</p>
+<p>The subgraph manifest, and all the files linked from it, are what is deployed to IPFS, and hashed to produce a subgraph ID that can be referenced on Ethereum and used to retrieve your subgraph in The Graph.</p>
+<h2><a class="header" href="#format" id="format">Format</a></h2>
+<p>The subgraph manifest follows the IPLD specification, which defines a data model for linking decentralized and universally addressable data structures.<a href="subgraph-manifest/#footnotes"><sup>1</sup></a> Supported formats include YAML and JSON. All examples in this section are written as YAML.</p>
+<h2><a class="header" href="#top-level-api" id="top-level-api">Top-Level API</a></h2>
+<table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>specVersion</strong></td><td><em>String</em></td><td>A semver version indicating which version of this API is being used.</td></tr>
+<tr><td><strong>schema</strong></td><td><a href="subgraph-manifest/#schema"><em>Schema</em></a></td><td>The GraphQL schema of this subgraph</td></tr>
+<tr><td><strong>dataSources</strong></td><td><a href="subgraph-manifest/#data-source"><em>[Data Source Spec]</em></a></td><td>Each Data Source spec defines data which will be ingested, and transformation logic to derive the state of the subgraph's entities based on the source data.</td></tr>
+</tbody></table>
+<h2><a class="header" href="#schema" id="schema">Schema</a></h2>
+<table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>file</strong></td><td><a href="subgraph-manifest/#path"><em>Path</em></a></td><td>The path of the GraphQL IDL file, either locally or on IPFS</td></tr>
+</tbody></table>
+<h2><a class="header" href="#data-source" id="data-source">Data Source</a></h2>
+<table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>kind</strong></td><td>*String</td><td>The type of data source. Possible values: <em>ethereum/contract</em></td></tr>
+<tr><td><strong>name</strong></td><td><em>String</em></td><td>The name of the source data. Will be used to generate APIs in mapping, and also for self-documentation purposes</td></tr>
+<tr><td><strong>source</strong></td><td><a href="subgraph-manifest/#ethereumcontractsource"><em>EthereumContractSource</em></a></td><td>The source data on a blockchain such as Ethereum</td></tr>
+<tr><td><strong>mapping</strong></td><td><a href="subgraph-manifest/#mapping"><em>Mapping</em></a></td><td>The transformation logic applied to the data prior to being indexed</td></tr>
+</tbody></table>
+<h3><a class="header" href="#ethereumcontractsource" id="ethereumcontractsource">EthereumContractSource</a></h3>
+<table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>address</strong></td><td><em>String</em></td><td>The address of the source data in its respective blockchain</td></tr>
+<tr><td><strong>abi</strong></td><td><em>String</em></td><td>The name of the ABI for this Ethereum contract (see <code>abis</code> in <code>mapping</code> manifest)</td></tr>
+</tbody></table>
+<h3><a class="header" href="#mapping" id="mapping">Mapping</a></h3>
+<p>The <code>mapping</code> field may be one of the following supported mapping manifests:</p>
+<ul>
+<li><a href="subgraph-manifest/#ethereum-events-mapping">Ethereum Events Mapping</a></li>
+</ul>
+<h4><a class="header" href="#ethereum-events-mapping" id="ethereum-events-mapping">Ethereum Events Mapping</a></h4>
+<table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>kind</strong></td><td><em>String</em></td><td>Must be &quot;ethereum/events&quot; for Ethereum Events Mapping</td></tr>
+<tr><td><strong>apiVersion</strong></td><td><em>String</em></td><td>Semver string of the version of the Mappings API which will be used by the mapping script</td></tr>
+<tr><td><strong>language</strong></td><td><em>String</em></td><td>The language of the runtime for the Mapping API. Possible values: <em>wasm/assemblyscript</em></td></tr>
+<tr><td><strong>entities</strong></td><td><em>[String]</em></td><td>A list of entities which will be ingested as part of this mapping. Must correspond to names of entities in the GraphQL IDL</td></tr>
+<tr><td><strong>abis</strong></td><td><em>ABI</em></td><td>ABIs for the contract classes which should be generated in the Mapping ABI. Name is also used to reference the ABI elsewhere in the manifest</td></tr>
+<tr><td><strong>eventHandlers</strong></td><td><em>EventHandler</em></td><td>Handlers for specific events, which will be defined in the mapping script</td></tr>
+<tr><td><strong>file</strong></td><td><a href="subgraph-manifest/#path"><em>Path</em></a></td><td>The path of the mapping script</td></tr>
+</tbody></table>
+<h4><a class="header" href="#eventhandler" id="eventhandler">EventHandler</a></h4>
+<table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>event</strong></td><td><em>String</em></td><td>An identifier for an event which will be handled in the mapping script. For Ethereum contracts, this must be the full event signature to disambiguate from events which may share the same name.</td></tr>
+<tr><td><strong>handler</strong></td><td><em>String</em></td><td>The name of an exported function in the mapping script which should handle the specified event.</td></tr>
+</tbody></table>
+<h2><a class="header" href="#path" id="path">Path</a></h2>
+<p>A path has one field <code>path</code> which either refers to a path of a file on the local dev machine, or an <a href="subgraph-manifest/#footnotes">IPLD link</a>.</p>
+<p>When using the Graph-CLI, local paths may be used during development, and then the tool will take care of deploying linked files to IPFS and replacing the local paths with IPLD links at deploy time.</p>
+<table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>path</strong></td><td><em>String or IPLD Link</em></td><td>A path to a local file or an IPLD link</td></tr>
+</tbody></table>
+<h2><a class="header" href="#footnotes-7" id="footnotes-7">Footnotes</a></h2>
+<ul>
+<li>[1] https://github.com/ipld/specs</li>
+<li>[2] https://github.com/ipld/specs/blob/master/Codecs/DAG-JSON.md</li>
+</ul>
+<h1><a class="header" href="#mappings-api" id="mappings-api">Mappings API</a></h1>
+<h2><a class="header" href="#overview-7" id="overview-7">Overview</a></h2>
+<p>Mappings define how data is extracted or ingested from one or more data sources, transformed, and then loaded in a format that follows a specific data model. At their core, mappings are simply WASM modules, and the mappings API is a set of host external functions that are injected into the WASM runtime and implement a specific interface. These function interfaces are in-protocol.</p>
+<p>Additionally, extra-protocol APIs may be defined in userspace, which implement an API in a higher-level language that compiles to WASM. The Graph Protocol team created one such API, which is included here as a reference example.</p>
+<h2><a class="header" href="#wasm-api" id="wasm-api">WASM API</a></h2>
+<p>The Mappings API can be split into two portions, the <em>ingest</em> or <em>extract</em> API and the <em>store</em> API (how data is loaded). We present an ingest API tailored to event-sourcing Ethereum smart contract data, but future versions of the protocol will enable ingest APIs specific to other decentralized data sources. The <em>store API</em> will not need to change to support new data sources.</p>
+<p><strong>Note:</strong> There are also a number of utility functions that are currently injected into the WASM runtime for convenience. These will either be implemented natively in WASM or fully specified in a future version of this spec.</p>
+<h3><a class="header" href="#ingest" id="ingest">Ingest</a></h3>
+<h4><a class="header" href="#ethereum-1" id="ethereum-1">Ethereum</a></h4>
+<p>Data is ingested from Ethereum by event-sourcing Solidity events, as well as other triggers, defined in the subgraph manifest. The WASM module referenced in the subgraph manifest is expected to have handlers that correspond to the handlers defined in the <a href="mappings-api/../subgraph-manifest">subgraph manifest</a>.</p>
+<p>See this <a href="https://github.com/graphprotocol/graph-node/blob/master/runtime/wasm/src/host.rs">reference implementation</a> for how these handlers should be called.</p>
+<p>Additionally, we inject functions for calling Ethereum smart contracts for additional data that is not included in the Ethereum event:</p>
+<ul>
+<li>ethereum_call</li>
+</ul>
+<p>See this <a href="https://github.com/graphprotocol/graph-node/blob/master/runtime/wasm/src/host_exports.rs">reference</a> for these additional functions.</p>
+<h3><a class="header" href="#store" id="store">Store</a></h3>
+<p>The store API includes the following methods:</p>
+<ul>
+<li>set</li>
+<li>get</li>
+<li>remove</li>
+</ul>
+<p>See this <a href="https://github.com/graphprotocol/graph-node/blob/master/runtime/wasm/src/host_exports.rs">reference implementation</a> for these external functions.</p>
+<h3><a class="header" href="#utilities" id="utilities">Utilities</a></h3>
+<p>We currently inject the following utility functions into the WASM runtime, which may be changed or removed in a future version of the protocol:</p>
+<ul>
+<li>bytes_to_string</li>
+<li>bytes_to_hex</li>
+<li>big_int_to_hex</li>
+<li>big_int_to_i32</li>
+<li>json_to_i64</li>
+<li>json_to_u64</li>
+<li>json_to_f64</li>
+<li>json_to_big_int</li>
+<li>crypto_keccak_256</li>
+<li>big_int_plus</li>
+<li>big_int_minus</li>
+<li>big_int_times</li>
+<li>big_int_divided_by</li>
+<li>big_int_mod</li>
+<li>string_to_h160</li>
+</ul>
+<p>See this <a href="https://github.com/graphprotocol/graph-node/blob/master/runtime/wasm/src/host_exports.rs">reference implementation</a> for these external functions.</p>
+<h2><a class="header" href="#higher-level-apis" id="higher-level-apis">Higher-Level APIs</a></h2>
+<p>Higher-level APIs provide context for the low-level APIs, described above, in a higher-level programming language that compiles to WASM.</p>
+<h3><a class="header" href="#assemblyscript" id="assemblyscript">AssemblyScript</a></h3>
+<p><a href="https://github.com/AssemblyScript/assemblyscript/wiki">AssemblyScript</a> is a subset of TypeScript that compiles to WASM. It only natively supports a handful of types, 32 and 64-bit floating point and integer numeric types, but we extend the runtime with additional higher-level types, such as <code>TypedMap</code> and <code>BigInt</code>, to facilitate a more developer-friendly API.</p>
+<p>See this <a href="https://github.com/graphprotocol/graph-ts/blob/master/index.ts">reference</a> for all types, external functions, and utilities.</p>
+<h4><a class="header" href="#types" id="types">Types</a></h4>
+<h5><a class="header" href="#basic-types" id="basic-types">Basic Types</a></h5>
+<ul>
+<li><code>TypedMap&lt;K, V&gt;</code></li>
+<li><code>TypedMapEntry&lt;K, V&gt;</code></li>
+<li><code>BytesArray</code></li>
+<li><code>Bytes</code></li>
+<li><code>BigInt</code></li>
+<li><code>Value</code></li>
+<li><code>ValueKind</code></li>
+<li><code>ValuePayload</code></li>
+</ul>
+<h5><a class="header" href="#serialization-formats" id="serialization-formats">Serialization Formats</a></h5>
+<ul>
+<li><code>JSONValue</code></li>
+<li><code>JSONValueKind</code></li>
+<li><code>JSONValuePayload</code></li>
+</ul>
+<h5><a class="header" href="#ethereum-types" id="ethereum-types">Ethereum Types</a></h5>
+<ul>
+<li><code>EthereumValue</code></li>
+<li><code>EthereumValueKind</code></li>
+<li><code>EthereumBlock</code></li>
+<li><code>EthereumTransaction</code></li>
+<li><code>EthereumEvent</code></li>
+<li><code>EthereumEventParams</code></li>
+<li><code>SmartContractCall</code></li>
+<li><code>SmartContract</code></li>
+</ul>
+<h5><a class="header" href="#store-types" id="store-types">Store Types</a></h5>
+<ul>
+<li><code>Entity</code></li>
+</ul>
+<h4><a class="header" href="#ingest-1" id="ingest-1">Ingest</a></h4>
+<h5><a class="header" href="#ethereum-2" id="ethereum-2">Ethereum</a></h5>
+<ul>
+<li><code>ethereum.call</code></li>
+</ul>
+<h5><a class="header" href="#ipfs-1" id="ipfs-1">IPFS</a></h5>
+<ul>
+<li><code>ipfs.cat</code></li>
+</ul>
+<h4><a class="header" href="#store-1" id="store-1">Store</a></h4>
+<ul>
+<li><code>store.set</code></li>
+<li><code>store.get</code></li>
+<li><code>store.remove</code></li>
+</ul>
+<h4><a class="header" href="#utilities-1" id="utilities-1">Utilities</a></h4>
+<ul>
+<li><code>crypto.keccak256</code></li>
+<li><code>json.fromBytes</code></li>
+<li><code>json.toI64</code></li>
+<li><code>json.toU64</code></li>
+<li><code>json.toF64</code></li>
+<li><code>json.toBigInt</code></li>
+<li><code>typeConversion.bytesToString</code></li>
+<li><code>typeConversion.bytesToHex</code></li>
+<li><code>typeConversion.bigIntToString</code></li>
+<li><code>typeConversion.stringToH160</code></li>
+<li><code>typeConversion.i32ToBigInt</code></li>
+<li><code>typeConversion.bigIntToI32</code></li>
+<li><code>bigInt.plus</code></li>
+<li><code>bigInt.minus</code></li>
+<li><code>bigInt.times</code></li>
+<li><code>bigInt.dividedBy</code></li>
+<li><code>bigInt.mod</code></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+        
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            MathJax.Hub.Register.StartupHook('End', function() {
+                window.setTimeout(window.print, 100);
+            });
+        });
+        </script>
+        
+        
+
+    </body>
+</html>

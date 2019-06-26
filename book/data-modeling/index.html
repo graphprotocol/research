@@ -1,0 +1,313 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Data Modeling - Hybrid Network</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="Hybrid Network Spec.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="affix"><a href="../index.html">Hybrid Network</a></li><li><a href="../architecture-overview/index.html"><strong aria-hidden="true">1.</strong> Architecture Overview</a></li><li><a href="../mechanism-design/index.html"><strong aria-hidden="true">2.</strong> Mechanism Design</a></li><li><a href="../query-processing/index.html"><strong aria-hidden="true">3.</strong> Query Processing</a></li><li><a href="../payment-channels/index.html"><strong aria-hidden="true">4.</strong> Payment Channels</a></li><li><a href="../read-interface/index.html"><strong aria-hidden="true">5.</strong> Read Interface</a></li><li><a href="../messages/index.html"><strong aria-hidden="true">6.</strong> Messages</a></li><li><a href="../rpc-api/index.html"><strong aria-hidden="true">7.</strong> JSON-RPC API</a></li><li><a href="../datasets/index.html"><strong aria-hidden="true">8.</strong> Datasets</a></li><li><a href="../data-modeling/index.html" class="active"><strong aria-hidden="true">9.</strong> Data Modeling</a></li><li><a href="../subgraph-manifest/index.html"><strong aria-hidden="true">10.</strong> Subgraph Manifest</a></li><li><a href="../mappings-api/index.html"><strong aria-hidden="true">11.</strong> Mappings API</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Hybrid Network</h1>
+
+                        <div class="right-buttons">
+                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#data-modeling" id="data-modeling">Data Modeling</a></h1>
+<p>The schema of your dataset--that is, the entity types, values and relationships that are available to query--are defined through the  GraphQL Interface Definition Language (IDL)<a href="#footnotes"><sup>1</sup></a>.</p>
+<h2><a class="header" href="#entities" id="entities">Entities</a></h2>
+<h2><a class="header" href="#entities-1" id="entities-1">Entities</a></h2>
+<p>Entities are defined as GraphQL types decorated with an <code>@entity</code>. All entities must have an <code>id: ID!</code> field defined.</p>
+<h4><a class="header" href="#example" id="example">Example</a></h4>
+<p>Define a <code>Token</code> entity:</p>
+<pre><code class="language-graphql">@entity
+type Token {
+  # The unique ID of this entity
+  id: ID!
+  name: String!
+  symbol: String!
+  decimals: Int!
+}
+</code></pre>
+<p>An attribute on an entity type may be specified as unique, in which case the value for that attribute must be unique among all instances of that entity type.</p>
+<h3><a class="header" href="#example-1" id="example-1">Example</a></h3>
+<p>Define a <code>File</code> entity with a unique content hash:</p>
+<pre><code class="language-graphql">@entity
+type File {
+  id: ID!
+  name: String!
+  bytes: Bytes!
+  length: Int!
+  # Only one File entity may be created with a given
+  # content hash.
+  hash: String! @unique
+}
+</code></pre>
+<h2><a class="header" href="#built-in-types" id="built-in-types">Built-In Types</a></h2>
+<h3><a class="header" href="#graphql-built-in-scalars" id="graphql-built-in-scalars">GraphQL Built-In Scalars</a></h3>
+<p>All the scalars defined in the GraphQL spec are supported: <code>Int</code>, <code>Float</code>, <code>String</code>, <code>Boolean</code>, and <code>ID</code>.</p>
+<h3><a class="header" href="#bytes" id="bytes">Bytes</a></h3>
+<p>There is a <code>Bytes</code> scalar for variable-length byte arrays.</p>
+<p>Additionally, fixed-length byte scalar types between 1 and 32 bytes are supported: <code>Byte</code>, <code>Bytes1</code> (an alias for <code>Byte</code>), <code>Bytes2</code>, <code>Bytes3</code> ... <code>Bytes31</code>, and <code>Bytes32</code>.</p>
+<h3><a class="header" href="#numbers" id="numbers">Numbers</a></h3>
+<p>The GraphQL spec defines <code>Int</code> and <code>Float</code> to have sizes of 32 bytes.</p>
+<p>This API additionally includes <code>BigInt</code> and <code>BigFloat</code> number types to represent arbitrarily large integer or floating point numbers, respectively.</p>
+<p>There are also fixed-size number types to represent numbers between 1 and 32 bytes long. The suffix is specified by the number of bits.</p>
+<p>Signed integers all share the <code>Int</code> prefix: <code>Int8</code>, <code>Int16</code>, <code>Int24</code>, <code>Int32</code> (an alias of <code>Int</code>) ... <code>Int240</code>, <code>Int248</code>, and <code>Int256</code>.</p>
+<p>There are corresponding unsigned integer types prefixed with <code>UInt</code>: <code>UInt8</code>, <code>UInt16</code>, <code>UInt24</code>, <code>UInt32</code> ... <code>UInt240</code>, <code>UInt248</code>, and <code>UInt256</code>.</p>
+<p>All number types other than <code>Int</code> and <code>Float</code>, which are serialized as JSON number types, are serialized as strings.</p>
+<p>Even though the serialization format is the same, having the sizes captured in the type system provides better self-documentation and enables tooling that generates convenient deserializers in statically typed languages.</p>
+<h2><a class="header" href="#value-objects" id="value-objects">Value Objects</a></h2>
+<p>All types not decorated with the <code>@entity</code> decorator are value objects. Value object types may be used as the type of entity attributes, and do not have unique <code>id</code> attributes themselves.</p>
+<h2><a class="header" href="#entity-relationships" id="entity-relationships">Entity Relationships</a></h2>
+<p>An entity may have a relationship to one or more other entities in your data model. Relations are unidirectional.</p>
+<p>Despite being unidirectional, attributes may be defined on entities which facilitate navigating relationships in the reverse direction. See <a href="#reverse-lookups">Reverse Lookups</a>.</p>
+<h3><a class="header" href="#basics" id="basics">Basics</a></h3>
+<p>Relationships are defined on entities just like any other scalar type, except that the type specified is that of another entity.</p>
+<h4><a class="header" href="#example-2" id="example-2">Example</a></h4>
+<p>Define a <code>Transaction</code> entity type with an optional one-to-one relationship with a <code>TransactionReceipt</code> entity type:</p>
+<pre><code class="language-graphql">@entity
+type Transaction {
+  id: ID!
+  transactionReceipt: TransactionReceipt
+}
+
+@entity
+type TransactionReceipt {
+  id: ID!
+  transaction: Transaction
+}
+</code></pre>
+<h4><a class="header" href="#example-3" id="example-3">Example</a></h4>
+<p>Define a <code>Token</code> entity type with a required one-to-many relationship with a <code>TokenBalance</code> entity type:</p>
+<pre><code class="language-graphql">@entity
+type Token {
+  id: ID!
+  tokenBalances: [TokenBalance!]!
+}
+
+@entity
+type TokenBalance {
+  id: ID!
+  amount: Int!
+}
+</code></pre>
+<h3><a class="header" href="#reverse-lookups" id="reverse-lookups">Reverse Lookups</a></h3>
+<p>Reverse lookups can be defined on an entity through the <code>@derivedFrom</code> field. This creates a &quot;virtual&quot; field on the entity that may be queried but cannot be set manually through the mappings API. Rather, it is derived from the relationship defined on the other entity.</p>
+<p>The type of a <code>@derivedFrom</code> field must be a collection since multiple entities may specify relationships to a single entity.</p>
+<h4><a class="header" href="#example-4" id="example-4">Example</a></h4>
+<p>Define a reverse lookup from a <code>User</code> entity type to an <code>Organization</code> entity type:</p>
+<pre><code class="language-graphql">@entity
+type Organization {
+  id: ID!
+  name: String!
+  members: [User]!
+}
+
+@entity
+type User {
+  id: ID!
+  name: String!
+  organizations: [Organization!] @derivedFrom(field: &quot;members&quot;)
+}
+</code></pre>
+<h2><a class="header" href="#footnotes" id="footnotes">Footnotes</a></h2>
+<ul>
+<li>[1] http://facebook.github.io/graphql/draft/#sec-Type-System</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../datasets/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../subgraph-manifest/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../datasets/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../subgraph-manifest/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

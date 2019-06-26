@@ -1,0 +1,530 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Read Interface - Hybrid Network</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="Hybrid Network Spec.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="affix"><a href="../index.html">Hybrid Network</a></li><li><a href="../architecture-overview/index.html"><strong aria-hidden="true">1.</strong> Architecture Overview</a></li><li><a href="../mechanism-design/index.html"><strong aria-hidden="true">2.</strong> Mechanism Design</a></li><li><a href="../query-processing/index.html"><strong aria-hidden="true">3.</strong> Query Processing</a></li><li><a href="../payment-channels/index.html"><strong aria-hidden="true">4.</strong> Payment Channels</a></li><li><a href="../read-interface/index.html" class="active"><strong aria-hidden="true">5.</strong> Read Interface</a></li><li><a href="../messages/index.html"><strong aria-hidden="true">6.</strong> Messages</a></li><li><a href="../rpc-api/index.html"><strong aria-hidden="true">7.</strong> JSON-RPC API</a></li><li><a href="../datasets/index.html"><strong aria-hidden="true">8.</strong> Datasets</a></li><li><a href="../data-modeling/index.html"><strong aria-hidden="true">9.</strong> Data Modeling</a></li><li><a href="../subgraph-manifest/index.html"><strong aria-hidden="true">10.</strong> Subgraph Manifest</a></li><li><a href="../mappings-api/index.html"><strong aria-hidden="true">11.</strong> Mappings API</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Hybrid Network</h1>
+
+                        <div class="right-buttons">
+                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#read-interface" id="read-interface">Read Interface</a></h1>
+<h2><a class="header" href="#overview" id="overview">Overview</a></h2>
+<p>To participate in the data retrieval market, Indexing Nodes implement a low-level read interface to the indexed data in their store. The read interface not only provides the means of retrieving data from an Indexing Node, but it also defines a contract that an Indexing Node is agreeing to uphold or else be slashed. This is enabled by attestations, which assert that a response was produced correctly and may be verified on-chain.</p>
+<h2><a class="header" href="#calling-read-operations" id="calling-read-operations">Calling Read Operations</a></h2>
+<p>Available read operations are defined by the respective interface of the index being read from. See <a href="#index-abstract-data-structures">Index Abstract Data Structures</a> and <a href="#index-types">Index Types</a> for more information.</p>
+<p>While the read interfaces are described using a TypeScript notation, all the interfaces are language agnostic and defined in terms of JSON types.</p>
+<p>Calling these read operations is done via JSON RPC 2.0<a href="#footnotes"><sup>1</sup></a>. See the full <a href="../rpc-api">JSON RPC API</a>.</p>
+<p>The method of interest here is <code>callReadOp</code> which accepts the following parameters:</p>
+<ol>
+<li><code>Object</code></li>
+</ol>
+<ul>
+<li><code>blockHash</code>: <code>String</code> - The hash of the Ethereum block from which to read the data.</li>
+<li><code>subgraphID</code>: <code>String</code> - The ID of the subgraph to read from.</li>
+<li><code>index</code>: <code>Object</code> - The <a href="#indexes">IndexRecord</a> of the index being read from.</li>
+<li><code>op</code>: <code>String</code> - The name of the read operation.</li>
+<li><code>params</code>: <code>[any]</code> - The parameters passed into the called read operation.</li>
+</ul>
+<ol start="2">
+<li><code>Object</code> - A <a href="../messages#locked-transfer">Locked Transfer</a> message which serves as a conditional micropayment for the read operation.</li>
+</ol>
+<p>The <code>readIndex</code> method returns the following:</p>
+<ol>
+<li><code>Object</code></li>
+</ol>
+<ul>
+<li><code>data</code>: <code>any</code> - The data retrieved by the read operation.</li>
+<li><code>attestation</code>: Object - An attestation that <code>data</code> is a correct response for the given read operation (see <a href="#attestation">Attestation</a>).</li>
+</ul>
+<pre><code class="language-js">// request
+{
+  &quot;method&quot;: &quot;readIndex&quot;,
+  &quot;params&quot;: [
+    {
+      &quot;blockHash&quot;: &quot;xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1&quot;,
+      &quot;subgraphID&quot;: &quot;QmTeW79w7QQ6Npa3b1d5tANreCDxF2iDaAPsDvW6KtLmfB&quot;,
+      &quot;index&quot;: {
+        &quot;indexType&quot;: &quot;kv&quot;
+      },
+      &quot;op&quot;: &quot;get&quot;
+      &quot;params&quot;: [&quot;User:1&quot;]
+    }
+  ],
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+// response
+{
+  &quot;data&quot;: {
+    &quot;firstName&quot;: &quot;Vitalik&quot;,
+    &quot;lastName&quot;: &quot;Buterin&quot;,
+  },
+  // TODO: Provide more realistic attestations
+  &quot;attestation&quot;: 0x0122340
+}
+</code></pre>
+<h5><a class="header" href="#example---entity-doesnt-exist" id="example---entity-doesnt-exist">Example - Entity doesn't exist</a></h5>
+<pre><code class="language-js">// request
+{
+  &quot;method&quot;: &quot;readIndex&quot;,
+  &quot;params&quot;: [
+    {
+      &quot;blockHash&quot;: &quot;xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1&quot;,
+      &quot;index&quot;: {
+        &quot;indexType&quot;: &quot;kv&quot;
+      },
+      &quot;op&quot;: &quot;get&quot;
+      &quot;params&quot;: [&quot;User:1&quot;]
+    }
+  ],
+  &quot;jsonrpc&quot;: &quot;2.0&quot;
+}
+// response
+{
+  &quot;data&quot;: null,
+  // TODO: Provide more realistic attestations
+  &quot;attestation&quot;: 0x0122340
+}
+</code></pre>
+<h2><a class="header" href="#indexes" id="indexes">Indexes</a></h2>
+<p>All read operations require that the caller specify an index. Index data structures efficiently organize the data to support different read access patterns.</p>
+<p>Indexes may include the entire dataset or cover only a subset. This is useful for enabling sharding, where different Indexing Nodes may store different subsets of the dataset to reduce the storage requirements for a single Indexing Node or enable better read performance.</p>
+<p>Indexes are defined by an <code>IndexRecord</code> which has the following shape:</p>
+<table><thead><tr><th>Field Name</th><th>Field Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>db</td><td>String</td><td>The identifier of the database model being used.</td></tr>
+<tr><td>indexType</td><td>String</td><td>An identifier of the index type used for the respective database model.</td></tr>
+<tr><td>partition</td><td>String</td><td>The name of the entity or interface which should be covered by the index.</td></tr>
+<tr><td>options</td><td>Object</td><td>Options specific to the type of index.</td></tr>
+</tbody></table>
+<h6><a class="header" href="#example-index-records" id="example-index-records">Example Index Records</a></h6>
+<p>Given a dataset with the following data model:</p>
+<pre><code class="language-graphql">interface EthereumAccount {
+  id: ID!
+  address: String!
+}
+
+type Contract implements EthereumAccount {
+  id: ID!
+  address: String!
+}
+
+type User implements EthereumAccount {
+  id: ID!
+  address: String!
+  name: FullName
+}
+
+type FullName {
+  first: String!
+  last: String!
+}
+</code></pre>
+<p>Then, the following would be valid index names for that dataset:</p>
+<table><thead><tr><th>Index Name</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>{ db: &quot;entitydb&quot;, indexType: &quot;dictionary&quot; }</code></td><td>A basic key-value index supporting constant-time lookup of all entities in dataset.</td></tr>
+<tr><td><code>{ db: &quot;entitydb&quot;, &quot;indexType: &quot;dictionary&quot;, partition: &quot;User&quot; }</code></td><td>A basic key-value index supporting constant-time lookup of <code>User</code> entities.</td></tr>
+<tr><td><code>{ db: &quot;entitydb&quot;, indexType: &quot;searchTree&quot;, options: { sortBy: [&quot;id&quot;] } }</code></td><td>A sorted key-value index supporting iteration through all entities, sorted by ID.</td></tr>
+<tr><td><code>{ db: &quot;entitydb&quot;, indexType: &quot;searchTree&quot;, partition: &quot;EthereumAccount&quot;, options: { sortBy: [&quot;address&quot;] }}</code></td><td>A sorted key-value index supporting iteration through all entities implementing the <code>EthereumAccount</code> interface, sorted by the <code>address</code> field.</td></tr>
+<tr><td><code>{ db: &quot;entitydb&quot;, indexType: &quot;searchTree&quot;, partition: &quot;User&quot;,  options: { sortBy: [&quot;name.first&quot;, &quot;name.last&quot;] } }</code></td><td>A sorted key-value index supporting iteration through all <code>User</code> entities, first sorted by the nested field <code>name.first</code>, then by the nested field <code>name.last</code> (i.e., a compound index).</td></tr>
+</tbody></table>
+<h3><a class="header" href="#index-abstract-data-structures" id="index-abstract-data-structures">Index Abstract Data Structures</a></h3>
+<p>All concrete index types implement an indexing abstract data structure, which specify the interface, semantics, and gas costs for read operations against that index.</p>
+<p>The concrete types (i.e., <code>K</code> and <code>V</code> shown below), as well as the implicit comparator function to determine sort order, are specified by each concrete index type.</p>
+<h4><a class="header" href="#dictionary" id="dictionary">Dictionary</a></h4>
+<h5><a class="header" href="#type" id="type">Type</a></h5>
+<p>Dictionary&lt;K,V&gt;</p>
+<h5><a class="header" href="#operations" id="operations">Operations</a></h5>
+<table><thead><tr><th>Op</th><th>Signature</th><th>Description</th><th>Gas Cost</th></tr></thead><tbody>
+<tr><td>get</td><td><code>(key: K) =&gt; V</code></td><td>Retrieves a value by its key.</td><td><code>opCostDictionaryGet</code> (set via governance)</td></tr>
+</tbody></table>
+<h4><a class="header" href="#search-tree" id="search-tree">Search Tree</a></h4>
+<h5><a class="header" href="#type-1" id="type-1">Type</a></h5>
+<p><code>SearchTree&lt;K,V&gt;</code></p>
+<h5><a class="header" href="#operations-1" id="operations-1">Operations</a></h5>
+<table><thead><tr><th>Op</th><th>Signature</th><th>Description</th><th>Gas Cost</th></tr></thead><tbody>
+<tr><td>find</td><td><code>(predicate: FilterPredicate, options?: { gte?: K, lt?: K } ) =&gt; V</code></td><td>Retrieves the first value for which the <code>FilterPredicate</code> returns true, searching in ascending order. If specified, only take values whose sort keys are between the range parameters <code>gte</code> (inclusive) and <code>lt</code> (exclusive).</td><td><code>(opCostSearchTreeStep opCostFilterPredicate) * N</code> where <code>N</code> is the number of iterations taken to find the value, <code>opCostSearchTreeStep</code> is set via governance, and <code>opCostFilterPredicate</code> is calculated for the specific filter predicate provided.</td></tr>
+<tr><td>findLast</td><td><code>(predicate: FilterPredicate, options?: { gt?: K, lte?: K } ) =&gt; V</code></td><td>Retrieves the first value for which the <code>FilterPredicate</code> returns true, searching in descending order. If specified, only take values whose sort keys are between the range parameters <code>gt</code> (exclusive) and <code>lte</code> (inclusive).</td><td><code>(opCostSearchTreeStep opCostFilterPredicate) * N</code> where <code>N</code> is the number of iterations taken to find the value, <code>opCostSearchTreeStep</code> is set via governance, and <code>opCostFilterPredicate</code> is calculated for the specific filter predicate provided.</td></tr>
+<tr><td>get</td><td><code>(key: K) =&gt; V</code></td><td>Retrieves a value by its sort key. If multiple values share the same sort key, it will retrieve the first value inserted with the sort key.</td><td><code>opCostSearchTreeGetPerH * H</code> where <code>H</code> is the height of a binary search tree, and <code>opCostSearchTreeGetPerH</code> is set via governance.</td></tr>
+<tr><td>take</td><td><code>(count: Number, options?: { skip?: Number, gte?: K, lt?: K}) =&gt; [V]</code></td><td>Retrieves the first N values, specified by <code>count</code>, from the index in ascending order, optionally skipping the number of values specified by <code>skip</code>. If specified, it only takes values whose sort keys are between the range parameters <code>gte</code> (inclusive) and <code>lt</code> (exclusive).</td><td><code>opCostSearchTreeStep * N</code> where <code>N</code> is the number of iterations taken including skipped values.</td></tr>
+<tr><td>takeUntil</td><td><code>(predicate: FilterPredicate, options?:{ skip?: Number, gte?: K, lt?: K}) =&gt; [V]</code></td><td>Retrieves values from the index in ascending order until <code>FilterPredicate</code> returns false, optionally skipping the number of values specified by <code>skip</code>. If specified, it only takes values whose sort keys are between the range parameters <code>gte</code> (inclusive) and <code>lt</code> (exclusive).</td><td><code>(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S</code> where <code>N</code> is the number of iterations taken not including skipped values, <code>S</code> is the number of values skipped over, <code>opCostSearchTreeStep</code> is set via governance, and <code>opCostFilterPredicate</code> is calculated for the specific filter predicate provided.</td></tr>
+<tr><td>takeWhile</td><td><code>(predicate: FilterPredicate, options?:{ skip?: Number, gte?: K, lt?: K}) =&gt; [V]</code></td><td>Retrieves values from the index in ascending order, while <code>FilterPredicate</code> returns true, optionally skipping the number of values specified by <code>skip</code>. If specified, it only takes values whose sort keys are between the range parameters <code>gte</code> (inclusive) and <code>lt</code> (exclusive).</td><td><code>(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S</code> where <code>N</code> is the number of iterations taken not including skipped values, <code>S</code> is the number of values skipped over, <code>opCostSearchTreeStep</code> is set via governance, and <code>opCostFilterPredicate</code> is calculated for the specific filter predicate provided.</td></tr>
+<tr><td>takeLast</td><td><code>(count: Number, options?: { skip?: Number, gt?: K, lte?: K })</code></td><td>Retrieves the last N values, specified by <code>count</code>, from the index in descending order, optionally skipping the number of values specified by <code>skip</code>. If specified, it only takes values whose sort keys are between the range parameters <code>gt</code> (exclusive) and <code>lte</code> (inclusive).</td><td><code>opCostSearchTreeStep * N</code> where <code>N</code> is the number of iterations taken including skipped values.</td></tr>
+<tr><td>takeLastUntil</td><td><code>(predicate: FilterPredicate, options?:{ skip?: Number, gt?: K, lte?: K}) =&gt; [V]</code></td><td>Retrieves values from the index in descending order, until <code>FilterPredicate</code> returns false, optionally skipping the number of values specified by <code>skip</code>. If specified, it only takes values whose sort keys are between the range parameters <code>gt</code> (exclusive) and <code>lte</code> (inclusive).</td><td><code>(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S</code> where <code>N</code> is the number of iterations taken not including skipped values, <code>S</code> is the number of values skipped over, <code>opCostSearchTreeStep</code> is set via governance, and <code>opCostFilterPredicate</code> is calculated for the specific filter predicate provided.</td></tr>
+<tr><td>takeLastWhile</td><td><code>(predicate: FilterPredicate, options?:{ skip?: Number, gt?: K, lte?: K}) =&gt; [V]</code></td><td>Retrieves values from the index in descending order, while <code>FilterPredicate</code> returns true, optionally skipping the number of values specified by <code>skip</code>. If specified, it only takes values whose sort keys are between the range parameters <code>gt</code> (exclusive) and <code>lte</code> (inclusive).</td><td><code>(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S</code> where <code>N</code> is the number of iterations taken not including skipped values, <code>S</code> is the number of values skipped over, <code>opCostSearchTreeStep</code> is set via governance, and <code>opCostFilterPredicate</code> is calculated for the specific filter predicate provided.</td></tr>
+</tbody></table>
+<h3><a class="header" href="#filter-predicates" id="filter-predicates">Filter Predicates</a></h3>
+<p>Filter predicates allow for declaratively asserting whether a value meets certain criteria. Filter predicates are expressed as objects that can be passed into several low-level index read operations, such as <code>takeWhile</code> and <code>find</code>.</p>
+<h4><a class="header" href="#structure" id="structure">Structure</a></h4>
+<p>Filter predicates are expressed through a simple DSL:</p>
+<pre><code class="language-typescript">type FilterPredicate = FilterPredicateAnd | FilterPredicateOr | FilterPredicateLeaf
+
+interface FilterPredicateAnd {
+  and: [FilterPredicate];
+}
+
+interface FilterPredicateOr {
+  or: [FilterPredicate];
+}
+
+type FilterPredicateLeaf = StringFilter | NumberFilter | BooleanFilter
+
+interface BaseFilter {
+  // The field the predicate will be applied to. Nested fields may be
+  // specified by concatenating field names with a &quot;.&quot;
+  // If no field is specified, the predicate will be applied to the value. This
+  // is only supported if the value is a primitive type.
+  field?: String;
+}
+
+// If multiple filter clauses are supplied, they will be treated as a logical AND.
+interface StringFilter extends BaseFilter {
+  equals?: String;
+  notEquals?: String;
+  // Contains string
+  contains?: String;
+  // Does not contain string
+  notContains?: String;
+  startsWith?: String;
+  notStartsWith?: String;
+  endsWith?: String;
+  notEndsWith?: String;
+  // Less than
+  lt?: String;
+  // Less than or equal to
+  lte?: String;
+  // Greater than
+  gt?: String;
+  // Greater than or equal to
+  gte?: String;
+  // Contained in list
+  in?: [String];
+  // Not contained in list
+  notIn?: [String];
+}
+
+
+// If multiple filter clauses are supplied, they will be treated as a logical AND.
+interface NumberFilter extends BaseFilter {
+  equals?: Number;
+  notEquals?: Number;
+  // Less than
+  lt?: Number;
+  // Less than or equal to
+  lte?: Number;
+  // Greater than
+  gt?: Number;
+  // Greater than or equal to
+  gte?: Number;
+  // Contained in list
+  in?: [Number];
+  // Not contained in list
+  notIn?: [Number];
+}
+
+// If multiple filter clauses are supplied, they will be treated as a logical AND.
+interface BooleanFilter extends BaseFilter {
+  equals?: Boolean;
+  notEquals?: Boolean;
+}
+</code></pre>
+<h5><a class="header" href="#example---simple-value-filter-predicate" id="example---simple-value-filter-predicate">Example - Simple Value Filter Predicate</a></h5>
+<pre><code class="language-js">{
+  equals: 12
+}
+</code></pre>
+<h5><a class="header" href="#example---object-filter-predicate" id="example---object-filter-predicate">Example - Object Filter Predicate</a></h5>
+<pre><code class="language-js">{
+  field: &quot;fullName&quot;,
+  contains: &quot;Vitalik&quot;
+}
+</code></pre>
+<h5><a class="header" href="#example---filter-predicate-with-boolean-operators-and-nested-fields" id="example---filter-predicate-with-boolean-operators-and-nested-fields">Example - Filter Predicate with Boolean Operators and Nested Fields</a></h5>
+<pre><code class="language-js">{
+ and: [
+   {
+     field: &quot;name.first&quot;,
+     equals: &quot;Vitalik&quot;
+   },
+   {
+     field: &quot;name.last&quot;,
+     equals: &quot;Buterin&quot;
+   }
+ ]
+}
+</code></pre>
+<h4><a class="header" href="#gas-cost" id="gas-cost">Gas Cost</a></h4>
+<p>The clauses in the filter predicate DSL can be grouped into several buckets of operation types, which share equivalent gas cost calculations:</p>
+<table><thead><tr><th>Operation Type</th><th>Description</th><th>Gas Cost</th></tr></thead><tbody>
+<tr><td>Number Comparison</td><td>Includes <code>lt</code>, <code>lte</code>, <code>gt</code>, <code>gte</code>, <code>equals</code> and <code>notEquals</code> clauses on Number types.</td><td><code>opCostByteCompare * B </code> where <code>B</code> is the number of bytes in the number type, and <code>opCostByteCompare</code> is set via governance.</td></tr>
+<tr><td>String Comparison</td><td>Includes <code>lt</code>, <code>lte</code>, <code>gt</code>, <code>gte</code>, <code>startsWith</code>, <code>notStartsWith</code>, <code>endsWith</code>, <code>notEndsWith</code>, <code>equals</code> and <code>notEquals</code> clauses on String types.</td><td><code>opCostCharCompare * N </code> where <code>N</code> is the number of characters compared in order to complete the operation, and <code>opCostCharCompare</code> is set via governance.</td></tr>
+<tr><td>Bit Comparison</td><td>Includes <code>equals</code> and <code>notEquals</code> clauses on Boolean types. Also used for combining two filter predicate clauses via the Boolean operators <code>or</code> and <code>and</code> (including the implicit <code>and</code> described above).</td><td><code>opCostBitCompare</code> where <code>opCostBitCompare</code> is set via governance.</td></tr>
+<tr><td>String Match</td><td>Used for <code>contains</code> and <code>notContains</code> clauses on String types</td><td><code>opCostStringSearch * (M + N)</code> where <code>N</code> is the number of characters in the pattern being matched, and <code>M</code> is the number of characters in the string being searched. <code>opCostStringSearch</code> is set via governance.</td></tr>
+</tbody></table>
+<h3><a class="header" href="#database-models" id="database-models">Database Models</a></h3>
+<p>The semantics of reading from an Indexing Node are determined by the database model that the index being read from implements, such as <a href="https://en.wikipedia.org/wiki/Key-value_database">key-value (KV)</a>, <a href="https://en.wikipedia.org/wiki/Entity%E2%80%93attribute%E2%80%93value_model">entity-attribute-value (EAV)</a> and the <a href="https://en.wikipedia.org/wiki/Relational_model">relational model</a>. Index types are prefixed with a short label indicating the database model the index implements:</p>
+<ul>
+<li><code>entitydb</code> - An <a href="#entity-database-model">entity database model</a>.</li>
+<li><code>rdb</code> -  Relational database model. Not supported in this version of the protocol.</li>
+<li><code>eav</code> -  Entity-attribute-value database model. Not supported in this version of the protocol.</li>
+</ul>
+<p>The database model also defines the available partitions and index types for use in read operations.</p>
+<p>In the v1 protocol, we only support the entity database model.</p>
+<h4><a class="header" href="#entity-database-model" id="entity-database-model">Entity Database Model</a></h4>
+<p>In the protocol's entity database model, entities are stored as key-value pairs, where the key is a concatenation of the entity type and the entity ID, and the value is an entity object.</p>
+<p>This database model is referenced as <code>entitydb</code> in Index Records.</p>
+<h5><a class="header" href="#example---entities-stored-as-key-value-pairs" id="example---entities-stored-as-key-value-pairs">Example - Entities Stored as Key-Value Pairs</a></h5>
+<table><thead><tr><th>Key</th><th>Value</th></tr></thead><tbody>
+<tr><td><code>user:1</code></td><td><code>{ id: &quot;user:1&quot;, user: &quot;Alice&quot;, age: 17 }</code></td></tr>
+<tr><td><code>user:2</code></td><td><code>{ id: &quot;user:2&quot;, user: &quot;Bob&quot;, age: 47 }</code></td></tr>
+</tbody></table>
+<h4><a class="header" href="#partitions" id="partitions">Partitions</a></h4>
+<p>Partitions define the subset of the data that is covered by the index.</p>
+<p>Possible values of <code>&lt;partition&gt;</code> in an Index Record:</p>
+<ul>
+<li>none - Includes all entities in the dataset. Default partition, <code>partition</code> key should be ommitted in IndexRecord.</li>
+<li><code>&quot;&lt;entityType&gt;&quot;</code> - Includes entities of the type specified by <code>entityType</code>. The entity type name is case-sensitive.</li>
+<li><code>&quot;&lt;interface&gt;&quot;</code> - Includes entities that implement the provided interface. The interface name is case-sensitive.</li>
+</ul>
+<h3><a class="header" href="#index-types" id="index-types">Index Types</a></h3>
+<h4><a class="header" href="#entity-db-indexes" id="entity-db-indexes">Entity DB Indexes</a></h4>
+<h5><a class="header" href="#dictionary-1" id="dictionary-1">Dictionary</a></h5>
+<p>The entity dictionary supports simple key-value lookups of entities by their entity type and ID, in constant time.</p>
+<h6><a class="header" href="#name" id="name">Name</a></h6>
+<p><code>dictionary</code></p>
+<h6><a class="header" href="#database-model" id="database-model">Database Model</a></h6>
+<p><code>entitydb</code></p>
+<h6><a class="header" href="#type-2" id="type-2">Type</a></h6>
+<p><code>Dictionary&lt;K, V&gt;</code></p>
+<ul>
+<li><code>K</code>: <code>String</code> - The id of the entity.</li>
+<li><code>V</code>: <code>Object</code> -  An entity that conforms to its type as defined in the schema of the dataset.</li>
+</ul>
+<h6><a class="header" href="#options" id="options">Options</a></h6>
+<p>None</p>
+<h5><a class="header" href="#search-tree-1" id="search-tree-1">Search Tree</a></h5>
+<p>This index supports iterating through entities, ordered by possibly nested attribute values. Supports compound indexes, where an entity is sorted first by one attribute, then by another.</p>
+<h6><a class="header" href="#name-1" id="name-1">Name</a></h6>
+<p><code>searchTree</code></p>
+<h6><a class="header" href="#database-model-1" id="database-model-1">Database Model</a></h6>
+<p><code>entitydb</code></p>
+<h6><a class="header" href="#type-3" id="type-3">Type</a></h6>
+<p><code>SearchTree&lt;K, V&gt;</code></p>
+<ul>
+<li><code>K</code>: <code>String</code> | <code>Number</code> | <code>Object</code> - The value of the sortKey, which is either a primitive value in the case of single-attribute indexes, or an object containing two attribute-value pairs in the case of compound indexes.</li>
+<li><code>V</code>:  An entity that conforms to its type as defined in the schema of the dataset.</li>
+</ul>
+<h6><a class="header" href="#options-1" id="options-1">Options</a></h6>
+<ul>
+<li><code>sortBy</code>: <code>Array</code>
+<ol>
+<li><code>String</code> - The first attribute to sort by, using <code>.</code> to indicate nested attributes (i.e., <code>&quot;name.first&quot;</code>)</li>
+<li><code>String</code> -  The second attribute to sort by, using <code>.</code> to indicate nested attributes (i.e., <code>&quot;name.last&quot;</code>)</li>
+</ol>
+</li>
+</ul>
+<h2><a class="header" href="#footnotes" id="footnotes">Footnotes</a></h2>
+<ul>
+<li>[1] https://www.jsonrpc.org/specification</li>
+<li>[2] https://github.com/multiformats/multicodec</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../payment-channels/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../messages/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../payment-channels/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../messages/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

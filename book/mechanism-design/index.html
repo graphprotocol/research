@@ -1,0 +1,287 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Mechanism Design - Hybrid Network</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="Hybrid Network Spec.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="affix"><a href="../index.html">Hybrid Network</a></li><li><a href="../architecture-overview/index.html"><strong aria-hidden="true">1.</strong> Architecture Overview</a></li><li><a href="../mechanism-design/index.html" class="active"><strong aria-hidden="true">2.</strong> Mechanism Design</a></li><li><a href="../query-processing/index.html"><strong aria-hidden="true">3.</strong> Query Processing</a></li><li><a href="../payment-channels/index.html"><strong aria-hidden="true">4.</strong> Payment Channels</a></li><li><a href="../read-interface/index.html"><strong aria-hidden="true">5.</strong> Read Interface</a></li><li><a href="../messages/index.html"><strong aria-hidden="true">6.</strong> Messages</a></li><li><a href="../rpc-api/index.html"><strong aria-hidden="true">7.</strong> JSON-RPC API</a></li><li><a href="../datasets/index.html"><strong aria-hidden="true">8.</strong> Datasets</a></li><li><a href="../data-modeling/index.html"><strong aria-hidden="true">9.</strong> Data Modeling</a></li><li><a href="../subgraph-manifest/index.html"><strong aria-hidden="true">10.</strong> Subgraph Manifest</a></li><li><a href="../mappings-api/index.html"><strong aria-hidden="true">11.</strong> Mappings API</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Hybrid Network</h1>
+
+                        <div class="right-buttons">
+                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#mechanism-design" id="mechanism-design">Mechanism Design</a></h1>
+<h2><a class="header" href="#overview" id="overview">Overview</a></h2>
+<p>The protocol implements a <em>work token</em> token model<a href="#footnotes"><sup>1</sup></a> in which Indexing Node operators stake deposits of Graph Tokens for particular datasets, called subgraphs, to gain the right to participate in the data retrieval marketplaces for that dataset--indexing data and responding to read requests in exchange for micropayments. This deposit is forfeit in the event that the work is not performed correctly, or is performed maliciously, as defined in the <a href="#dispute-resolution">slashing conditions</a>.</p>
+<p>There are secondary mechanisms in the protocol that also require a staking of tokens, such as curation, stake delegation, and name registration, all of which will be expanded upon in their respective sections.</p>
+<h2><a class="header" href="#graph-token" id="graph-token">Graph Token</a></h2>
+<p>We introduce a native token for the protocol, Graph Tokens, which are the only token that may be used for staking in the network. However, ETH or DAI is used for paying for read operations, thus reducing friction and balance sheet risk for end-users of dApps that query The Graph. Graph Tokens will have variable inflation to reward specific activities in the network, as described in <a href="#inflation-rewards">Inflation Rewards</a>.</p>
+<h2><a class="header" href="#governance" id="governance">Governance</a></h2>
+<p>There are several parameters throughout this mechanism design that are set via a governance process. In the v1 specification, governance will consist of a multi-sig wallet contract controlled by the Graph Protocol team.</p>
+<p>In future versions of the protocol, more decentralized forms of governance will explored.</p>
+<h2><a class="header" href="#staking" id="staking">Staking</a></h2>
+<p>Indexing Nodes deposit a <code>stakingAmount</code> of Graph Tokens to process read requests for a specific dataset, which is identified by its <code>subgraphID</code>.</p>
+<p>For a <code>stakingAmount</code> to be considered valid, it must meet the following requirements:</p>
+<ul>
+<li><code>stakingAmount &gt;= minStakingAmount</code> where <code>minStakingAmount</code> is set via governance.</li>
+<li>The <code>stakingAmount</code> must be in the set of the top N staking amounts, where N is determined by the <code>maxIndexers</code> parameter that is set via governance.</li>
+</ul>
+<p>Indexing Nodes that have staked for a dataset are not limited by the protocol in how many read requests they may process for that dataset. However, it may be assumed that Indexing Nodes with higher deposits will receive more read requests and, thus, collect more fees, if all else is equal, as this represents a greater economic security margin to the end user.</p>
+<h2><a class="header" href="#data-retrieval-market" id="data-retrieval-market">Data Retrieval Market</a></h2>
+<p>Indexing Nodes which have staked to index a particular dataset, will be discoverable in the data retrieval market for that dataset.</p>
+<p>Indexing Nodes compete to have the most compelling combination of economic security margin (the amount of tokens staked), performance and price to attract read requests from users of the network. See <a href="../query-processing">Query Processing</a> for an example market interaction.</p>
+<p>Indexing Nodes receive requests which include a <a href="../messages#read-operation">Read Operation</a> and a Locked Transfer.</p>
+<p>The Read Operation fully defines the data that is being requested, while the <a href="../messages#locked-transfer">Locked Transfer</a> is a micropayment that is paid, conditional, on the Indexing Node producing a <a href="../messages#read-response">Read Response</a> along with a signed <a href="../messages#attestation">Attestation</a> message which certifies the response data is correct.</p>
+<h2><a class="header" href="#data-retrieval-pricing" id="data-retrieval-pricing">Data Retrieval Pricing</a></h2>
+<p>Pricing in the data retrieval market is set according to the bandwidth and compute required to process a request.</p>
+<p>Compute is priced as a <code>gasPrice</code>, denominated in ETH or DAI, where the <code>gas</code> required for a request is determined by the specific read operation and parameters. See <a href="../read-interface">Read Interface</a> for operation specific gas prices.</p>
+<p>Bandwidth is priced in <code>bytesPrice</code>, denominated in ETH or DAI, where <code>bytes</code> refers to the size of the <code>data</code> portion of the response, measured in bytes.</p>
+<p>Indexing Nodes respond with their compute and bandwidth costs in response to the <code>getPrices</code> method in the <a href="../rpc-api">JSON-RPC API</a>.</p>
+<h2><a class="header" href="#verification" id="verification">Verification</a></h2>
+<h3><a class="header" href="#fisherman-service" id="fisherman-service">Fisherman Service</a></h3>
+<p>A Fisherman Service is an economic agent who verifies read responses in exchange for a reward in cases where they detect that an Indexing Node has attested to an incorrect response, and the Fisherman successfully disputes the response on-chain.</p>
+<p>In the v1 of the protocol, the Graph Protocol team will operate a Fisherman service. This is to accommodate the fact, that in the absence of forced errors in the v1 protocol, Fisherman rewards should go to zero overtime, and thus must have altruistic motives in order to perform their service.</p>
+<h3><a class="header" href="#dispute-resolution" id="dispute-resolution">Dispute Resolution</a></h3>
+<p>Dispute resolution is handled through an on-chain dispute resolution process. In future versions of the protocol, this may involve programmatically verifying proofs or using a Truebit-style verification game, but in the v1 specification, the outcome of a dispute will be decided by a centralized arbitrator interacting with the on-chain dispute resolution process.</p>
+<p>To dispute a response, a Fisherman must submit the attestation of the response they are disputing as well as a deposit.</p>
+<p><strong>TODO</strong> <a href="https://github.com/graphprotocol/research/issues/76">Define deposit amount for Fisherman disputes</a></p>
+<p>In the event of a successful dispute the Indexing Node forfeits the entire deposit of tokens they staked on the dataset for which they produced an incorrect response. The Fisherman, in turn, receives a reward equal to a percentage of the slashed deposit.</p>
+<p><strong>TODO</strong> <a href="https://github.com/graphprotocol/research/issues/77">Define slashing reward for successful disputes</a></p>
+<p>In the event of an unsuccessful dispute, the Fisherman forfeits the entire deposit they submitted with their dispute.</p>
+<h2><a class="header" href="#market-discovery" id="market-discovery">Market Discovery</a></h2>
+<p>Market discovery is the process by which Indexing Nodes choose which datasets to index and serve data on.</p>
+<p>When the data retrieval market for a particular dataset is active, an Indexing Node may observe payment activity on-chain to decide if it would be profitable to participate in that market.</p>
+<p>With little to no activity for a newly created dataset, however, payment activity provides a poor signal. Instead, this signal to the network is provided by a <em>Curation Market</em>.<a href="#footnotes"><sup>2</sup></a></p>
+<h3><a class="header" href="#curation-market" id="curation-market">Curation Market</a></h3>
+<p>Curators are economic agents who earn rewards by betting on the future economic value of datasets, perhaps with the benefit of private information.</p>
+<p>A Curator stakes a deposit of Graph Tokens for a particular dataset in exchange for dataset-specific <em>subgraph tokens</em>. These tokens entitle the holder to a portion of a curation reward, which is paid in Graph Tokens through inflation. See <a href="#inflation-rewards">Inflation Rewards</a> for how curation reward is calculated for each dataset.</p>
+<p>Subgraph tokens are issued according to a bonding curve, making it more expensive to mint subgraph tokens by locking up Graph Tokens as the amount of bonded tokens increases, thus making it more expensive to purchase a share of future curator inflation rewards.</p>
+<p><strong>TODO</strong> <a href="https://github.com/graphprotocol/research/issues/69">Define bonding curve for curation market or bonding curve parameters</a>.</p>
+<h4><a class="header" href="#curator-rewards" id="curator-rewards">Curator Rewards</a></h4>
+<p>Curators earn a percentage of the fees paid for queries on the subgraphs they curate. Each subgraph token minted corresponds to <em>one basis point (0.01%)</em> of the fees paid to Indexers of that subgraph.</p>
+<h2><a class="header" href="#participation-adjusted-inflation-reward" id="participation-adjusted-inflation-reward">Participation Adjusted Inflation Reward</a></h2>
+<p>To encourage Graph Token holders to participate in the network, the protocol implements a participation-adjusted inflation<a href="#footnotes"><sup>3</sup></a> reward.</p>
+<p>The participation reward to the entire network is calculated as a function of a <code>targetParticipationRate</code> that is set via governance. If <code>actualParticipationRate == targetParticipationRate</code>, then <code>participationRewardRate = 0</code>. Conversely, the lower the actual participation rate is relative to the target participation rate, the higher the participation reward.</p>
+<p><strong>TODO</strong> <a href="https://github.com/graphprotocol/research/issues/70">Decide on actual function for relating <code>participationRewardRate</code> to <code>targetParticipationRate</code></a>.</p>
+<p>To incentivize actual work being provided to the network, not just staking, the participation reward will be distributed to Indexing Nodes who are staking for datasets with the strongest market signal from curators.</p>
+<ul>
+<li>Let <code>totalStakedForCuration</code> be the amount of Graph Tokens staked for curation in the entire network</li>
+<li>Let <code>stakedForCuration[s]</code> be the amount staked for curation for a particular dataset <code>s</code>.</li>
+<li>Let <code>stakedForIndexing[s]</code> be the total amount staked for indexing on a particular dataset <code>s</code>.</li>
+<li>Let <code>stakedForIndexing[s][i]</code> be the amount staked for indexing by Indexer <code>i</code> on dataset <code>s</code>.</li>
+</ul>
+<p>Then we can compute <code>participationReward[s][i]</code>, the participation reward allotted to Indexer <code>i</code> staked on dataset <code>s</code>, as follows:</p>
+<p><code>participationReward[s][i] = (stakedForCuration[s] / totalStakedForCuration) * (stakedForIndexing[s][i] / stakedForIndexing[s]) * participationRewardRate * totalTokenSupply</code>.</p>
+<h2><a class="header" href="#rounds" id="rounds">Rounds</a></h2>
+<p>Inflation rewards are calculated over a period of time, measured in blocks, according to a <code>roundDuration</code> parameter that is set via governance.</p>
+<p><strong>TODO</strong> <a href="https://github.com/graphprotocol/research/issues/75">How should round duration be set to balance gas costs and facilitating a dynamic market?</a></p>
+<p>For a given round <code>R</code>, the inflation rewards for that round are made available at the end of round <code>R+1</code>.</p>
+<p>This provides adequate time for off-chain micropayments to be settled on-chain. This settlement on-chain also provides a <a href="#market-signals">market signal</a>. So, <code>roundDuration</code> should be set sufficiently small to provide a good market signal, but sufficiently large to reduce the amount of on-chain transactions required to redeem inflation rewards on an on-going basis.</p>
+<h2><a class="header" href="#stake-delegation" id="stake-delegation">Stake Delegation</a></h2>
+<p>Participation in the protocol is a specialized activity. In the case of Curators, it entails accurately predicting the future value of datasets to the network, while in the case of Indexing Nodes, it requires operating infrastructure to index and serve data.</p>
+<p>Token holders who do not feel equipped to perform one of these functions may <em>delegate</em> their tokens to an Indexing Node that is staked for a particular dataset. In this case, the delegator is the residual claimant for their stake, earning participation rewards according to the activities of the delegatee Indexing Node but also forfeiting their stake in the event that the delagatee Indexing Node is slashed.</p>
+<h2><a class="header" href="#footnotes" id="footnotes">Footnotes</a></h2>
+<ul>
+<li>[1] https://multicoin.capital/2018/02/13/new-models-utility-tokens/</li>
+<li>[2] https://medium.com/@simondlr/introducing-curation-markets-trade-popularity-of-memes-information-with-code-70bf6fed9881</li>
+<li>[3] https://medium.com/@petkanics/inflation-and-participation-in-stake-based-token-protocols-1593688612bf</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../architecture-overview/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../query-processing/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../architecture-overview/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../query-processing/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

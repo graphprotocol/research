@@ -1,0 +1,287 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Query Processing - Hybrid Network</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="Hybrid Network Spec.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="affix"><a href="../index.html">Hybrid Network</a></li><li><a href="../architecture-overview/index.html"><strong aria-hidden="true">1.</strong> Architecture Overview</a></li><li><a href="../mechanism-design/index.html"><strong aria-hidden="true">2.</strong> Mechanism Design</a></li><li><a href="../query-processing/index.html" class="active"><strong aria-hidden="true">3.</strong> Query Processing</a></li><li><a href="../payment-channels/index.html"><strong aria-hidden="true">4.</strong> Payment Channels</a></li><li><a href="../read-interface/index.html"><strong aria-hidden="true">5.</strong> Read Interface</a></li><li><a href="../messages/index.html"><strong aria-hidden="true">6.</strong> Messages</a></li><li><a href="../rpc-api/index.html"><strong aria-hidden="true">7.</strong> JSON-RPC API</a></li><li><a href="../datasets/index.html"><strong aria-hidden="true">8.</strong> Datasets</a></li><li><a href="../data-modeling/index.html"><strong aria-hidden="true">9.</strong> Data Modeling</a></li><li><a href="../subgraph-manifest/index.html"><strong aria-hidden="true">10.</strong> Subgraph Manifest</a></li><li><a href="../mappings-api/index.html"><strong aria-hidden="true">11.</strong> Mappings API</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Hybrid Network</h1>
+
+                        <div class="right-buttons">
+                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#query-processing" id="query-processing">Query Processing</a></h1>
+<h2><a class="header" href="#background" id="background">Background</a></h2>
+<p>In some respects, The Graph resembles a traditional distributed query engine, where users may retrieve data that is distributed across a variety of stores via a single query interface, typically SQL.</p>
+<p>In this analogy, Query Nodes play the role of query engine, and Indexing Nodes play the role of data stores.</p>
+<p>Notably, the protocol only defines the <em>read interface</em> to the Indexing Nodes, which is consumed by the Query Nodes, while remaining agnostic to the actual implementation of the Query Nodes.</p>
+<p>Some Query Node implementations may provide an SQL interface, while others may provide a GraphQL interface. Query Nodes may implement different heuristics for balancing the requirements of price, performance, and economic security or make these algorithms pluggable. Indeed, some users may choose to forgo the Query Node altogether and directly consume the lower-level read interface exposed by the Indexing Nodes.</p>
+<p>While this last case is certainly possible, we present the architecture and high-level algorithms for consuming the data indexed by The Graph via a distributed query engine because that is the intended usage pattern of the protocol.</p>
+<p>The specification will omit detailed steps in the algorithms that are left to implementers. However, the Graph Protocol team will implement a reference Query Node/Client that provides a concrete example of how these algorithms might be implemented in order to provide a GraphQL interface to The Graph.</p>
+<h2><a class="header" href="#query-processing-architecture" id="query-processing-architecture">Query Processing Architecture</a></h2>
+<h3><a class="header" href="#with-query-node" id="with-query-node">With Query Node</a></h3>
+<p><img src="../assets/query-node-architecture.png" alt="Query Node Architecture" /></p>
+<h3><a class="header" href="#with-query-client" id="with-query-client">With Query Client</a></h3>
+<p><img src="../assets/query-client-architecture.png" alt="Query Client Architecture" /></p>
+<h2><a class="header" href="#overview" id="overview">Overview</a></h2>
+<p>As shown in the diagrams above, the query processing may take place via a Query Client, which is embedded in the end-user application, or it may take place via a Query Node that is external to the application. In the latter case, the Query Node may be running locally on the user's machine or as an external service that is accessed via the Internet. Some extra-protocol Query Node providers may choose to also run Indexing Nodes to provide a low-latency GraphQL interface, optimized for specific datasets.</p>
+<p>In either construction, query processing consists of the following steps:</p>
+<ol>
+<li>Query Planning (Optional)</li>
+<li>Service Discovery</li>
+<li>Service Selection</li>
+<li>Processing and Payment</li>
+<li>Response Collation</li>
+</ol>
+<h2><a class="header" href="#design" id="design">Design</a></h2>
+<h3><a class="header" href="#query-planning" id="query-planning">Query Planning</a></h3>
+<p>In this stage, the Query Node transforms a query into a plan, consisting of an ordered set of lower-level read operations that may be used to retrieve the data specified by the query. These steps are encapsulated in some intermediate representation (IR).</p>
+<table><thead><tr><th>Implementor's Note</th></tr></thead><tbody>
+<tr><td>Query planning is optional. For example, producing a query plan is common for most SQL databases, but for GraphQL server implementations, it is common to directly process the query in field-level resolvers.</td></tr>
+</tbody></table>
+<h2><a class="header" href="#query-optimization" id="query-optimization">Query Optimization</a></h2>
+<p>Query plans may optionally be optimized based on a variety of heuristics and algorithms, which are out of the scope of this specification.</p>
+<h3><a class="header" href="#service-discovery" id="service-discovery">Service Discovery</a></h3>
+<p>Processing a query plan, or processing a query directly, results in low-level read operations being made to Indexing Nodes. Each read operation corresponds to a specific dataset and, thus, needs to be made against an Indexing Node for that dataset. In the Service Discovery step, the Query Node locates Indexing Nodes for a specific dataset as well as important metadata that is useful in deciding which Indexing Node to issue read operations to, such as price, performance, and economic security margin.</p>
+<h4><a class="header" href="#locating-indexing-nodes" id="locating-indexing-nodes">Locating Indexing Nodes</a></h4>
+<p>To locate Indexing Nodes with data for a specific dataset, the Query Node makes several calls to the service discovery layer, which is implemented as several smart contracts on the Ethereum mainnet:</p>
+<ol>
+<li>Resolve subgraph names via the Graph Name Service (GNS).</li>
+<li>Identify per-subgraph Indexing Nodes via the Staking Contract.</li>
+<li>Identify Indexing Node URLs via the Service Registry.</li>
+</ol>
+<h4><a class="header" href="#collecting-indexing-node-metadata" id="collecting-indexing-node-metadata">Collecting Indexing Node Metadata</a></h4>
+<p>After identifying the URLs of all Indexing Nodes for a given dataset, the next step is to collect the metadata for price, performance, and economic security margin. This information should be cached for future Service Discovery steps for subsequent queries.</p>
+<p>Fetching price and latency for a node is done via a single call to the Indexing Node RPC API and returns the following data: the latency required to fulfill the request; a <code>bandwidthPrice</code> measured in price per byte transmitted over the network; and a <code>gasPrice</code>, which captures the cost of compute and IO for a given read operation.</p>
+<p>Economic security margin is the amount that an Indexing Node has staked and is willing to forfeit in the event that they provide an incorrect response to a read operation. The Query Node receives this in the previously made call to the Staking Contract.</p>
+<table><thead><tr><th>Implementor's Note</th></tr></thead><tbody>
+<tr><td>The Query Node does not need to make calls to every Indexing Node for a given dataset. It could choose to only contact a randomly selected subset or to keep contacting Indexing Nodes until it finds one that meets its selection criteria.</td></tr>
+</tbody></table>
+<h3><a class="header" href="#service-selection" id="service-selection">Service Selection</a></h3>
+<p>In the Service Selection stage, Query Nodes choose which Indexing Nodes to transact with for each read operation. An algorithm for this stage could incorporate <code>latency</code> (measured in ms), <code>economicSecurityMargin</code> (measured in Graph Tokens), <code>gasPrice</code>, and <code>bytesPrice</code> (the cost of sending a byte over the network).</p>
+<p>A naive algorithm for service selection could look like the following:</p>
+<ol>
+<li>Filter Indexing Nodes where <code>economicSecurityMargin &lt; minEconomicSecurityMargin</code>.
+<ul>
+<li>If no Indexing Nodes remain, return an error to the sender of the query for this piece of data, and specify the reason.</li>
+</ul>
+</li>
+<li>Filter Indexing Nodes where <code>latency &lt; minLatency</code>.
+<ul>
+<li>If no Indexing Nodes remain, increase <code>minLatency</code> by 33%, and repeat the step.</li>
+</ul>
+</li>
+<li>Estimate the cost of the read operation for each remaining Index.
+<ul>
+<li>Assume 80% of the maximum possible entities returnable by the query will be returned.</li>
+<li>Assume 25% of the max field size (in bytes) for each entity field with variable size.</li>
+<li>Calculate the bandwidth and gas costs based on the above assumptions and the gas costs specified in the <a href="../read-interface">Read Interface</a>.</li>
+</ul>
+</li>
+<li>Choose the Indexing Node with the lowest estimated cost for the read operation.</li>
+</ol>
+<p>In this example algorithm, <code>minLatency</code> and <code>minEconomicSecurityMargin</code> could be set per dataset or for all datasets. Additionally, it could be set by the Query Node or sent as metadata with an individual query.</p>
+<h3><a class="header" href="#processing-and-payment" id="processing-and-payment">Processing and Payment</a></h3>
+<p>Available read operations are defined in the <a href="../read-interface">Read Interface</a>, and are sent to the Indexing Nodes via the <a href="../rpc-api">JSON-RPC API</a>. They are accompanied by Locked Transfers, conditional micropayments that may be unlocked by the Indexing Node producing a Read Response and a signed <a href="../messages#attestation">Attestation</a> message certifying the response data is correct.
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; v1-spec: Update links and minor edits</p>
+<h3><a class="header" href="#response-collation" id="response-collation">Response Collation</a></h3>
+<p>Once all read operations have been processed, the resulting data must be collated into a response that fulfills the read schema of the query interface provided by the Query Node. This response is then returned to the sender of the query.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../mechanism-design/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../payment-channels/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../mechanism-design/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../payment-channels/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

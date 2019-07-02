@@ -87,7 +87,7 @@ It uses the following metasyntactic notation:
 
 The entire query follows this grammar:
 
-```
+```ignore
     QUERY ::= select FIELD [, FIELD]*
                 from TABLE_REF
                      [[inner|left outer] join] TABLE_REF on JOINCOND
@@ -99,7 +99,7 @@ The entire query follows this grammar:
 
 with the following nonterminals:
 
-```
+```ignore
     TABLE_REF ::= NAME [as NAME]
                 | (QUERY) as NAME
     FIELD     ::= ATTR [as NAME]

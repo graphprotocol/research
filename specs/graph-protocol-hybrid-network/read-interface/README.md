@@ -62,7 +62,9 @@ and returns an `Object` in the response with the following properties:
 
 ## Type system
 
-The precise set of values that needs to be supported still needs to be finalized, but the type system will need to at least allow for strings, ints, bigints, bigdecimals, and byte strings as primitive types.
+The precise set of values that needs to be supported still needs to be
+finalized, but the type system will need to at least allow for strings,
+ints, bigints, bigdecimals, and byte strings as primitive types.([Tracking issue](https://github.com/graphprotocol/graph-node/issues/1096))
 
 Composite types are homogenous arrays and maps whose keys are strings and whose values are any value allowed by this type system.
 
@@ -125,7 +127,9 @@ with the following nonterminals:
 
 ### AST representation
 
-Queries are transmitted as abstract syntax trees, not as text. The precise representation of the abstract syntax tree in JSON still needs to be defined.
+Queries are transmitted as abstract syntax trees, not as text. The precise
+representation of the abstract syntax tree in JSON still needs to be
+defined. ([Tracking issue](https://github.com/graphprotocol/graph-node/issues/1097))
 
 ## Query semantics
 
@@ -252,7 +256,13 @@ The details of how to compute an attestation based on the query, the data retrie
 
 ## Cost model
 
-The cost of queries needs to cover both the cost of indexing as well as the cost of actually running a query and returning its result. Indexing will incur relatively high fixed costs, which will need to be supported by the cost of queries. In addition, the marginal costs for indexing a subgraph and for expanding query capacity are relatively low, something that needs to be taken into account for the overall cost structure of an index operator.
+The cost of queries needs to cover both the cost of indexing as well as the
+cost of actually running a query and returning its result. Indexing will
+incur relatively high fixed costs, which will need to be supported by the
+cost of queries. In addition, the marginal costs for indexing a subgraph
+and for expanding query capacity are relatively low, something that needs
+to be taken into account for the overall cost structure of an index
+operator. ([Tracking issue](https://github.com/graphprotocol/graph-node/issues/1098))
 
 For any given query, the cost function could take a number of factors into account; given that query cost needs to subsidize fairly large indexing costs, it is probably good enough to work with a fairly coarse cost model. Possibilities here are:
 

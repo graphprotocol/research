@@ -1,43 +1,43 @@
 # Read Interface
 
 ## Overview
-To participate in the data retrieval market, Indexing Nodes implement a low-level read interface to the indexed data in their store. The read interface not only provides the means of retrieving data from an Indexing Node, but it also defines a contract that an Indexing Node is agreeing to uphold or else be slashed. This is enabled by attestations, which assert that a response was produced correctly and may be verified on-chain.
+To participate in the data retrieval market, Indexing Nodes implement a low-level read interface to the data they store. The read interface not only provides the means of retrieving data from an Indexing Node, but it also defines a contract that an Indexing Node is agreeing to uphold or else be slashed. This is enabled by attestations, which assert that a response was produced correctly and may be verified on-chain.
 
-## Calling Read Operations
-Available read operations are defined by the respective interface of the index being read from. See [Index Abstract Data Structures](#index-abstract-data-structures) and [Index Types](#index-types) for more information.
+The design of the read interface is based on the following considerations:
+1. Queries must be deterministically repeatable and verifiable: if two Indexing Nodes maintain the same data, submitting the same query to them must yield the same result, even if the two queries are done at different points in time. In particular, it should not matter how much of the underlying block chains the Indexing Nodes have indexed when the query happens, only that the data needed to perform the query is present on both.
+1. Query costs must be verifiable: the cost that an Indexing Node charges for running a query must be computable from data that is available to any Indexing Node that indexes a given subgraph. Just as with query results, all Indexing Node must charge the same amount of gas for the same query. The gas cost of a query can though be based, at least in part, on the size of the query result.
+1. Querying must be efficient: since Query Engine and Indexing Node communicate over general-purpose Internet connections, the Read Interface must make sure that the number of roundtrips and the amount of data sent between Query Engine and Indexing Node is as small as possible.
 
-While the read interfaces are described using a TypeScript notation, all the interfaces are language agnostic and defined in terms of JSON types.
+## Query Requests and Responses
+An Indexing Node's read interface offers a `query` operation that allows accessing the data of a subgraph using a subset of SQL.
 
-Calling these read operations is done via JSON RPC 2.0[<sup>1</sup>](#footnotes). See the full [JSON RPC API](../rpc-api).
+Calling the `query` operation is done via JSON RPC 2.0[<sup>1</sup>](#footnotes). See the full [JSON RPC API](../rpc-api).
 
-
-The method of interest here is `callReadOp` which accepts the following parameters:
+The `query` method accepts the following parameters:
 1. `Object`
- - `blockHash`: `String` - The hash of the Ethereum block from which to read the data.
+ - `blockHash`: `Object` - The hashes of blocks from which to read the data. Currently, the `blockHash` object can only have an `ethereum` property whose value must be the hash of the Ethereum block from which to read the data or the special value `latest`
  - `subgraphID`: `String` - The ID of the subgraph to read from.
- - `index`: `Object` - The [IndexRecord](#indexes) of the index being read from.
- - `op`: `String` - The name of the read operation.
- - `params`: `[any]` - The parameters passed into the called read operation.
+ - `query`: `Object` - The query to run against the given `subgraph` at the given `blockHash`.
 2. `Object` - A [Locked Transfer](../messages#locked-transfer) message which serves as a conditional micropayment for the read operation.
 
-The `readIndex` method returns the following:
-1. `Object`
- - `data`: `any` - The data retrieved by the read operation.
- - `attestation`: Object - An attestation that `data` is a correct response for the given read operation (see [Attestation](#attestation)).
+and returns an `Object` in the response with the following properties:
+1. `data`: `any` - The data retrieved by the query.
+1. `blockHash`: `Object` - The hashes of the blocks from which the data was queried in the same format as the `blockHash` in the request, except that the value `latest` will not be used.
+1. `attestation`: `Object` - An attestation that `data` is a correct response for the given read operation (see [Attestation](#attestation)).
 
+#### A Simple Example
 ```js
 // request
 {
-  "method": "readIndex",
+  "method": "query",
   "params": [
     {
-      "blockHash": "xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1",
-      "subgraphID": "QmTeW79w7QQ6Npa3b1d5tANreCDxF2iDaAPsDvW6KtLmfB",
-      "index": {
-        "indexType": "kv"
+      "blockHash": {
+        "ethereum": "latest"
       },
-      "op": "get"
-      "params": ["User:1"]
+      "subgraphID": "QmRngUAWqpipGzJULkt6MC5aU1vJyxcbwnkNHeXmn3fHqh",
+      // TODO: Use AST, not query string
+      "query": "select id, name from domains where labelName = 'addr'"
     }
   ],
   "jsonrpc": "2.0"
@@ -45,313 +45,239 @@ The `readIndex` method returns the following:
 // response
 {
   "data": {
-    "firstName": "Vitalik",
-    "lastName": "Buterin",
+    "domains": [
+      {
+        "id": "0x91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e2",
+        "name": "addr.reverse"
+      }
+    ]
+  },
+  "blockHash": {
+      "ethereum": "0xd2042f2b92fea0de6c4fca82e7d149b932693c4061421b31b159ec1be39e3477"
   },
   // TODO: Provide more realistic attestations
   "attestation": 0x0122340
 }
 ```
 
-##### Example - Entity doesn't exist
+## Type system
 
-```js
-// request
-{
-  "method": "readIndex",
-  "params": [
-    {
-      "blockHash": "xbf133b670857b983fc1b8f08759bc860378179042a0dba30b30e26d6f7f919d1",
-      "index": {
-        "indexType": "kv"
-      },
-      "op": "get"
-      "params": ["User:1"]
-    }
-  ],
-  "jsonrpc": "2.0"
-}
-// response
-{
-  "data": null,
-  // TODO: Provide more realistic attestations
-  "attestation": 0x0122340
-}
+The precise set of values that needs to be supported still needs to be
+finalized, but the type system will need to at least allow for strings,
+ints, bigints, bigdecimals, and byte strings as primitive types.([Tracking issue](https://github.com/graphprotocol/graph-node/issues/1096))
+
+Composite types are homogenous arrays and maps whose keys are strings and whose values are any value allowed by this type system.
+
+An encoding of values into JSON also still needs to be defined. The encoding will use the GraphQL schema that defines the subgraph to determine the types of attributes mentioned in the query. Processing a query and its result therefore requires knowledge of the subgraph schema.
+
+## Query Syntax
+
+The following grammar describes the queries that the read interface supports. The grammar was chosen such that it is powerful enough to support GraphQL queries, but leaves out large swaths of standard SQL functionality in the interest of simplicity.
+
+It uses the following metasyntactic notation:
+
+|      Symbol     | Meaning                                       |
+|-----------------|-----------------------------------------------|
+| UPPER CASE NAME | Nonterminal                                   |
+| lower case name | Terminal                                      |
+|  `::=`          | Definition of nonterminal                     |
+|  A &#124; B     | Both `A` and `B` are valid productions        |
+|  `[ EXPR ]`     | Optional expression                           |
+|  `[ EXPR ]*`    | Optional expression with arbitrary repetition |
+|  `/regexp/`     | Regular expression                            |
+
+
+The entire query follows this grammar:
+
+```ignore
+    QUERY ::= select FIELD [, FIELD]*
+                from TABLE_REF
+                     [[inner|left outer] join] TABLE_REF on JOINCOND
+              [where PREDICATE]
+              [order by ATTR [asc|desc]]
+              [limit INT]
+            | QUERY union all QUERY
 ```
 
-## Indexes
-All read operations require that the caller specify an index. Index data structures efficiently organize the data to support different read access patterns.
+with the following nonterminals:
 
-Indexes may include the entire dataset or cover only a subset. This is useful for enabling sharding, where different Indexing Nodes may store different subsets of the dataset to reduce the storage requirements for a single Indexing Node or enable better read performance.
+```ignore
+    TABLE_REF ::= NAME [as NAME]
+                | (QUERY) as NAME
+    FIELD     ::= ATTR [as NAME]
+                | map(NAME) as NAME
+                | collect(NAME) as NAME over NAME [, NAME ]*
+    ATTR      ::= NAME . NAME
+    JOINCOND  ::= ATTR = ATTR [and ATTR = ATTR]*
+    PREDICATE ::= ATTR OP VALUE
+                | VALUE OP ATTR
+                | PREDICATE and PREDICATE
+                | PREDICATE or PREDICATE
+                | not PREDICATE
+                | (PREDICATE)
+    OP        ::= = | != | < | <= | > | >=
+                | in
+                | contains | starts with | ends with
+    VALUE     ::= 'STRING' | INT | ( VALUE [, VALUE ]* )
+                | literals for whatever other types we'll support
+    NAME      ::= /[A-Za-z][A-Za-z_]*/
+    INT       ::= /[0-9]+/
 
-Indexes are defined by an `IndexRecord` which has the following shape:
+```
 
-| Field Name | Field Type | Description |
-| ---------- | ---------- | ----------- |
-| db | String | The identifier of the database model being used. |
-| indexType | String | An identifier of the index type used for the respective database model. |
-| partition | String | The name of the entity or interface which should be covered by the index. |  
-| options | Object | Options specific to the type of index. |
+### AST representation
 
-###### Example Index Records
-Given a dataset with the following data model:
+Queries are transmitted as abstract syntax trees, not as text. The precise
+representation of the abstract syntax tree in JSON still needs to be
+defined. ([Tracking issue](https://github.com/graphprotocol/graph-node/issues/1097))
 
+## Query semantics
+
+Most of the semantics of a `QUERY` are the same as in standard SQL; some of the deviations from standard SQL deserve more of an explanation:
+
+### Tables
+
+The tables that are available for use by queries correspond to the entities defined in a subgraph's schema, and the columns of those tables are the attributes of those entities, with the exception of derived attributes. Table and column names use snake case so that an attribute `mainBand` in the subgraph schema would be accessed as the `main_band` column.
+
+### Fields
+
+The definition of `FIELD` is motivated by the specific needs of performing GraphQL queries. A `FIELD` can be one of:
+
+- a reference to a column of one of the tables in the `from` clause
+- the special function `map` applied to a row which results in a map whose keys are the names of the columns of the row and whose values are the corresponding column values
+- the special function `collect` which takes a set of rows of one of the tables we are selecting from that have the same values on the columns in the `over` clause and puts them into an array of maps.  It is a simplified version of what in standard SQL would be expressed as a `GROUP BY` clause in combination with a function that aggregates into an array
+
+### Join condition
+
+The query syntax only allows joining on the equality of attributes (equijoin) but not on more general conditions like `table1.attr <= table2.attr` in an effort to limit the complexity of queries. It is also not possible to express antijoins with this syntax.
+
+Joins can either be _inner_ joins, which makes it possible to filter by the attributes of related objects, or _left outer_ joins, which makes it possible to include optional related objects in the query results.
+
+### Where clause
+
+The `where` clause allows arbitrary boolean expressions, but only ones where an attribute is compared to a constant value, as attribute to attribute comparisons represent join conditions and can only appear in a join clause.
+
+The `in` operator is used to check whether an attribute is one of a list of possible values, for example, `m.color in ('blue', 'green')`.
+
+The `contains`, `starts with`, and `ends with` operators check whether a string attribute contains, starts with or ends with the given value, for example, `m.title contains 'foo'`.
+
+### Paging
+
+Clients need to be able to page through a possibly large result set. The `limit` clause allows clients to specify how many results should be sent back; the point at which to start generating results in the larger result set can be indicated by an appropriate condition in the `where` clause. For example, a query to list musicians might look like
+
+```sql
+    select m.id, m.name
+      from musicians as m
+     order by m.name, m.id
+     limit 10
+```
+
+The next page of the list of musicians can be generated with the query
+```sql
+    select m.id, m.name
+      from musicians as m
+     where m.id > $last_id
+     order by m.name, m.id
+     limit 10
+```
+where the client replaces `$last_id` with the last `id` mentioned in the first result set. The ordering by `name` and `id` is crucial for making paging work; in particular, ordering by `id` resolves possible ambiguities if more than one musician have the same name.
+
+### Example
+
+We assume that we are working with a subgraph that stores musicians, bands and their songs using the following schema:
 ```graphql
-interface EthereumAccount {
-  id: ID!
-  address: String!
+type Musician @entity {
+    id: ID!
+    name: String!
+    mainBand: Band
+    bands: [Band!]!
+    writtenSongs: [Song]! @derivedFrom(field: "writtenBy")
 }
 
-type Contract implements EthereumAccount {
-  id: ID!
-  address: String!
+type Band @entity {
+    id: ID!
+    name: String!
+    members: [Musician!]! @derivedFrom(field: "bands")
+    originalSongs: [Song!]!
 }
 
-type User implements EthereumAccount {
-  id: ID!
-  address: String!
-  name: FullName
-}
-
-type FullName {
-  first: String!
-  last: String!
-}
-```
-
-Then, the following would be valid index names for that dataset:
-
-| Index Name | Description|
-| ---------- | ---------- |
-| `{ db: "entitydb", indexType: "dictionary" }`       | A basic key-value index supporting constant-time lookup of all entities in dataset. |
-| `{ db: "entitydb", "indexType: "dictionary", partition: "User" }`  | A basic key-value index supporting constant-time lookup of `User` entities. |
-| `{ db: "entitydb", indexType: "searchTree", options: { sortBy: ["id"] } }` | A sorted key-value index supporting iteration through all entities, sorted by ID. |
-| `{ db: "entitydb", indexType: "searchTree", partition: "EthereumAccount", options: { sortBy: ["address"] }}` |  A sorted key-value index supporting iteration through all entities implementing the `EthereumAccount` interface, sorted by the `address` field. |
-| `{ db: "entitydb", indexType: "searchTree", partition: "User",  options: { sortBy: ["name.first", "name.last"] } }` | A sorted key-value index supporting iteration through all `User` entities, first sorted by the nested field `name.first`, then by the nested field `name.last` (i.e., a compound index). |
-
-### Index Abstract Data Structures
-
-All concrete index types implement an indexing abstract data structure, which specify the interface, semantics, and gas costs for read operations against that index.
-
-The concrete types (i.e., `K` and `V` shown below), as well as the implicit comparator function to determine sort order, are specified by each concrete index type.
-
-#### Dictionary
-##### Type
-Dictionary<K,V>
-
-##### Operations
-| Op  | Signature | Description | Gas Cost |
-| --- | --------- | ----------- | -------- |
-| get | `(key: K) => V` | Retrieves a value by its key. | `opCostDictionaryGet` (set via governance) |
-
-#### Search Tree
-
-##### Type
-`SearchTree<K,V>`
-
-##### Operations
-| Op  | Signature           | Description  | Gas Cost |
-| --- | ------------------- | ------------ | -------- |
-| find | `(predicate: FilterPredicate, options?: { gte?: K, lt?: K } ) => V` | Retrieves the first value for which the `FilterPredicate` returns true, searching in ascending order. If specified, only take values whose sort keys are between the range parameters `gte` (inclusive) and `lt` (exclusive). | `(opCostSearchTreeStep opCostFilterPredicate) * N` where `N` is the number of iterations taken to find the value, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided. |
-| findLast | `(predicate: FilterPredicate, options?: { gt?: K, lte?: K } ) => V` | Retrieves the first value for which the `FilterPredicate` returns true, searching in descending order. If specified, only take values whose sort keys are between the range parameters `gt` (exclusive) and `lte` (inclusive). |  `(opCostSearchTreeStep opCostFilterPredicate) * N` where `N` is the number of iterations taken to find the value, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided. |
-| get | `(key: K) => V` | Retrieves a value by its sort key. If multiple values share the same sort key, it will retrieve the first value inserted with the sort key. | `opCostSearchTreeGetPerH * H` where `H` is the height of a binary search tree, and `opCostSearchTreeGetPerH` is set via governance. |
-| take | `(count: Number, options?: { skip?: Number, gte?: K, lt?: K}) => [V]` | Retrieves the first N values, specified by `count`, from the index in ascending order, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gte` (inclusive) and `lt` (exclusive).| `opCostSearchTreeStep * N` where `N` is the number of iterations taken including skipped values. |
-| takeUntil | `(predicate: FilterPredicate, options?:{ skip?: Number, gte?: K, lt?: K}) => [V]` | Retrieves values from the index in ascending order until `FilterPredicate` returns false, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gte` (inclusive) and `lt` (exclusive). | `(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S` where `N` is the number of iterations taken not including skipped values, `S` is the number of values skipped over, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided.  |
-| takeWhile | `(predicate: FilterPredicate, options?:{ skip?: Number, gte?: K, lt?: K}) => [V]` | Retrieves values from the index in ascending order, while `FilterPredicate` returns true, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gte` (inclusive) and `lt` (exclusive). | `(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S` where `N` is the number of iterations taken not including skipped values, `S` is the number of values skipped over, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided. |
-| takeLast | `(count: Number, options?: { skip?: Number, gt?: K, lte?: K })` | Retrieves the last N values, specified by `count`, from the index in descending order, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gt` (exclusive) and `lte` (inclusive). | `opCostSearchTreeStep * N` where `N` is the number of iterations taken including skipped values.  |
-| takeLastUntil | `(predicate: FilterPredicate, options?:{ skip?: Number, gt?: K, lte?: K}) => [V]` | Retrieves values from the index in descending order, until `FilterPredicate` returns false, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gt` (exclusive) and `lte` (inclusive). | `(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S` where `N` is the number of iterations taken not including skipped values, `S` is the number of values skipped over, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided. |
-| takeLastWhile | `(predicate: FilterPredicate, options?:{ skip?: Number, gt?: K, lte?: K}) => [V]` | Retrieves values from the index in descending order, while `FilterPredicate` returns true, optionally skipping the number of values specified by `skip`. If specified, it only takes values whose sort keys are between the range parameters `gt` (exclusive) and `lte` (inclusive). | `(opCostSearchTreeStep + opCostFilterPredicate) * N + opCostSearchTreeStep * S` where `N` is the number of iterations taken not including skipped values, `S` is the number of values skipped over, `opCostSearchTreeStep` is set via governance, and `opCostFilterPredicate` is calculated for the specific filter predicate provided. |
-
-### Filter Predicates
-Filter predicates allow for declaratively asserting whether a value meets certain criteria. Filter predicates are expressed as objects that can be passed into several low-level index read operations, such as `takeWhile` and `find`.
-
-#### Structure
-
-Filter predicates are expressed through a simple DSL:
-```typescript
-type FilterPredicate = FilterPredicateAnd | FilterPredicateOr | FilterPredicateLeaf
-
-interface FilterPredicateAnd {
-  and: [FilterPredicate];
-}
-
-interface FilterPredicateOr {
-  or: [FilterPredicate];
-}
-
-type FilterPredicateLeaf = StringFilter | NumberFilter | BooleanFilter
-
-interface BaseFilter {
-  // The field the predicate will be applied to. Nested fields may be
-  // specified by concatenating field names with a "."
-  // If no field is specified, the predicate will be applied to the value. This
-  // is only supported if the value is a primitive type.
-  field?: String;
-}
-
-// If multiple filter clauses are supplied, they will be treated as a logical AND.
-interface StringFilter extends BaseFilter {
-  equals?: String;
-  notEquals?: String;
-  // Contains string
-  contains?: String;
-  // Does not contain string
-  notContains?: String;
-  startsWith?: String;
-  notStartsWith?: String;
-  endsWith?: String;
-  notEndsWith?: String;
-  // Less than
-  lt?: String;
-  // Less than or equal to
-  lte?: String;
-  // Greater than
-  gt?: String;
-  // Greater than or equal to
-  gte?: String;
-  // Contained in list
-  in?: [String];
-  // Not contained in list
-  notIn?: [String];
-}
-
-
-// If multiple filter clauses are supplied, they will be treated as a logical AND.
-interface NumberFilter extends BaseFilter {
-  equals?: Number;
-  notEquals?: Number;
-  // Less than
-  lt?: Number;
-  // Less than or equal to
-  lte?: Number;
-  // Greater than
-  gt?: Number;
-  // Greater than or equal to
-  gte?: Number;
-  // Contained in list
-  in?: [Number];
-  // Not contained in list
-  notIn?: [Number];
-}
-
-// If multiple filter clauses are supplied, they will be treated as a logical AND.
-interface BooleanFilter extends BaseFilter {
-  equals?: Boolean;
-  notEquals?: Boolean;
+type Song @entity {
+    id: ID!
+    title: String!
+    writtenBy: Musician!
+    band: Band @derivedFrom(field: "originalSongs")
 }
 ```
 
-##### Example - Simple Value Filter Predicate
+Queries against such a subgraph can make use of the `musicians`, `bands`, and `songs` table. The ID's of the songs a musician has written can be queried with
+```sql
+    select s.id
+    from musicians as m
+    inner join songs as s on s.written_by = m.id
+    where m.name = 'John Coltrane'
+```
+
+A GraphQL query that lists musicians, their main bands, and the songs they have written
+```graphql
+    musicians { id mainBand { id } writtenSongs { id } }
+```
+
+would correspond to this SQL query
+```sql
+    select m.id,
+           map(main_band) as mainBand,
+           collect(songs) as songs over m.id
+        from musicians m
+             left outer join (select id from bands) as main_band
+                             on (m.main_band = main_band.id)
+             left outer join (select id from songs) as songs
+                             on (songs.written_by = m.id)
+```
+
+The result of the query will look like
 ```js
 {
-  equals: 12
+  "data": [
+    { "id": "coltrane",
+      "mainBand": { "id": "classic_quartet" },
+      "songs": [{"id": "resolution"}, {"id": "psalm"}]
+    },
+    ...
+  ]
+  // remaining response fields omitted
 }
 ```
 
-##### Example - Object Filter Predicate
-```js
-{
-  field: "fullName",
-  contains: "Vitalik"
-}
-```
+## Attestation
 
-##### Example - Filter Predicate with Boolean Operators and Nested Fields
-```js
-{
- and: [
-   {
-     field: "name.first",
-     equals: "Vitalik"
-   },
-   {
-     field: "name.last",
-     equals: "Buterin"
-   }
- ]
-}
-```
+The attestation contains a verifiable assurance that the data returned for a query is a correct response for that query.
 
-#### Gas Cost
-The clauses in the filter predicate DSL can be grouped into several buckets of operation types, which share equivalent gas cost calculations:
+The details of how to compute an attestation based on the query, the data retrieved, and the block hashes at which the data was retrieved still need to be defined.
 
-| Operation Type | Description | Gas Cost |
-| --------- | ----------- | -------- |
-| Number Comparison | Includes `lt`, `lte`, `gt`, `gte`, `equals` and `notEquals` clauses on Number types. | `opCostByteCompare * B ` where `B` is the number of bytes in the number type, and `opCostByteCompare` is set via governance. |
-| String Comparison | Includes `lt`, `lte`, `gt`, `gte`, `startsWith`, `notStartsWith`, `endsWith`, `notEndsWith`, `equals` and `notEquals` clauses on String types. | `opCostCharCompare * N ` where `N` is the number of characters compared in order to complete the operation, and `opCostCharCompare` is set via governance. |
-| Bit Comparison | Includes `equals` and `notEquals` clauses on Boolean types. Also used for combining two filter predicate clauses via the Boolean operators `or` and `and` (including the implicit `and` described above). | `opCostBitCompare` where `opCostBitCompare` is set via governance. |
-| String Match | Used for `contains` and `notContains` clauses on String types | `opCostStringSearch * (M + N)` where `N` is the number of characters in the pattern being matched, and `M` is the number of characters in the string being searched. `opCostStringSearch` is set via governance. |
+## Cost model
 
+The cost of queries needs to cover both the cost of indexing as well as the
+cost of actually running a query and returning its result. Indexing will
+incur relatively high fixed costs, which will need to be supported by the
+cost of queries. In addition, the marginal costs for indexing a subgraph
+and for expanding query capacity are relatively low, something that needs
+to be taken into account for the overall cost structure of an index
+operator. ([Tracking issue](https://github.com/graphprotocol/graph-node/issues/1098))
 
-### Database Models
-The semantics of reading from an Indexing Node are determined by the database model that the index being read from implements, such as [key-value (KV)](https://en.wikipedia.org/wiki/Key-value_database), [entity-attribute-value (EAV)](https://en.wikipedia.org/wiki/Entity%E2%80%93attribute%E2%80%93value_model) and the [relational model](https://en.wikipedia.org/wiki/Relational_model). Index types are prefixed with a short label indicating the database model the index implements:
-- `entitydb` - An [entity database model](#entity-database-model).
-- `rdb` -  Relational database model. Not supported in this version of the protocol.
-- `eav` -  Entity-attribute-value database model. Not supported in this version of the protocol.
+For any given query, the cost function could take a number of factors into account; given that query cost needs to subsidize fairly large indexing costs, it is probably good enough to work with a fairly coarse cost model. Possibilities here are:
 
-The database model also defines the available partitions and index types for use in read operations.
+- a constant cost function - every query costs the same regardless of its complexity
+- a cost function based on result size - larger results are more expensive than smaller results
+- a cost function based on result size and the query itself - more complex queries (measured by static analysis of the query, e.g., the number of joins in the query) are more expensive than simpler queries
 
-In the v1 protocol, we only support the entity database model.
+Note that cost functions do not need to be linear, and it would therefore entirely possible to, for example, have a cost function that makes querying large amounts of data prohibitively expensive.
 
-#### Entity Database Model
-In the protocol's entity database model, entities are stored as key-value pairs, where the key is a concatenation of the entity type and the entity ID, and the value is an entity object.
+Other possible factors that were discussed but will impose a serious burden on the implementation, and will therefore not be used for now are:
 
-This database model is referenced as `entitydb` in Index Records.
+- database statistics such as table size or distribution of values: since fisherman will need to check the computation of query cost a while after the query ran, those checks must be time travel queries, and therefore require that these statistics are kept for every block.
+- data structure state such as the number of steps a lookup has to take when traversing an index: again, since fishermen perform time travel queries, only data structures that do not mutate their structure would be suitable, and it needs to be possible to traverse them at any given block.
 
-
-##### Example - Entities Stored as Key-Value Pairs
-| Key | Value |
-| --- | ----- |
-| `user:1` | `{ id: "user:1", user: "Alice", age: 17 }` |
-| `user:2` | `{ id: "user:2", user: "Bob", age: 47 }` |
-
-#### Partitions
-Partitions define the subset of the data that is covered by the index.
-
-Possible values of `<partition>` in an Index Record:
- - none - Includes all entities in the dataset. Default partition, `partition` key should be ommitted in IndexRecord.
- - `"<entityType>"` - Includes entities of the type specified by `entityType`. The entity type name is case-sensitive.
- - `"<interface>"` - Includes entities that implement the provided interface. The interface name is case-sensitive.
-
-### Index Types
-
-#### Entity DB Indexes
-
-##### Dictionary
-The entity dictionary supports simple key-value lookups of entities by their entity type and ID, in constant time.
-
-###### Name
-`dictionary`
-
-###### Database Model
-`entitydb`
-
-###### Type
-`Dictionary<K, V>`
-   - `K`: `String` - The id of the entity.
-   - `V`: `Object` -  An entity that conforms to its type as defined in the schema of the dataset.
-
-###### Options
-None
-
-##### Search Tree
-This index supports iterating through entities, ordered by possibly nested attribute values. Supports compound indexes, where an entity is sorted first by one attribute, then by another.
-
-###### Name
-`searchTree`
-
-###### Database Model
-`entitydb`
-
-###### Type
-`SearchTree<K, V>`
-   - `K`: `String` | `Number` | `Object` - The value of the sortKey, which is either a primitive value in the case of single-attribute indexes, or an object containing two attribute-value pairs in the case of compound indexes.
-   - `V`:  An entity that conforms to its type as defined in the schema of the dataset.
-
-###### Options
-- `sortBy`: `Array`
-  1. `String` - The first attribute to sort by, using `.` to indicate nested attributes (i.e., `"name.first"`)
-  2. `String` -  The second attribute to sort by, using `.` to indicate nested attributes (i.e., `"name.last"`)
+We will collect data on queries, and their result sizes as soon as we can and experiment with queries following the structure above to better understand where a simple cost model would significantly deviate from real life query performance.
 
 ## Footnotes
 - [1] https://www.jsonrpc.org/specification
